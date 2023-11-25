@@ -14,3 +14,4 @@ gem "jbuilder"
 gem "tzinfo-data", platforms: %i[ mingw mswin x64_mingw jruby ]
 gem "bootsnap", require: false
 gem "sassc-rails"
+gem "faker", "3.2.2"
