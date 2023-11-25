@@ -29,7 +29,7 @@
                         <th class="col-3 text-center">Ações</th>
                     </thead>
                     <tbody>
-                    <% @planning.incomes.each do |income| %>
+                    <% @incomes.each do |income| %>
                     <tr>
                         <td><%= income.description %></td>
                         <td><%= decimal_to_float(income.value) %></td>
@@ -45,6 +45,9 @@
                     <% end %>
                     </tbody>
                 </table>
+            </div>
+            <div class="card-footer">
+                <%= render partial: 'shared/pagination', locals: { pagy: @pagy } %>
             </div>
         </div>
     </div>

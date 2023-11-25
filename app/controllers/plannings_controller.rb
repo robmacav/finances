@@ -7,6 +7,8 @@ class PlanningsController < ApplicationController
 
   def show
     @planning = Planning.includes(:expense_categories, :expenses, :incomes).find(params[:id])
+
+    @pagy, @incomes = pagy(@planning.incomes, items: params[:per_page] || 5)
   end
 
   def new
