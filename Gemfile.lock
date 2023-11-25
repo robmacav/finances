@@ -147,6 +147,10 @@ GEM
       thor (~> 1.0)
       zeitwerk (~> 2.5)
     rake (13.0.6)
+    ransack (4.1.1)
+      activerecord (>= 6.1.5)
+      activesupport (>= 6.1.5)
+      i18n
     sassc (2.4.0)
       ffi (~> 1.9)
     sassc-rails (2.1.2)
@@ -190,6 +194,7 @@ DEPENDENCIES
   pagy (= 3.5)
   puma (~> 5.0)
   rails (~> 7.0.4)
+  ransack (= 4.1.1)
   sassc-rails
   sprockets-rails
   sqlite3 (~> 1.4)
