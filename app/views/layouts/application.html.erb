@@ -11,6 +11,17 @@
   </head>
 
   <body>
-    <%= yield %>
+    <div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
+      <nav class="navbar show navbar-vertical h-lg-screen navbar-expand-lg px-0 py-3 navbar-light bg-light border-bottom border-bottom-lg-0 border-end-lg" id="navbarVertical">
+        <%= render 'shared/sidebar' %>
+      </nav>
+      <div class="h-screen flex-grow-1 overflow-y-lg-auto">
+        <main class="pt-7 pb-3 px-3 bg-surface-secondary">
+          <div class="container-fluid">
+            <%= yield %>
+          </div>
+        </main>
+      </div>
+    </div>
   </body>
 </html>
