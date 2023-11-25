@@ -1,0 +1,20 @@
+<% link = pagy_link_proc(pagy, 'class="page-link"') %>
+
+<div class="d-flex justify-content-center justify-content-sm-between align-items-center">
+  <span class="d-none d-sm-inline-flex">Há um total de <%= pagy.count %> items.</span>
+
+  <nav aria-label="pager"  class="pagy-bootstrap-nav" role="navigation">
+    <ul class="pagination">
+    <% if pagy.prev %>    
+      <li class="page-item prev"><%== link.call(pagy.prev, '<i class="bi bi-caret-left"></i>', 'aria-label="previous"') %></li>
+    <% else %>    
+      <li class="page-item prev disabled"><a href="#" class="page-link"><%== '<i class="bi bi-caret-left"></i>' %></a></li>
+    <% end -%>
+    <% if pagy.next %>    
+        <li class="page-item next"><%== link.call(pagy.next, '<i class="bi bi-caret-right"></i>', 'aria-label="next"') %></li>
+      <% else %>    
+        <li class="page-item next disabled"><a href="#" class="page-link"><%== '<i class="bi bi-caret-right"></i>' %></a></li>
+    <% end %>
+    </ul>
+  </nav>
+</div>
