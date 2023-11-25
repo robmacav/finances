@@ -1,0 +1,3 @@
+<%= render "shared/modal", title: "Editar categoria", size: 'modal-lg', url: "/categories/#{@category.id}", form_id: @category.class.table_name do %>
+  <%= render "form", category: @category %>
+<% end %>
