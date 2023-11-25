@@ -1,0 +1,30 @@
+<%= form_with(model: @expense, id: @expense.class.table_name, html: { autocomplete: 'off' }) do |f| %>
+<%= f.hidden_field :planning_expense_category_id %>
+
+<div class="row mb-3">
+    <div class="col-12 col-sm-12">
+        <%= f.label :description, "Descrição" %>
+        <%= f.text_field :description, class: 'form-control', placeholder: 'Energia Elétrica' %>
+        <div class="text-danger">
+        <% if @expense.errors.include?(:description) %>
+            <% @expense.errors.full_messages_for(:description).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12 col-sm-12">
+        <%= f.label :value, "Valor" %>
+        <%= f.text_field :value, class: 'form-control real-currency', placeholder: 'R$ 400' %>
+        <div class="text-danger">
+        <% if @expense.errors.include?(:value) %>
+            <% @expense.errors.full_messages_for(:value).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<% end %>
