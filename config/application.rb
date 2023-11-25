@@ -18,5 +18,14 @@ module Finances
   class Application < Rails::Application
     config.load_defaults 7.0
     config.generators.system_tests = nil
+
+    config.generators do |g|
+      g.system_tests = nil
+      g.helper false
+      g.stylesheets false
+      g.javascripts false
+      g.skip_routes true
+      g.test_framework false
+    end
   end
 end
