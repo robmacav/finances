@@ -1,3 +1,5 @@
 Rails.application.routes.draw do
-  # root "articles#index"
+  resources :plannings
+  
+  root to: redirect('/plannings')
 end

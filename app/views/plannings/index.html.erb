@@ -1,0 +1,60 @@
+<div class="row mb-5">
+    <div class="col-12 col-sm-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Planejamento</h3>
+                <%= link_to new_planning_path, class: 'btn btn-sm btn-neutral me-2', data: { turbo_frame: 'modal' } do %>
+                    <i class="bi bi-plus"></i> 
+                    <span class="d-none d-sm-inline-flex">Adicionar</span>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+<% if @plannings.present? %>
+<div class="row mb-5">
+    <div class="col-md-12 col-12">
+        <div class="card mb-5">
+            <div class="table-responsive">
+                <table class="table table-striped text-nowrap mb-0">
+                    <thead class="">
+                        <tr>
+                            <th>Mês / Ano</th>
+                            <th>Receita</th>
+                            <th>Despesas</th>
+                            <th>Disponível</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% @plannings.each do |planning| %>
+                            <tr>
+                                <td class="col-3 col-sm-2 align-middle"><%= Date.strptime(planning.month_year, '%m%Y').strftime("%m/%Y") %></td>
+                                <td class="col-3 col-sm-2 align-middle"><%= planning_total_incomes(planning) %></td>
+                                <td class="col-3 col-sm-2 align-middle"><%= planning_total_expenses(planning) %></td>
+                                <td class="col-3 col-sm-2 align-middle"><%= planning_total_available(planning) %></td>
+                                <td class="col-3 col-sm-3 text-center">
+                                    <%= link_to planning_path(planning), class: 'btn btn-sm btn-neutral' do %>
+                                        <i class="bi bi-eye"></i>
+                                    <% end %>
+                                    <%= link_to edit_planning_path(planning), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+                                        <i class="bi bi-pencil"></i>
+                                    <% end %>
+                                    <%= link_to planning_path(planning), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
+                                        <i class="bi bi-trash"></i>
+                                    <% end %>
+                                </td>
+                            </tr>
+                        <% end %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer d-flex justify-content-center align-items-center">
+                Há um total de <%#= @pagy.count %> items.
+            </div>
+        </div>
+    </div>
+</div>
+<% end %>
