@@ -1,0 +1,3 @@
+<%= render "shared/modal", title: "Editar receita", size: 'modal-lg', url: "/planning-incomes/#{@income.id}", form_id: @income.class.table_name do %>
+  <%= render "form", item: @income %>
+<% end %>
