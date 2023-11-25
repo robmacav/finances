@@ -1,0 +1,53 @@
+<div class="row g-6 mb-6">
+  <div class="col-xl-4 col-sm-12 col-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Receitas</span>
+            <span class="h3 font-bold mb-0"><%= planning_total_incomes(planning) %></span>
+          </div>
+          <div class="col-auto">
+            <div class="icon icon-shape bg-success text-white text-lg rounded-circle">
+              <i class="bi bi-graph-up-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-sm-12 col-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Despesas</span>
+            <span class="h3 font-bold mb-0"><%= planning_total_expenses(planning) %></span>
+          </div>
+          <div class="col-auto">
+            <div class="icon icon-shape bg-danger text-white text-lg rounded-circle">
+              <i class="bi bi-graph-down-arrow"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="col-xl-4 col-sm-12 col-12">
+    <div class="card shadow-sm">
+      <div class="card-body">
+        <div class="row">
+          <div class="col">
+            <span class="h6 font-semibold text-muted text-sm d-block mb-2">Disponível</span>
+            <span class="h3 font-bold mb-0"><%= planning_total_available(planning) %></span>
+          </div>
+          <div class="col-auto">
+            <div class="icon icon-shape bg-primary text-white text-lg rounded-circle">
+              <i class="bi bi-wallet"></i>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

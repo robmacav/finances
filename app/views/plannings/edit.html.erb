@@ -1,0 +1,3 @@
+<%= render "shared/modal", title: "Editar planejamento", size: 'modal-lg', url: "/plannings/#{@planning.id}", form_id: @planning.class.table_name do %>
+  <%= render "form", planning: @planning %>
+<% end %>

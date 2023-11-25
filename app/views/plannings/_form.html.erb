@@ -1,0 +1,15 @@
+<%= form_with(model: @planning, id: @planning.class.table_name, html: { autocomplete: 'off' }) do |f| %>
+<div class="row mb-5">
+    <div class="col-12 col-sm-12">
+        <%= f.label :month_year, "Mês / Ano" %>
+        <%= f.text_field :month_year, class: 'form-control datepicker-mm-yyyy', placeholder: Time.now.strftime("%m/%Y") %>
+        <div class="text-danger">
+        <% if @planning.errors.include?(:month_year) %>
+            <% @planning.errors.full_messages_for(:month_year).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<% end %>

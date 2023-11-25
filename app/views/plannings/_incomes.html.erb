@@ -1,0 +1,51 @@
+<div class="row mb-5">
+    <div class="col-12 col-sm-12">
+        <div class="card">
+            <div class="card-header">
+                <div class="row">
+                    <div class="col-12 col-sm-12 d-flex justify-content-between align-items-center">
+                        <h3 class="card-title mb-0">Receitas</h3>
+                        <div>
+                            <%= link_to new_planning_income_path(planning_id: params[:planning_id]), class: 'btn btn-sm btn-neutral me-2', data: { turbo_frame: 'modal' } do %>
+                                <i class="bi bi-plus"></i>
+                                <span class="d-none d-sm-inline-flex">Adicionar</span>
+                            <% end %>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-3">
+    <div class="col-12 col-sm-12">
+        <div class="card mb-5">
+            <div class="table-responsive">
+                <table class="table table-striped text-nowrap mb-0">
+                    <thead>
+                        <th class="col-6">Descrição</th>
+                        <th class="col-3">Valor</th>
+                        <th class="col-3 text-center">Ações</th>
+                    </thead>
+                    <tbody>
+                    <% @planning.incomes.each do |income| %>
+                    <tr>
+                        <td><%= income.description %></td>
+                        <td><%= decimal_to_float(income.value) %></td>
+                        <td class="text-center">
+                            <%= link_to edit_planning_income_path(income), class: 'btn btn-sm btn-neutral', "data-bsdismiss" => "modal", data: { turbo_frame: 'modal' } do %>
+                                <i class="bi bi-pencil"></i>
+                            <% end %>
+                            <%= link_to planning_income_path(income), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
+                                <i class="bi bi-trash"></i>
+                            <% end %>
+                        </td>
+                    </tr>
+                    <% end %>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
