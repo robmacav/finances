@@ -21,6 +21,7 @@
         <main class="pt-7 pb-3 px-3 bg-surface-secondary">
           <div class="container-fluid">
             <%= yield %>
+            <%= turbo_frame_tag "modal", target: '_top' %>
           </div>
         </main>
       </div>
