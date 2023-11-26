@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  devise_for :users
   resources :plannings
   resources :planning_incomes, path: 'planning-incomes'
   resources :planning_expenses, path: 'planning-expenses'
