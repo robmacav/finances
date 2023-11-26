@@ -25,6 +25,7 @@ class PlanningIncomesController < ApplicationController
     end
   
     def edit
+      @income.value = @income.value_decimal_to_float
     end
   
     def update
