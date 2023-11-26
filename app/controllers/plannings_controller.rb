@@ -3,7 +3,7 @@ class PlanningsController < ApplicationController
   before_action :normalization_params, only: [ :index, :create, :update ]
   
   def index
-    params[:q].present? ? @q = Planning.ransack(params[:q]) : @q = Planning.current_year.ransack(params[:q])
+    params[:q].present? ? @q = Planning.current_user_session(current_user.id).ransack(params[:q]) : @q = Planning.current_user_session(current_user.id).current_year.ransack(params[:q])
 
     @pagy, @plannings = pagy(@q.result.order("month_year asc"), items: params[:per_page] || 5)
   end
@@ -67,6 +67,6 @@ class PlanningsController < ApplicationController
   end
 
   def planning_params
-    params.require(:planning).permit(:month_year).merge(user_id: current_user.id)
+    params.require(:planning).permit(:month_year)
   end
 end
