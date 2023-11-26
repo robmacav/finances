@@ -67,6 +67,6 @@ class PlanningsController < ApplicationController
   end
 
   def planning_params
-    params.require(:planning).permit(:month_year).merge(user_id: 1)
+    params.require(:planning).permit(:month_year).merge(user_id: current_user.id)
   end
 end
