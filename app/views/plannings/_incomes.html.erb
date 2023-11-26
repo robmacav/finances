@@ -6,7 +6,7 @@
                     <div class="col-12 col-sm-12 d-flex justify-content-between align-items-center">
                         <h3 class="card-title mb-0">Receitas</h3>
                         <div>
-                            <%= link_to new_planning_income_path(planning_id: params[:planning_id]), class: 'btn btn-sm btn-neutral me-2', data: { turbo_frame: 'modal' } do %>
+                            <%= link_to new_planning_income_path(planning_id: @planning.id), class: 'btn btn-sm btn-neutral me-2', data: { turbo_frame: 'modal' } do %>
                                 <i class="bi bi-plus"></i>
                                 <span class="d-none d-sm-inline-flex">Adicionar</span>
                             <% end %>
