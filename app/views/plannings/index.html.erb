@@ -73,6 +73,9 @@
                     </tbody>
                 </table>
             </div>
+            <div class="card-footer">
+                <%= render partial: 'shared/pagination', locals: { pagy: @pagy } %>
+            </div>
         </div>
     </div>
 </div>
