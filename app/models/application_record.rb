@@ -1,6 +1,8 @@
 class ApplicationRecord < ActiveRecord::Base
   primary_abstract_class
 
+  scope :current_user_session, ->(user_id) { where(user_id: user_id) }
+
   def self.ransackable_attributes(auth_object = nil)
     ["month_year"]
   end
