@@ -5,7 +5,6 @@ ruby "3.0.1"
 
 gem "rails", "~> 7.0.4"
 gem "sprockets-rails"
-gem "sqlite3", "~> 1.4"
 gem "puma", "~> 5.0"
 gem "importmap-rails"
 gem "turbo-rails"
@@ -19,3 +18,11 @@ gem "pagy", "3.5"
 gem "ransack", "4.1.1"
 gem "devise", "4.9.3"
 gem "dotenv-rails", "2.8.1"
+
+group :development do
+    gem "sqlite3", "1.6.8"
+end
+
+group :production do
+    gem "pg", "1.5.4"
+end
