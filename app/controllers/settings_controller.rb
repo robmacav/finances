@@ -19,6 +19,16 @@ class SettingsController < ApplicationController
     end
   end
 
+  def destroy
+    respond_to do |format|
+      if current_user.update(status: 1)
+        format.html { redirect_to settings_path, notice: "Solicitação de exclusão realizada com sucesso!" }
+      else
+        format.html { redirect_to settings_path, notice: "Ocorreu um erro. Tente novamente ou contate o suporte!" }
+      end
+    end
+  end
+
   private
 
   def set_user
