@@ -1,0 +1,29 @@
+<% if notice.present? %>
+    <div class="position-fixed bottom-0 end-0 p-3" style="z-index: 11">
+        <div id="liveToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+            <div class="toast-header">
+                <%= image_tag 'logotipo', class: 'rounded me-2', width: 20 %>
+                <strong class="me-auto">Finances</strong>
+                <small>Agora</small>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+            </div>
+            
+            <div class="toast-body">
+            <%= notice %>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("turbo:load", function() {
+            var toastLiveExample = document.getElementById('liveToast')
+
+            function run() {
+                var toast = new bootstrap.Toast(toastLiveExample)
+                toast.show()
+            }
+
+            run()
+        })
+    </script>
+<% end %>
