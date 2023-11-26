@@ -1,8 +1,11 @@
 class PlanningsController < ApplicationController
   before_action :set_planning, only: [ :edit, :update, :destroy ]
+  before_action :normalization_params, only: [ :index, :create, :update ]
   
   def index
-    @plannings = Planning.all
+    params[:q].present? ? @q = Planning.ransack(params[:q]) : @q = Planning.current_year.ransack(params[:q])
+
+    @pagy, @plannings = pagy(@q.result.order("month_year asc"), items: params[:per_page] || 5)
   end
 
   def show
@@ -53,6 +56,11 @@ class PlanningsController < ApplicationController
   end
 
   private
+
+  def normalization_params
+    params[:planning][:month_year].gsub!(/\D/, '') if params[:planning].present?
+    params[:q][:month_year_cont_any].gsub!(/\D/, '') if params[:q].present?
+  end
 
   def set_planning
     @planning = Planning.find(params[:id])

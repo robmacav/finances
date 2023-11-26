@@ -6,4 +6,6 @@ class Planning < ApplicationRecord
   has_many :expenses, class_name: 'PlanningExpense', through: :expense_categories, dependent: :destroy
 
   validates_presence_of :month_year
+
+  scope :current_year, -> { where("month_year like ?", "%#{Time.now.strftime("%Y")}%") }
 end

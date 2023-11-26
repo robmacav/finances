@@ -8,6 +8,28 @@
                     <span class="d-none d-sm-inline-flex">Adicionar</span>
                 <% end %>
             </div>
+            <div class="card-body">
+                <%= search_form_for @q, html: { autocomplete: 'off' } do |f| %>
+                    <div class="row mb-10">
+                        <div class="col-12 col-sm-12">
+                            <%= f.label :month_year, "Mês / Ano" %>
+                            <%= f.search_field :month_year_cont_any, class: 'form-control datepicker-mm-yyyy', placeholder: Time.now.strftime("%m/%Y") %>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col-12 col-sm-12 d-flex justify-content-end">
+                            <%= link_to plannings_path, class: 'btn btn-sm btn-neutral me-1' do %>
+                                <i class="bi bi-eraser-fill"></i>
+                                <span>Limpar</span>
+                            <% end %>
+                            <%= button_tag(:type => 'submit', class: 'btn btn-sm btn-neutral') do %>
+                                <i class="bi bi-search me-1"></i> 
+                                <span>Buscar</span>
+                            <% end %>
+                        </div>
+                    </div>
+                <% end %>
+            </div>
         </div>
     </div>
 </div>
