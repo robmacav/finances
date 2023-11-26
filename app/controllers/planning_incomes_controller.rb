@@ -1,10 +1,6 @@
 class PlanningIncomesController < ApplicationController
     before_action :set_income, only: [ :update, :edit, :destroy ]
     before_action :normalization_params, only: [ :create, :update ]
-
-    def index
-      @incomes = PlanningIncome.where(planning_id: params[:planning_id])
-    end
   
     def new
       @income = PlanningIncome.new(planning_id: params[:planning_id])
