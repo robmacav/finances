@@ -36,11 +36,11 @@
                   <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
                     <div class="mb-5">
                       <label class="form-label" for="email">E-mail</label>
-                      <%= f.email_field :email, class: 'form-control form-control-muted', id: 'email', autofocus: true, autocomplete: "email" %>
+                      <%= f.email_field :email, class: 'form-control', id: 'email', autofocus: true, autocomplete: "email" %>
                     </div>
                     <div class="mb-5">
                       <label class="form-label" for="password">Senha</label>
-                      <%= f.password_field :password, class: 'form-control form-control-muted', id: 'password', autocomplete: "current-password" %>
+                      <%= f.password_field :password, class: 'form-control', id: 'password', autocomplete: "current-password" %>
                     </div>
                     <div class="mb-5">
                       <div class="form-check">
@@ -71,13 +71,13 @@
                   <div class="col-12 col-sm-6">
                     <div class="mb-5">
                       <label class="form-label" for="email">Primeiro nome</label>
-                      <%= f.text_field :first_name, class: 'form-control form-control-muted', autofocus: true %>
+                      <%= f.text_field :first_name, class: 'form-control', autofocus: true %>
                     </div>
                   </div>
                   <div class="col-12 col-sm-6">
                     <div class="mb-5">
                       <label class="form-label" for="email">Último nome</label>
-                      <%= f.text_field :last_name, class: 'form-control form-control-muted', autofocus: true %>
+                      <%= f.text_field :last_name, class: 'form-control', autofocus: true %>
                     </div>
                   </div>
                 </div>
@@ -85,11 +85,11 @@
                   <div class="col-12 col-sm-12">
                     <div class="mb-5">
                       <label class="form-label" for="email">E-mail</label>
-                      <%= f.email_field :email, class: 'form-control form-control-muted', id: 'email', autofocus: true, autocomplete: "email" %>
+                      <%= f.email_field :email, class: 'form-control', id: 'email', autofocus: true, autocomplete: "email" %>
                     </div>
                     <div class="mb-5">
                       <label class="form-label" for="password">Senha</label>
-                      <%= f.password_field :password, class: 'form-control form-control-muted', id: 'password', autocomplete: "current-password" %>
+                      <%= f.password_field :password, class: 'form-control', id: 'password', autocomplete: "current-password" %>
                     </div>
                     <div class="mb-5">
                       <div class="form-check">
