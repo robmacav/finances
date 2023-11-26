@@ -4,6 +4,11 @@ class User < ApplicationRecord
     
     validates_presence_of :first_name, :last_name, :email
 
+    enum status: { 
+        'Ativo': nil, 
+        'Solicitado Exclusão': 1 
+    }
+    
     def fullname
         "#{self.first_name} #{self.last_name}"
     end
