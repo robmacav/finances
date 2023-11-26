@@ -1,0 +1,25 @@
+name: Deploy to VPS
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout to Repository
+        uses: actions/checkout@main
+      
+      - name: Git pull and rebuild containers
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.REMOTE_HOST }}
+          USERNAME: ${{ secrets.REMOTE_USER }}
+          KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd /root/finances
+            git pull origin main
+            docker container rm $(docker ps -qa) --force
+            docker compose up --build --remove-orphans -d
