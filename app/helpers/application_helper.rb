@@ -16,6 +16,6 @@ module ApplicationHelper
     end
 
     def planning_total_available(planning)
-        "R$ #{decimal_to_float(planning.incomes.sum(:value))}"
+        "R$ #{decimal_to_float(planning.incomes.sum(:value) - planning.expenses.sum(:value))}"
     end
 end
