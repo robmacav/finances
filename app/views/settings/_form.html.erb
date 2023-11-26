@@ -1,0 +1,43 @@
+<%= form_with model: user, url: "/settings/#{user.id}" do |f| %>
+    <div class="row mb-5">
+        <div class="col-md-12">
+            <label class="form-label" for="email">E-mail</label>
+            <%= f.text_field :email, class: 'form-control' %>
+            <div class="text-danger">
+                <% if @user.errors.include?(:email) %>
+                    <% @user.errors.full_messages_for(:email).each do |error_message| %>
+                        <%= error_message %>.
+                    <% end %>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <label class="form-label" for="first_name">Primeiro nome</label>
+            <%= f.text_field :first_name, class: 'form-control' %>
+            <div class="text-danger">
+                <% if @user.errors.include?(:first_name) %>
+                    <% @user.errors.full_messages_for(:first_name).each do |error_message| %>
+                        <%= error_message %>.
+                    <% end %>
+                <% end %>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <label class="form-label" for="last_name">Último nome</label>
+            <%= f.text_field :last_name, class: 'form-control' %>
+            <div class="text-danger">
+                <% if @user.errors.include?(:last_name) %>
+                    <% @user.errors.full_messages_for(:last_name).each do |error_message| %>
+                        <%= error_message %>.
+                    <% end %>
+                <% end %>
+            </div>
+        </div>
+    </div>
+    <div class="text-end mt-5">
+        <%= f.submit 'Salvar', class: 'btn btn-sm btn-primary' %>
+        <%= link_to 'Cancelar', settings_path, class: 'btn btn-sm btn-neutral me-2' %>
+    </div>
+<% end %>

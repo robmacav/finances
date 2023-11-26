@@ -1,0 +1,24 @@
+<div class="row">
+  <div class="col-xl-7 mx-auto">
+    <%= render 'header', user: @user %>
+    <div class="row mb-5">
+      <div class="col-md-12">
+        <label class="form-label" for="email">E-mail</label>
+        <input type="text" class="form-control" value="<%= @user.email %>" disabled>
+      </div>
+    </div>
+    <div class="row mb-5">
+      <div class="col-md-6">
+        <label class="form-label" for="first_name">Primeiro nome</label>
+        <input type="text" class="form-control" value="<%= @user.first_name %>" disabled>
+      </div>
+      <div class="col-md-6">
+        <label class="form-label" for="last_name">Último nome</label>
+        <input type="text" class="form-control" value="<%= @user.last_name %>" disabled>
+      </div>
+    </div>
+    <div class="text-end mt-5">
+      <%= link_to "Editar", edit_setting_path(@user), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'user_form' } %>
+    </div>
+  </div>
+</div>
