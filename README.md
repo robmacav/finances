@@ -23,6 +23,14 @@
 - [ ] Register credit cards, installment plans and configure limits, closing and expiration dates.
 - [ ] Monthly balance of expenses, income acquired in the month and money and available credit / installment limits.
 
+## How to Run
+```bash
+docker build -f Dockerfile.dev -t finances_app_dev .
+```
+```bash
+docker run -p 3000:3000 -v .:/app finances_app 
+```
+
 ## Credits
 This project is mainly built with [webpixels](https://webpixels.io/), [Bootstrap](https://getbootstrap.com/), [Bootstrap Icons](https://icons.getbootstrap.com/) and some other wonderful tools. 
 
