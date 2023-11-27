@@ -28,7 +28,7 @@
 docker build -f Dockerfile.dev -t finances_app_dev .
 ```
 ```bash
-docker run -p 3000:3000 -v .:/app finances_app 
+docker run -p 3000:3000 -v .:/app finances_app_dev
 ```
 
 ## Credits
