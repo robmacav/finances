@@ -30,9 +30,3 @@ docker build -f Dockerfile.dev -t finances_app_dev .
 ```bash
 docker run -p 3000:3000 -v .:/app finances_app_dev
 ```
-
-## Credits
-This project is mainly built with [webpixels](https://webpixels.io/), [Bootstrap](https://getbootstrap.com/), [Bootstrap Icons](https://icons.getbootstrap.com/) and some other wonderful tools. 
-
-## License
-This project is published under [MIT License](docs/LICENSE).
