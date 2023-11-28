@@ -18,99 +18,43 @@
       <div class="w-56 h-56 bg-orange-500 rounded-circle position-absolute bottom-0 end-20 transform translate-y-1/3"></div>
     </div>
     <div class="col-12 col-md-9 col-lg-7 offset-lg-5 d-flex flex-column justify-content-center py-lg-16 px-lg-20 position-relative">
-      <ul class="nav nav-tabs" role="tablist">
-        <div class="container">
-          <ul class="nav nav-tabs">
-            <li class="nav-item">
-              <a class="nav-link active" data-bs-toggle="tab" href="#login">Log in</a>
-            </li>
-            <li class="nav-item">
-              <a class="nav-link" data-bs-toggle="tab" href="#signup">Cadastre-se</a>
-            </li>
-          </ul>
-
-          <div class="tab-content">
-            <div class="tab-pane container active" id="login">
-              <div class="row mt-5">
-                <div class="col-12 col-sm-12">
-                  <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-                    <div class="mb-5">
-                      <label class="form-label" for="email">E-mail</label>
-                      <%= f.email_field :email, class: 'form-control', id: 'email', autofocus: true, autocomplete: "email" %>
-                    </div>
-                    <div class="mb-5">
-                      <label class="form-label" for="password">Senha</label>
-                      <%= f.password_field :password, class: 'form-control', id: 'password', autocomplete: "current-password" %>
-                    </div>
-                    <div class="mb-5">
-                      <div class="form-check">
-                        <% if devise_mapping.rememberable? %>
-                          <div class="field">
-                            <%= f.check_box :remember_me, class: 'form-check-input' %>
-                            <%= f.label :remember_me, 'Lembrar de mim', class: 'form-check-label' %>
-                          </div>
-                        <% end %>
+      <div class="container">
+        <div class="tab-content">
+          <div class="row mt-5">
+            <div class="col-12 col-sm-12">
+              <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
+                <div class="mb-5">
+                  <label class="form-label" for="email">E-mail</label>
+                  <%= f.email_field :email, class: 'form-control', id: 'email', autofocus: true, autocomplete: "email" %>
+                </div>
+                <div class="mb-5">
+                  <label class="form-label" for="password">Senha</label>
+                  <%= f.password_field :password, class: 'form-control', id: 'password', autocomplete: "current-password" %>
+                </div>
+                <div class="mb-5">
+                  <div class="form-check">
+                    <% if devise_mapping.rememberable? %>
+                      <div class="field">
+                        <%= f.check_box :remember_me, class: 'form-check-input' %>
+                        <%= f.label :remember_me, 'Lembrar de mim', class: 'form-check-label' %>
                       </div>
-                    </div>
-                    <div>
-                      <%= f.submit "Acessar", class: 'btn btn-primary w-full' %>
-                    </div>
-                  <% end %>
-                  <div class="my-3 text-center">
-                    <small>Esqueceu a senha?</small>
-                    <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
-                      <%= link_to "Recupere.", '', class: 'text-warning text-sm font-semibold' %>
                     <% end %>
                   </div>
                 </div>
-              </div>
-            </div>
-            <div class="tab-pane container fade" id="signup">
-              <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-                <div class="row mt-5">
-                  <div class="col-12 col-sm-6">
-                    <div class="mb-5">
-                      <label class="form-label" for="email">Primeiro nome</label>
-                      <%= f.text_field :first_name, class: 'form-control', autofocus: true %>
-                    </div>
-                  </div>
-                  <div class="col-12 col-sm-6">
-                    <div class="mb-5">
-                      <label class="form-label" for="email">Último nome</label>
-                      <%= f.text_field :last_name, class: 'form-control', autofocus: true %>
-                    </div>
-                  </div>
-                </div>
-                <div class="row">
-                  <div class="col-12 col-sm-12">
-                    <div class="mb-5">
-                      <label class="form-label" for="email">E-mail</label>
-                      <%= f.email_field :email, class: 'form-control', id: 'email', autofocus: true, autocomplete: "email" %>
-                    </div>
-                    <div class="mb-5">
-                      <label class="form-label" for="password">Senha</label>
-                      <%= f.password_field :password, class: 'form-control', id: 'password', autocomplete: "current-password" %>
-                    </div>
-                    <div class="mb-5">
-                      <div class="form-check">
-                        <% if devise_mapping.rememberable? %>
-                          <div class="field">
-                            <%= f.check_box :remember_me, class: 'form-check-input' %>
-                            <%= f.label :remember_me, 'Lembrar de mim', class: 'form-check-label' %>
-                          </div>
-                        <% end %>
-                      </div>
-                    </div>
-                    <div class="mb-5">
-                      <%= f.submit "Cadastrar", class: 'btn btn-primary w-full' %>
-                    </div>
-                  </div>
+                <div>
+                  <%= f.submit "Acessar", class: 'btn btn-primary w-full' %>
                 </div>
               <% end %>
+              <div class="my-3 text-center">
+                <small>Esqueceu a senha?</small>
+                <%- if devise_mapping.registerable? && controller_name != 'registrations' %>
+                  <%= link_to "Recupere.", '', class: 'text-warning text-sm font-semibold' %>
+                <% end %>
+              </div>
             </div>
           </div>
         </div>
-      </ul>
+      </div>
     </div>
   </div>
 </div>
