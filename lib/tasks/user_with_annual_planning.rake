@@ -2,7 +2,7 @@ namespace :db do
     desc "Create a user who has an annual plan containing income and expenses."
 
     task :user_with_annual_planning => :environment do
-        user = User.new(first_name: Faker::Name.first_name, last_name: Faker::Name.first_name)
+        user = User.new(first_name: "Test", last_name: "User", email: 'user@finances.me', password: 111111)
 
         # plannings
         1.upto(12) do |month|
