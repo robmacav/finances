@@ -10,14 +10,14 @@ namespace :db do
 
             # incomes
             1.upto(5) do |index|
-                planning.incomes.new(description: "Receita #{index.to_s.rjust(2, '0')}", value: Random.rand(100..20000))
+                planning.incomes.new(description: "Income #{index.to_s.rjust(2, '0')}", value: Random.rand(100..20000))
             end
 
             # categories + expenses
             categories = [  
-                            { description: 'Transporte', items: [ { description: 'Combustível', value: 240 } ] },
-                            { description: 'Serviços', items: [ { description: 'Spotify', value: 20 }, { description: 'Digital Ocean - VPS', value: Random.rand(27..36) } ] },
-                            { description: 'Moradia', items: [ { description: 'Aluguel', value: 350 }, { description: 'Energia Elétrica', value: Random.rand(200..480) }, { description: 'Internet', value: 105 } ] } 
+                            { description: 'Category 01', items: [ { description: 'Expense 01', value: 240 } ] },
+                            { description: 'Category 02', items: [ { description: 'Expense 02', value: 20 }, { description: 'Expense 03', value: Random.rand(27..36) } ] },
+                            { description: 'Category 03', items: [ { description: 'Expense 04', value: 350 }, { description: 'Expense 05', value: Random.rand(200..480) }, { description: 'Expense 06', value: 105 } ] } 
                         ]       
 
             categories.each do |category|
