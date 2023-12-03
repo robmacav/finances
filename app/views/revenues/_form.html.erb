@@ -1,0 +1,41 @@
+<%= form_with(model: @revenue, id: @revenue.class.table_name, html: { autocomplete: 'off' }) do |f| %>
+<div class="row mb-3">
+    <div class="col-12 col-sm-12">
+        <%= f.label :description, "Descrição" %>
+        <%= f.text_field :description, class: 'form-control', placeholder: 'SEFIN' %>
+        <div class="text-danger">
+        <% if @revenue.errors.include?(:description) %>
+            <% @revenue.errors.full_messages_for(:description).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12 col-sm-12">
+        <%= f.label :value, "Valor" %>
+        <%= f.text_field :value, class: 'form-control real-currency', placeholder: 'R$ 3.500' %>
+        <div class="text-danger">
+        <% if @revenue.errors.include?(:value) %>
+            <% @revenue.errors.full_messages_for(:value).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<div class="row mb-5">
+    <div class="col-12 col-sm-12">
+        <%= f.label :date, "Data" %>
+        <%= f.text_field :date, class: 'form-control datepicker-dd-mm-yyyy', placeholder: Time.now.strftime("%d/%m/%Y") %>
+        <div class="text-danger">
+        <% if @revenue.errors.include?(:date) %>
+            <% @revenue.errors.full_messages_for(:date).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<% end %>
