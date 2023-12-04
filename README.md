@@ -17,11 +17,11 @@
 </div>
 
 ## Features
-- [x] Planning the expenses you want in a given month, making it possible to allocate expenses and categorize them.
-- [ ] Registration of sources of income acquired over the months and years.
-- [ ] Write-off of separate expenses (debit card, physical cash) and those linked to credit/credit cards.
-- [ ] Register credit cards, installment plans and configure limits, closing and expiration dates.
-- [ ] Monthly balance of expenses, income acquired in the month and money and available credit / installment limits.
+- Income planning and expense categorization.
+- Registration of revenues over the months and years.
+- Record of expenses + payment method.
+- Card registration.
+- Monthly balance of expenses, income and available credit and cash limits.
 
 ## How to Run
 ```bash
