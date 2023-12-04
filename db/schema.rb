@@ -10,7 +10,16 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_03_224204) do
+ActiveRecord::Schema[7.0].define(version: 2023_12_03_234423) do
+  create_table "cards", force: :cascade do |t|
+    t.string "description", null: false
+    t.decimal "limit", null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_cards_on_user_id"
+  end
+
   create_table "planning_expense_categories", force: :cascade do |t|
     t.string "description", null: false
     t.string "color", limit: 6, null: false
@@ -71,6 +80,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_03_224204) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "cards", "users"
   add_foreign_key "planning_expense_categories", "plannings"
   add_foreign_key "planning_expenses", "planning_expense_categories"
   add_foreign_key "planning_incomes", "plannings"
