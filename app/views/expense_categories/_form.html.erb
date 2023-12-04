@@ -1,0 +1,15 @@
+<%= form_with(model: @category, id: @category.class.table_name, html: { autocomplete: 'off' }) do |f| %>
+<div class="row mb-5">
+    <div class="col-12 col-sm-12">
+        <%= f.label :description, "Descrição" %>
+        <%= f.text_field :description, class: 'form-control', placeholder: "Moradia" %>
+        <div class="text-danger">
+        <% if @category.errors.include?(:description) %>
+            <% @category.errors.full_messages_for(:description).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<% end %>
