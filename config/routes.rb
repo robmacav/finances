@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   resources :cards
   resources :revenues
+  resources :expenses
   resources :expense_categories, path: 'expense-categories'
   
   resources :plannings

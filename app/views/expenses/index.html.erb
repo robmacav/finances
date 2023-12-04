@@ -1,0 +1,87 @@
+<div class="row mb-5">
+    <div class="col-12 col-sm-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Despesas</h3>
+                <%= link_to new_expense_path, class: 'btn btn-sm btn-neutral me-2', data: { turbo_frame: 'modal' } do %>
+                    <i class="bi bi-plus"></i> Adicionar
+                <% end %>
+            </div>
+            <div class="card-body">
+                <%= search_form_for @q, html: { autocomplete: "off" } do |f| %>
+                <div class="row mb-10">
+                    <div class="col-12 col-sm-7 mb-3 mb-sm-0">
+                        <%= f.label :date, "Descrição" %>
+                        <%= f.search_field :description_cont_any, class: 'form-control', placeholder: 'Supermercado' %>
+                    </div>
+                    <div class="col-12 col-sm-5">
+                        <%= f.label :date, "Mês / Ano" %>
+                        <%= f.search_field :date_cont_any, class: 'form-control datepicker-mm-yyyy', placeholder: "#{Time.now.strftime("%m/%Y")}" %>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 d-flex justify-content-end">
+                        <%= link_to expenses_path, class: 'btn btn-sm btn-neutral me-1' do %>
+                            <i class="bi bi-eraser-fill"></i>
+                            <span class="d-none d-sm-inline-flex">Limpar</span>
+                        <% end %>
+                        <%= button_tag(:type => 'submit', class: 'btn btn-sm btn-neutral') do %>
+                            <i class="bi bi-search me-1"></i> Buscar
+                        <% end %>
+                    </div>
+                </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% if @expenses.present? %>
+<div class="row mb-5">
+    <div class="col-md-12 col-12">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-striped text-nowrap mb-0">
+                    <thead>
+                        <tr>
+                            <th>Data</th>
+                            <th>Descrição</th>
+                            <th>Valor</th>
+                            <th>Forma de Pagamento</th>
+                            <th style="border-radius: .5rem;" class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% @expenses.each do |expense| %>
+                            <tr>
+                                <td><%= Date.strptime(expense.date, '%d%m%Y').strftime("%d/%m/%Y") %></td>
+                                <td class="align-middle"><%= expense.description %></td>
+                                <td class="align-middle"><%= decimal_to_float(expense.value) %></td>
+                                <td><%= expense.payment_method %></td>
+                                <td class="text-center">
+                                    <%= link_to expense_path(expense), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+                                        <i class="bi bi-eye"></i>
+                                    <% end %>
+                                    <%= link_to edit_expense_path(expense), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+                                        <i class="bi bi-pencil"></i>
+                                    <% end %>
+                                    <%= link_to expense_path(expense), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
+                                        <i class="bi bi-trash"></i>
+                                    <% end %>
+                                </td>
+                            </tr>
+                        <% end %>
+                </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <%= render partial: 'shared/pagination', locals: { pagy: @pagy } %>
+            </div>
+        </div>
+    </div>
+</div>
+<% end %>
+
+<script>
+    
+</script>

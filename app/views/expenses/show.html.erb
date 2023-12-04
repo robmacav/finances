@@ -1,0 +1,57 @@
+<%= render "shared/modal", title: "Despesa - #{@expense.description}", size: 'modal-xl modal-dialog-scrollable' do %>
+  <div class="row">
+    <div class="col-12 col-sm-4 mb-5">
+      <h6>Descrição</h6>
+      <span><%= @expense.description %></span>
+    </div>
+    <div class="col-12 col-sm-4 mb-5">
+      <h6>Categoria</h6>
+      <span><%= @expense.expense_category.description %></span>
+    </div>
+    <div class="col-12 col-sm-4 mb-5">
+      <h6>Data</h6>
+      <span><%= I18n.l Date.strptime(@expense.date, '%d%m%Y'), :format => '%d de %B de %Y' %></span>
+    </div>
+  </div>
+  <div class="row">
+    <div class="col-12 col-sm-4 mb-5">
+      <h6>Método de Pagamento</h6>
+      <span><%= @expense.payment_method %></span>
+    </div>
+
+    <% if @expense.card.present? %>
+    <div class="col-12 col-sm-4 mb-5">
+      <h6>Cartão</h6>
+      <span><%= @expense.card.description %></span>
+    </div>
+    <% end %>
+
+    <div class="col-12 col-sm-4 mb-5">
+      <h6>Total</h6>
+      <span><%= "R$ #{decimal_to_float(@expense.value)}" %></span>
+    </div>
+  </div>
+
+  <h3 class="text-uppercase my-5">Items</h3>
+
+  <div class="table-responsive mb-3">
+    <table class="table table-striped">
+        <thead>
+            <th class="col-2">Quantidade</th>
+            <th class="col-4">Descrição</th>
+            <th class="col-3">Valor</th>
+            <th class="col-3">Sub-total</th>
+        </thead>
+        <tbody>
+        <% @expense.items.each do |item| %>
+        <tr>
+            <td><%= item.quantity %></td>
+            <td><%= item.description %></td>
+            <td><%= "R$ #{decimal_to_float(item.value)}" %></td>
+            <td><%= "R$ #{decimal_to_float(item.value * item.quantity)}" %></td>
+        </tr>
+        <% end %>
+        </tbody>
+    </table>
+  </div>
+<% end %>
