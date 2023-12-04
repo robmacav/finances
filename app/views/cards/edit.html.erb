@@ -1,0 +1,3 @@
+<%= render "shared/modal", title: "Editar cartão", size: 'modal-lg', url: "/cards/#{@card.id}", form_id: @card.class.table_name do %>
+  <%= render "form", card: @card %>
+<% end %>

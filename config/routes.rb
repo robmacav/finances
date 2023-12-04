@@ -2,6 +2,7 @@ Rails.application.routes.draw do
   devise_for :users 
   resources :settings
 
+  resources :cards
   resources :revenues
   
   resources :plannings

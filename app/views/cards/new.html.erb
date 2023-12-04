@@ -1,0 +1,3 @@
+<%= render "shared/modal", title: "Cadastrar novo cartão", size: 'modal-lg', url: '/cards', form_id: @card.class.table_name do %>
+  <%= render "form", card: @card %>
+<% end %>
