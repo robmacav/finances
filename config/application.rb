@@ -19,6 +19,8 @@ module Finances
     config.load_defaults 7.0
     config.generators.system_tests = nil
 
+    config.i18n.default_locale = "pt-BR"
+
     config.generators do |g|
       g.system_tests = nil
       g.helper false
