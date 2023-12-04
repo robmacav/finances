@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2023_12_03_234423) do
+ActiveRecord::Schema[7.0].define(version: 2023_12_04_000748) do
   create_table "cards", force: :cascade do |t|
     t.string "description", null: false
     t.decimal "limit", null: false
@@ -18,6 +18,15 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_03_234423) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.index ["user_id"], name: "index_cards_on_user_id"
+  end
+
+  create_table "expense_categories", force: :cascade do |t|
+    t.string "description", null: false
+    t.string "color", limit: 6, null: false
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_expense_categories_on_user_id"
   end
 
   create_table "planning_expense_categories", force: :cascade do |t|
@@ -81,6 +90,7 @@ ActiveRecord::Schema[7.0].define(version: 2023_12_03_234423) do
   end
 
   add_foreign_key "cards", "users"
+  add_foreign_key "expense_categories", "users"
   add_foreign_key "planning_expense_categories", "plannings"
   add_foreign_key "planning_expenses", "planning_expense_categories"
   add_foreign_key "planning_incomes", "plannings"
