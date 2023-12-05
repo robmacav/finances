@@ -2,6 +2,8 @@ Rails.application.routes.draw do
   devise_for :users 
   resources :settings
 
+  get '/dashboard', to: 'dashboard#index', as: 'dashboard'
+
   resources :cards
   resources :revenues
   resources :expenses
@@ -12,5 +14,5 @@ Rails.application.routes.draw do
   resources :planning_expenses, path: 'planning-expenses'
   resources :planning_expense_categories, path: 'planning-expense-categories'
   
-  root to: redirect('/plannings')
+  root to: redirect('/dashboard')
 end
