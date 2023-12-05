@@ -13,6 +13,12 @@ class Expense < ApplicationRecord
   scope :all_by_current_user, ->(user) { where(user_id: user.id) }
   scope :all_by_current_month_year, -> { where("date like ?", "%#{Date.today.strftime("%m%Y")}%") }
 
+  scope :all_by_current_month_year_sum, -> { where("date like ?", "%#{Date.today.strftime("%m%Y")}%").sum(:value) }
+
+  scope :all_by_current_month_year_with_credit_card_sum, -> { where("date like ? and payment_method = ?", "%#{Date.today.strftime("%m%Y")}%", 1)
+                                                              .sum(:value)
+                                                            }
+
   enum payment_method: {
     'Cartão de Débito': 0,
     'Cartão de Crédito': 1,
