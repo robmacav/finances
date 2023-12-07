@@ -10,8 +10,4 @@ class ExpenseCategory < ApplicationRecord
   def generate_random_attribute_color
     self.color = SecureRandom.hex(3)
   end
-
-  def self.ransackable_attributes(auth_object = nil)
-    ["description"]
-  end
 end

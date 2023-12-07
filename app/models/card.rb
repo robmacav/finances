@@ -13,12 +13,4 @@ class Card < ApplicationRecord
 
     parts.join(',')
   end
-
-  def self.ransackable_associations(auth_object = nil)
-    ["user"]
-  end
-
-  def self.ransackable_attributes(auth_object = nil)
-    ["description"]
-  end
 end

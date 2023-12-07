@@ -3,8 +3,12 @@ class ApplicationRecord < ActiveRecord::Base
 
   scope :current_user_session, ->(user_id) { where(user_id: user_id) }
 
-  def self.ransackable_attributes(auth_object = nil)
-    ["month_year"]
+  def self.ransackable_attributes(_ = nil)
+    authorizable_ransackable_attributes
+  end
+
+  def self.ransackable_associations(_ = nil)
+    authorizable_ransackable_associations
   end
 
   def value_decimal_to_float

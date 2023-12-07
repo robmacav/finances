@@ -37,14 +37,6 @@ class Expense < ApplicationRecord
     self.value = total
 end
 
-  def self.ransackable_associations(auth_object = nil)
-    ["category", "user"]
-  end
-
-  def self.ransackable_attributes(auth_object = nil)
-    ["description", "date"]
-  end
-
   private
 
   def valid_payment_method
