@@ -71,6 +71,7 @@ GEM
       msgpack (~> 1.2)
     builder (3.2.4)
     concurrent-ruby (1.2.2)
+    connection_pool (2.4.1)
     crass (1.0.6)
     date (3.3.3)
     devise (4.9.3)
@@ -164,6 +165,10 @@ GEM
       activerecord (>= 6.1.5)
       activesupport (>= 6.1.5)
       i18n
+    redis (5.0.8)
+      redis-client (>= 0.17.0)
+    redis-client (0.18.0)
+      connection_pool
     responders (3.1.1)
       actionpack (>= 5.2)
       railties (>= 5.2)
@@ -175,6 +180,11 @@ GEM
       sprockets (> 3.0)
       sprockets-rails
       tilt
+    sidekiq (7.2.0)
+      concurrent-ruby (< 2)
+      connection_pool (>= 2.3.0)
+      rack (>= 2.2.4)
+      redis-client (>= 0.14.0)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -216,7 +226,9 @@ DEPENDENCIES
   puma (~> 5.0)
   rails (~> 7.0.4)
   ransack (= 4.1.1)
+  redis (= 5.0.8)
   sassc-rails
+  sidekiq (= 7.2.0)
   sprockets-rails
   sqlite3 (= 1.6.8)
   stimulus-rails

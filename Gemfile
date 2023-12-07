@@ -16,6 +16,8 @@ gem "sassc-rails"
 gem "pagy", "3.5"
 gem "ransack", "4.1.1"
 gem "devise", "4.9.3"
+gem "sidekiq", "7.2.0"
+gem "redis", "5.0.8"
 
 group :development do
     gem "sqlite3", "1.6.8"
