@@ -24,6 +24,7 @@ group :development do
     gem "sqlite3", "1.6.8"
     gem "faker", "3.2.2"
     gem "brakeman", "6.1.0"
+    gem "rubycritic", "4.9.0"
 end
 
 group :production do
