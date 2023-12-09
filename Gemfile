@@ -27,6 +27,10 @@ group :development do
     gem "rubycritic", "4.9.0"
 end
 
+group :development, :test do 
+    gem "rspec-rails", "6.1.0"
+end
+
 group :production do
     gem "pg", "1.5.4"
     gem "dotenv-rails", "2.8.1"
