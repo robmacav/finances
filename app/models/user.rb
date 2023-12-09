@@ -1,6 +1,10 @@
 class User < ApplicationRecord
     devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
     has_many :plannings, dependent: :destroy
+    has_many :cards, dependent: :destroy
+    has_many :expense_categories, dependent: :destroy
+    has_many :expenses, dependent: :destroy
+    has_many :revenue, dependent: :destroy
     
     validates_presence_of :first_name, :last_name
     validates_presence_of :email, uniqueness: true
