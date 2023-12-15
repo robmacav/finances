@@ -15,3 +15,5 @@
   ![Devices Mockup](docs/images/planning.png)
   <!-- ![Devices Mockup](docs/images/schema.png) -->
 </div>
+
+Access the [documentation](https://robmacav.githib.io/finances) for this project.
