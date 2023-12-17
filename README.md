@@ -16,4 +16,12 @@
   <!-- ![Devices Mockup](docs/images/schema.png) -->
 </div>
 
-Access the [documentation](https://robmacav.githib.io/finances) for this project.
+## How to Run
+```bash
+docker build -f Dockerfile.dev -t finances_app_dev .
+```
+```bash
+docker run -p 3000:3000 -v .:/app finances_app_dev
+```
+
+Access the [documentation](https://robmacav.github.io/finances) for this project.
