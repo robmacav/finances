@@ -24,4 +24,4 @@ docker build -f Dockerfile.dev -t finances_app_dev .
 docker run -p 3000:3000 -v .:/app finances_app_dev
 ```
 
-Access the [documentation](https://robmacav.github.io/finances) for this project.
+Access the <a href="https://robmacav.github.io/finances" target="_blank">documentation</a> for this project.
