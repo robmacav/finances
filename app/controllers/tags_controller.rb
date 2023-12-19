@@ -1,4 +1,6 @@
 class TagsController < ApplicationController
+  before_action :set_tag, only: [ :edit, :update, :destroy ]
+
   def index
     @q = Tag.ransack(params[:q])
     @pagy, @tags = pagy(@q.result, items: params[:per_page] || 5)
