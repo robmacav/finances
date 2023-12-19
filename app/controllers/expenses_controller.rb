@@ -21,6 +21,7 @@ class ExpensesController < ApplicationController
       @expense.items.build
 
       @cards = Card.all_by_current_user(current_user).map{|card| [card.description, card.id]}
+      @tags = Tag.all_by_current_user(current_user).map{|t| [t.description, t.id]}
     end
   
     def create
@@ -45,6 +46,7 @@ class ExpensesController < ApplicationController
       end
 
       @cards = Card.all_by_current_user(current_user).map{|card| [card.description, card.id]}
+      @tags = Tag.all_by_current_user(current_user).map{|t| [t.description, t.id]}
     end
   
     def update
@@ -86,7 +88,7 @@ class ExpensesController < ApplicationController
     end
   
     def expense_params
-      params.require(:expense).permit(:description, :expense_category_id, :date, :payment_method, :card_id, items_attributes: [ :id, :quantity, :description, :value, :_destroy ]).merge(user_id: current_user.id)
+      params.require(:expense).permit(:description, :expense_category_id, :tag_id, :date, :payment_method, :card_id, items_attributes: [ :id, :quantity, :description, :value, :_destroy ]).merge(user_id: current_user.id)
     end
   end
   

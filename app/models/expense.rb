@@ -1,4 +1,5 @@
 class Expense < ApplicationRecord
+  belongs_to :tag, optional: true
   belongs_to :expense_category
   belongs_to :card, optional: true
   belongs_to :user

@@ -13,12 +13,23 @@
     </div>
 </div>
 <div class="row mb-3">
-    <div class="col-12 col-sm-12">
+    <div class="col-12 col-sm-6">
         <%= f.label :expense_category_id, "Categoria" %>
         <%= f.select :expense_category_id, ExpenseCategory.all.map{|category| [category.description, category.id]}, { include_blank: 'Selecione' }, class: 'form-control', placeholder: 'SEFIN' %>
         <div class="text-danger">
         <% if @expense.errors.include?(:expense_category_id) %>
             <% @expense.errors.full_messages_for(:expense_category_id).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+    <div class="col-12 col-sm-6">
+        <%= f.label :tag_id, "Tag" %>
+        <%= f.select :tag_id, @tags, { include_blank: 'Selecione' }, class: 'form-control' %>
+        <div class="text-danger">
+        <% if @expense.errors.include?(:tag_id) %>
+            <% @expense.errors.full_messages_for(:tag_id).each do |error_message| %>
                 <%= error_message %>.
             <% end %>
         <% end %>

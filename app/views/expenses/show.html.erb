@@ -9,11 +9,15 @@
       <span><%= @expense.expense_category.description %></span>
     </div>
     <div class="col-12 col-sm-4 mb-5">
-      <h6>Data</h6>
-      <span><%= I18n.l Date.strptime(@expense.date, '%d%m%Y'), :format => '%d de %B de %Y' %></span>
+      <h6>Tag</h6>
+      <span><%= @expense.tag&.description %></span>
     </div>
   </div>
   <div class="row">
+    <div class="col-12 col-sm-4 mb-5">
+      <h6>Data</h6>
+      <span><%= I18n.l Date.strptime(@expense.date, '%d%m%Y'), :format => '%d de %B de %Y' %></span>
+    </div>
     <div class="col-12 col-sm-4 mb-5">
       <h6>Método de Pagamento</h6>
       <span><%= @expense.payment_method %></span>
