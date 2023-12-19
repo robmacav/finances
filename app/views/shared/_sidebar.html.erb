@@ -51,6 +51,11 @@
       <hr class="d-none d-lg-block">
 
       <li class="nav-item">
+        <%= link_to tags_path, class: 'nav-link' do %>
+          <i class="bi bi-tag"></i> Tags
+        <% end %>
+      </li>
+      <li class="nav-item">
         <%= link_to cards_path, class: 'nav-link' do %>
           <i class="bi bi-credit-card"></i> Cartões
         <% end %>

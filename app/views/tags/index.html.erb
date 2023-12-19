@@ -1,0 +1,72 @@
+<div class="row mb-5">
+    <div class="col-12 col-sm-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Pesquisar</h3>
+                <%= link_to new_tag_path, class: 'btn btn-sm btn-neutral me-2', data: { turbo_frame: 'modal' } do %>
+                    <i class="bi bi-plus"></i>
+                    <span class="d-none d-sm-inline-flex">Adicionar</span>
+                <% end %>
+            </div>
+            <div class="card-body">
+                <%= search_form_for @q, html: { autocomplete: 'off' } do |f| %>
+                <div class="row mb-10">
+                    <div class="col-12 col-sm-12">
+                        <%= f.label :description, "Descrição" %>
+                        <%= f.search_field :description_cont_any, class: 'form-control', placeholder: 'Fixo' %>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 d-flex justify-content-end">
+                        <%= link_to tags_path, class: 'btn btn-sm btn-neutral me-1' do %>
+                            <i class="bi bi-eraser-fill"></i>
+                            <span class="d-none d-sm-inline-flex">Limpar</span>
+                        <% end %>
+                        <%= button_tag(:type => 'submit', class: 'btn btn-sm btn-neutral') do %>
+                            <i class="bi bi-search me-1"></i> 
+                            <span class="d-none d-sm-inline-flex">Buscar</span>
+                        <% end %>
+                    </div>
+                </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<% if @tags.present? %>
+<div class="row mb-5">
+    <div class="col-md-12 col-12">
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-striped text-nowrap mb-0">
+                    <thead>
+                        <tr>
+                            <th>Descrição</th>
+                            <th class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% @tags.each do |tag| %>
+                            <tr>
+                                <td class="align-middle"><%= tag.description %></td>
+                                <td class="text-center">
+                                    <%= link_to edit_tag_path(tag), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+                                        <i class="bi bi-pencil"></i>
+                                    <% end %>
+                                    <%= link_to tag_path(tag), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
+                                        <i class="bi bi-trash"></i>
+                                    <% end %>
+                                </td>
+                            </tr>
+                        <% end %>
+                </tbody>
+              </table>
+            </div>
+            <div class="card-footer">
+                <%= render partial: 'shared/pagination', locals: { pagy: @pagy } %>
+            </div>
+        </div>
+    </div>
+</div>
+<% end %>

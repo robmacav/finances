@@ -4,6 +4,7 @@ Rails.application.routes.draw do
 
   get '/dashboard', to: 'dashboard#index', as: 'dashboard'
 
+  resources :tags
   resources :cards
   resources :revenues
   resources :expenses

@@ -1,0 +1,15 @@
+<%= form_with(model: @tag, id: @tag.class.table_name, html: { autocomplete: 'off' }) do |f| %>
+<div class="row mb-3">
+    <div class="col-12 col-sm-12">
+        <%= f.label :description, "Descrição" %>
+        <%= f.text_field :description, class: 'form-control' %>
+        <div class="text-danger">
+        <% if @tag.errors.include?(:description) %>
+            <% @tag.errors.full_messages_for(:description).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<% end %>
