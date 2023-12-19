@@ -1,6 +1,7 @@
 class User < ApplicationRecord
     devise :database_authenticatable, :registerable, :recoverable, :rememberable, :validatable
     has_many :plannings, dependent: :destroy
+    has_many :tags, dependent: :destroy
     has_many :cards, dependent: :destroy
     has_many :expense_categories, dependent: :destroy
     has_many :expenses, dependent: :destroy
