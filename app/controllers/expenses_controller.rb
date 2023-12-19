@@ -10,6 +10,7 @@ class ExpensesController < ApplicationController
       end
 
       @pagy, @expenses = pagy(@q.result, items: 5)
+      @categories = ExpenseCategory.all.map{|c| [c.description, c.id]}
     end
   
     def show

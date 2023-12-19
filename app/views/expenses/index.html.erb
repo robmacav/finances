@@ -10,11 +10,15 @@
             <div class="card-body">
                 <%= search_form_for @q, html: { autocomplete: "off" } do |f| %>
                 <div class="row mb-10">
-                    <div class="col-12 col-sm-7 mb-3 mb-sm-0">
+                    <div class="col-12 col-sm-4 mb-3 mb-sm-0">
                         <%= f.label :date, "Descrição" %>
                         <%= f.search_field :description_cont_any, class: 'form-control', placeholder: 'Supermercado' %>
                     </div>
-                    <div class="col-12 col-sm-5">
+                    <div class="col-12 col-sm-4 mb-3 mb-sm-0">
+                        <%= f.label :date, "Categoria" %>
+                        <%= f.select :expense_category_id_eq, @categories, {}, class: 'form-control' %>
+                    </div>
+                    <div class="col-12 col-sm-4">
                         <%= f.label :date, "Mês / Ano" %>
                         <%= f.search_field :date_cont_any, class: 'form-control datepicker-mm-yyyy', placeholder: "#{Time.now.strftime("%m/%Y")}" %>
                     </div>
@@ -46,6 +50,7 @@
                         <tr>
                             <th>Data</th>
                             <th>Descrição</th>
+                            <th>Categoria</th>
                             <th>Valor</th>
                             <th>Forma de Pagamento</th>
                             <th style="border-radius: .5rem;" class="text-center">Ações</th>
@@ -56,6 +61,7 @@
                             <tr>
                                 <td><%= Date.strptime(expense.date, '%d%m%Y').strftime("%d/%m/%Y") %></td>
                                 <td class="align-middle"><%= expense.description %></td>
+                                <td><%= expense.expense_category.description %></td>
                                 <td class="align-middle"><%= decimal_to_float(expense.value) %></td>
                                 <td><%= expense.payment_method %></td>
                                 <td class="text-center">
