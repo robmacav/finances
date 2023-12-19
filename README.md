@@ -12,7 +12,7 @@
 
 </p>
 
-  ![Devices Mockup](docs/images/planning.png)
+  ![Devices Mockup](docs/images/expenses-01.png)
   <!-- ![Devices Mockup](docs/images/schema.png) -->
 </div>
 
