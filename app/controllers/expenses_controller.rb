@@ -11,6 +11,7 @@ class ExpensesController < ApplicationController
 
       @pagy, @expenses = pagy(@q.result, items: 5)
       @categories = ExpenseCategory.all.map{|c| [c.description, c.id]}
+      @tags = Tag.all_by_current_user(current_user).map{|t| [t.description, t.id]}
     end
   
     def show

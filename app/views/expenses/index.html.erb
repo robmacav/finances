@@ -10,15 +10,19 @@
             <div class="card-body">
                 <%= search_form_for @q, html: { autocomplete: "off" } do |f| %>
                 <div class="row mb-10">
-                    <div class="col-12 col-sm-4 mb-3 mb-sm-0">
+                    <div class="col-12 col-sm-3 mb-3 mb-sm-0">
                         <%= f.label :date, "Descrição" %>
                         <%= f.search_field :description_cont_any, class: 'form-control', placeholder: 'Supermercado' %>
                     </div>
-                    <div class="col-12 col-sm-4 mb-3 mb-sm-0">
+                    <div class="col-12 col-sm-3 mb-3 mb-sm-0">
                         <%= f.label :date, "Categoria" %>
                         <%= f.select :expense_category_id_eq, @categories, {}, class: 'form-control' %>
                     </div>
-                    <div class="col-12 col-sm-4">
+                    <div class="col-12 col-sm-3 mb-3 mb-sm-0">
+                        <%= f.label :tag, "Tag" %>
+                        <%= f.select :tag_id_eq, @tags, {}, class: 'form-control' %>
+                    </div>
+                    <div class="col-12 col-sm-3">
                         <%= f.label :date, "Mês / Ano" %>
                         <%= f.search_field :date_cont_any, class: 'form-control datepicker-mm-yyyy', placeholder: "#{Time.now.strftime("%m/%Y")}" %>
                     </div>
