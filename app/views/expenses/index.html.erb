@@ -16,11 +16,11 @@
                     </div>
                     <div class="col-12 col-sm-3 mb-3 mb-sm-0">
                         <%= f.label :date, "Categoria" %>
-                        <%= f.select :expense_category_id_eq, @categories, {}, class: 'form-control' %>
+                        <%= f.select :expense_category_id_eq, @categories, { include_blank: 'Selecione' }, class: 'form-control' %>
                     </div>
                     <div class="col-12 col-sm-3 mb-3 mb-sm-0">
                         <%= f.label :tag, "Tag" %>
-                        <%= f.select :tag_id_eq, @tags, {}, class: 'form-control' %>
+                        <%= f.select :tag_id_eq, @tags, { include_blank: 'Selecione' }, class: 'form-control' %>
                     </div>
                     <div class="col-12 col-sm-3">
                         <%= f.label :date, "Mês / Ano" %>
