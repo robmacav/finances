@@ -28,4 +28,5 @@ Or, if you prefer, you can explore the system's functionalities using these acce
 - `explorer@finances.me`
 - `123456`
 
+## Documentation
 Access the <a href="https://robmacav.github.io/finances" target="_blank">documentation</a> for this project.
