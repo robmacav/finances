@@ -4,6 +4,10 @@ Rails.application.routes.draw do
 
   get '/dashboard', to: 'dashboard#index', as: 'dashboard'
 
+  scope :admin do
+    get '/users', to: 'admin/users#index', as: 'admin_users'
+  end
+
   resources :tags
   resources :cards
   resources :revenues

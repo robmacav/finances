@@ -8,6 +8,10 @@ class ApplicationController < ActionController::Base
         value&.gsub(".", "")&.sub(",",".")
     end
 
+    def valid_admin
+      redirect_to root_path if current_user.admin != 'Sim'
+    end
+
     protected
 
     def configure_permitted_parameters
