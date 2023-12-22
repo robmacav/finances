@@ -1,0 +1,18 @@
+<tr id="<%= dom_id(expense) %>">
+    <td><%= Date.strptime(expense.date, '%d%m%Y').strftime("%d/%m/%Y") %></td>
+    <td class="align-middle"><%= expense.description %></td>
+    <td><%= expense.expense_category.description %></td>
+    <td class="align-middle"><%= decimal_to_float(expense.value) %></td>
+    <td><%= expense.payment_method %></td>
+    <td class="text-center">
+        <%= link_to expense_path(expense), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+            <i class="bi bi-eye"></i>
+        <% end %>
+        <%= link_to edit_expense_path(expense), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+            <i class="bi bi-pencil"></i>
+        <% end %>
+        <%= link_to expense_path(expense), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
+            <i class="bi bi-trash"></i>
+        <% end %>
+    </td>
+</tr>

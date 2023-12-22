@@ -47,23 +47,10 @@
                             <th class="text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% @categories.each do |category| %>
-                            <tr>
-                                <td class="align-middle"><%= category.description %></td>
-                                <td class="align-middle"><i class="bi bi-circle-fill" style="color: #<%= "#{category.color}" %>;"></i></td>
-                                <td class="text-center">
-                                    <%= link_to edit_expense_category_path(category), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
-                                        <i class="bi bi-pencil"></i>
-                                    <% end %>
-                                    <%= link_to expense_category_path(category), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
-                                        <i class="bi bi-trash"></i>
-                                    <% end %>
-                                </td>
-                            </tr>
-                        <% end %>
-                </tbody>
-              </table>
+                    <tbody id="categories">
+                        <%= render @categories %>
+                    </tbody>
+                </table>
             </div>
             <div class="card-footer">
                 <%= render partial: 'shared/pagination', locals: { pagy: @pagy } %>

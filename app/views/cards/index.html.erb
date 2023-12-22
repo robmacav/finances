@@ -47,23 +47,10 @@
                             <th style="border-radius: .5rem;" class="text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% @cards.each do |card| %>
-                            <tr>
-                                <td class="align-middle"><%= card.description %></td>
-                                <td><%= "R$ #{decimal_to_float(card.limit)}" %></td>
-                                <td class="text-center">
-                                    <%= link_to edit_card_path(card), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
-                                        <i class="bi bi-pencil"></i>
-                                    <% end %>
-                                    <%= link_to card_path(card), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
-                                        <i class="bi bi-trash"></i>
-                                    <% end %>
-                                </td>
-                            </tr>
-                        <% end %>
-                </tbody>
-              </table>
+                    <tbody id="cards">
+                        <%= render @cards %>
+                    </tbody>
+                </table>
             </div>
             <div class="card-footer">
                 <%= render partial: 'shared/pagination', locals: { pagy: @pagy } %>

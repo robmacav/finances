@@ -1,0 +1,11 @@
+<tr id="<%= dom_id(tag) %>">
+    <td class="align-middle"><%= tag.description %></td>
+    <td class="text-center">
+        <%= link_to edit_tag_path(tag), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+            <i class="bi bi-pencil"></i>
+        <% end %>
+        <%= link_to tag_path(tag), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
+            <i class="bi bi-trash"></i>
+        <% end %>
+    </td>
+</tr>

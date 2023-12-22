@@ -51,25 +51,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% @plannings.each do |planning| %>
-                            <tr>
-                                <td class="col-3 col-sm-2 align-middle"><%= Date.strptime(planning.month_year, '%m%Y').strftime("%m/%Y") %></td>
-                                <td class="col-3 col-sm-2 align-middle"><%= planning_total_incomes(planning) %></td>
-                                <td class="col-3 col-sm-2 align-middle"><%= planning_total_expenses(planning) %></td>
-                                <td class="col-3 col-sm-2 align-middle"><%= planning_total_available(planning) %></td>
-                                <td class="col-3 col-sm-3 text-center">
-                                    <%= link_to planning_path(planning), class: 'btn btn-sm btn-neutral' do %>
-                                        <i class="bi bi-eye"></i>
-                                    <% end %>
-                                    <%= link_to edit_planning_path(planning), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
-                                        <i class="bi bi-pencil"></i>
-                                    <% end %>
-                                    <%= link_to planning_path(planning), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
-                                        <i class="bi bi-trash"></i>
-                                    <% end %>
-                                </td>
-                            </tr>
-                        <% end %>
+                        <%= render @plannings %>
                     </tbody>
                 </table>
             </div>

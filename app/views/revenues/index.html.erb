@@ -54,24 +54,7 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <% @revenues.each do |revenue| %> 
-                            <tr>
-                                <td><%= Date.strptime(revenue.date, '%d%m%Y').strftime("%d/%m/%Y") %></td>
-                                <td><%= revenue.description %></td>
-                                <td><%= "R$ #{decimal_to_float(revenue.value)}" %></td>
-                                <td class="col-3 col-sm-3 text-center">
-                                    <%= link_to revenue_path(revenue), class: 'btn btn-sm btn-neutral' do %>
-                                        <i class="bi bi-eye"></i>
-                                    <% end %>
-                                    <%= link_to edit_revenue_path(revenue), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
-                                        <i class="bi bi-pencil"></i>
-                                    <% end %>
-                                    <%= link_to revenue_path(revenue), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
-                                        <i class="bi bi-trash"></i>
-                                    <% end %>
-                                </td>
-                            </tr>
-                        <% end %>
+                        <%= render @revenues %>
                     </tbody>
                 </table>
             </div>

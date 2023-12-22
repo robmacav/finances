@@ -1,0 +1,12 @@
+<tr id="<%= dom_id(card) %>">
+    <td class="align-middle"><%= card.description %></td>
+    <td><%= "R$ #{decimal_to_float(card.limit)}" %></td>
+    <td class="text-center">
+        <%= link_to edit_card_path(card), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+            <i class="bi bi-pencil"></i>
+        <% end %>
+        <%= link_to card_path(card), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
+            <i class="bi bi-trash"></i>
+        <% end %>
+    </td>
+</tr>

@@ -46,22 +46,10 @@
                             <th class="text-center">Ações</th>
                         </tr>
                     </thead>
-                    <tbody>
-                        <% @tags.each do |tag| %>
-                            <tr>
-                                <td class="align-middle"><%= tag.description %></td>
-                                <td class="text-center">
-                                    <%= link_to edit_tag_path(tag), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
-                                        <i class="bi bi-pencil"></i>
-                                    <% end %>
-                                    <%= link_to tag_path(tag), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
-                                        <i class="bi bi-trash"></i>
-                                    <% end %>
-                                </td>
-                            </tr>
-                        <% end %>
-                </tbody>
-              </table>
+                    <tbody id="tags">
+                        <%= render @tags %>
+                    </tbody>
+                </table>
             </div>
             <div class="card-footer">
                 <%= render partial: 'shared/pagination', locals: { pagy: @pagy } %>
