@@ -10,6 +10,11 @@ class User < ApplicationRecord
     validates_presence_of :first_name, :last_name
     validates_presence_of :email, uniqueness: true
 
+    enum admin: {
+        'Não': nil,
+        'Sim': 1
+    }
+
     enum status: { 
         'Ativo': nil, 
         'Solicitado Exclusão': 1 
