@@ -1,29 +1,8 @@
 version: '3.9'
 
 services:
-  db:
-    image: postgres
-    container_name: finances_db
-    volumes:
-      - ./tmp/db:/var/lib/postgresql/data
-    env_file: .env
-    environment:
-      POSTGRES_DB: ${POSTGRES_DB}
-      POSTGRES_USER: ${POSTGRES_USER}
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   app:
     build: .
     container_name: finances_app
     volumes:
       - .:/app
-    depends_on:
-      - db
-  web:
-    image: nginx
-    container_name: finances_web
-    volumes:
-      - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    ports: 
-      - "80:80"
-    depends_on:
-      - app
