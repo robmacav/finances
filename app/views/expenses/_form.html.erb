@@ -5,6 +5,7 @@
         <%= f.text_field :description, class: 'form-control disabled', placeholder: 'SEFIN' %>
         <div class="text-danger">
         <% if @expense.errors.include?(:description) %>
+            <%= byebug %>
             <% @expense.errors.full_messages_for(:description).each do |error_message| %>
                 <%= error_message %>.
             <% end %>
@@ -15,7 +16,10 @@
 <div class="row mb-3">
     <div class="col-12 col-sm-6">
         <%= f.label :expense_category_id, "Categoria" %>
-        <%= f.select :expense_category_id, ExpenseCategory.all.map{|category| [category.description, category.id]}, { include_blank: 'Selecione' }, class: 'form-control', placeholder: 'SEFIN' %>
+        <%= f.select :expense_category_id, ExpenseCategory.all.map{|category| [category.description, category.id]}, { include_blank: 'Selecione' } || [], class: 'form-control', placeholder: 'SEFIN' %>
+        <%= link_to new_expense_category_path, class: 'text-primary small' do %>
+            <i class="bi bi-plus-lg"></i> Adicionar
+        <% end %>
         <div class="text-danger">
         <% if @expense.errors.include?(:expense_category_id) %>
             <% @expense.errors.full_messages_for(:expense_category_id).each do |error_message| %>
@@ -26,7 +30,10 @@
     </div>
     <div class="col-12 col-sm-6">
         <%= f.label :tag_id, "Tag" %>
-        <%= f.select :tag_id, @tags, { include_blank: 'Selecione' }, class: 'form-control' %>
+        <%= f.select :tag_id, @tags || [], { include_blank: 'Selecione' }, class: 'form-control' %>
+        <%= link_to new_tag_path, class: 'text-primary small' do %>
+            <i class="bi bi-plus-lg"></i> Adicionar
+        <% end %>
         <div class="text-danger">
         <% if @expense.errors.include?(:tag_id) %>
             <% @expense.errors.full_messages_for(:tag_id).each do |error_message| %>
@@ -63,7 +70,7 @@
     </div>
     <div class="col-12 col-lg-6 d-none mb-3 mb-lg-0" id="cards">
         <%= f.label :card_id, "Cartão" %>
-        <%= f.select :card_id, @cards, { include_blank: 'Selecione' }, class: 'form-control' %>
+        <%= f.select :card_id, @cards || [], { include_blank: 'Selecione' }, class: 'form-control' %>
     </div>
 </div>
 

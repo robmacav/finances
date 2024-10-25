@@ -13,4 +13,7 @@ class Card < ApplicationRecord
 
     parts.join(',')
   end
+
+  scope :all_by_current_month_year_with_credit_card_sum, -> { }
+
 end

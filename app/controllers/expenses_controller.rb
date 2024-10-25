@@ -21,8 +21,8 @@ class ExpensesController < ApplicationController
       @expense = Expense.new
       @expense.items.build
 
-      @cards = Card.all_by_current_user(current_user).map{|card| [card.description, card.id]}
-      @tags = Tag.all_by_current_user(current_user).map{|t| [t.description, t.id]}
+      @cards = Card.all_by_current_user(current_user).map{|card| [card.description, card.id]} || []
+      @tags = Tag.all_by_current_user(current_user).map{|t| [t.description, t.id]} || [] 
     end
   
     def create

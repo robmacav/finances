@@ -2,6 +2,17 @@
 pt-BR:
   activerecord:
     errors:
+      models:
+        expense:
+          attributes:
+            description:
+              blank: 'O campo de descrição não pode está vazio'
+            date:
+              blank: 'O campo de data não pode está vazio'
+            tag_id:
+              blank: 'O campo de data não pode está vazio'
+            payment_method:
+              blank: 'O campo de data não pode está vazio'
       messages:
         record_invalid: 'A validação falhou: %{errors}'
         restrict_dependent_destroy:

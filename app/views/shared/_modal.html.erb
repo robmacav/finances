@@ -21,4 +21,23 @@
     </div>
   </div>
 </div>
+
+<script>
+  function submitForm() {
+    document.querySelector("form#<%= form_id%>").submit();
+  }
+
+  const btnSubmit = document.querySelector('input[form="<%= form_id %>"]');
+
+  btnSubmit.addEventListener("click", function() {
+    submitForm();
+  })
+
+  document.addEventListener("keydown", function(e) {
+    if (e.code == "Enter") {
+      submitForm();
+    }
+  })
+</script>
+
 <% end %>
