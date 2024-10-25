@@ -10,8 +10,12 @@ services:
       POSTGRES_USER: ${POSTGRES_USER}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
   app:
-    build: .
+    build: 
+      context: .
+      dockerfile: Dockerfile.dev
     container_name: finances_app
+    ports:
+      - "3000:3000"
     volumes:
       - .:/app
     depends_on:
