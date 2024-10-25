@@ -16,6 +16,9 @@
 
 ## How to Run
 ```bash
+docker compose -f docker-compose.dev.yml build --no-cache
+```
+```bash
 docker compose -f docker-compose.dev.yml up
 ```
 
