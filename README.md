@@ -16,10 +16,7 @@
 
 ## How to Run
 ```bash
-docker build -f Dockerfile.dev -t finances_app_dev .
-```
-```bash
-docker run -p 3000:3000 -v .:/app finances_app_dev
+docker compose -f docker-compose.dev.yml up
 ```
 
 Or, if you prefer, you can explore the system's functionalities using these access credentials:
