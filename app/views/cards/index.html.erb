@@ -1,0 +1,61 @@
+<div class="row mb-5">
+    <div class="col-12 col-sm-12">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h3 class="card-title mb-0">Cartões</h3>
+                <%= link_to new_card_path, class: 'btn btn-sm btn-neutral me-2', data: { turbo_frame: 'modal' } do %>
+                    <i class="bi bi-plus"></i>
+                    <span class="d-none d-sm-inline-flex">Adicionar</span>
+                <% end %>
+            </div>
+            <div class="card-body">
+                <%= search_form_for @q, html: { autocomplete: 'off' } do |f| %>
+                <div class="row mb-10">
+                    <div class="col-12 col-sm-12">
+                        <%= f.label :description, "Descrição" %>
+                        <%= f.search_field :description_cont_any, class: 'form-control', placeholder: 'Banco do Brasil' %>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-12 col-sm-12 d-flex justify-content-end">
+                        <%= link_to cards_path, class: 'btn btn-sm btn-neutral me-1' do %>
+                            <i class="bi bi-eraser-fill"></i>
+                            <span class="d-none d-sm-inline-flex">Limpar</span>
+                        <% end %>
+                        <%= button_tag(:type => 'submit', class: 'btn btn-sm btn-neutral') do %>
+                            <i class="bi bi-search me-1"></i> 
+                            <span class="d-none d-sm-inline-flex">Buscar</span>
+                        <% end %>
+                    </div>
+                </div>
+                <% end %>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-5">
+    <div class="col-md-12 col-12">
+      <% if @cards.present? %>
+        <div class="card">
+            <div class="table-responsive">
+                <table class="table table-striped text-nowrap mb-0">
+                    <thead class="">
+                        <tr>
+                            <th>Descrição</th>
+                            <th>Limite</th>
+                            <th style="border-radius: .5rem;" class="text-center">Ações</th>
+                        </tr>
+                    </thead>
+                    <tbody id="cards">
+                        <%= render @cards %>
+                    </tbody>
+                </table>
+            </div>
+            <div class="card-footer">
+                <%= render partial: 'shared/pagination', locals: { pagy: @pagy } %>
+            </div>
+        </div>
+      <% end %>
+    </div>
+</div>

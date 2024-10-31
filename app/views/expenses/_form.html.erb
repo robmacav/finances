@@ -1,0 +1,92 @@
+<%= form_with(model: @expense, id: "#{@expense.class.table_name}", html: { autocomplete: 'off', turbo: false }) do |f| %>
+<div class="row mb-3">
+    <div class="col-12 col-sm-12">
+        <%= f.label :description, "Descrição" %>
+        <%= f.text_field :description, class: 'form-control disabled', placeholder: 'SEFIN' %>
+        <div class="text-danger">
+        <% if @expense.errors.include?(:description) %>
+            <%= byebug %>
+            <% @expense.errors.full_messages_for(:description).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12 col-sm-6">
+        <%= f.label :expense_category_id, "Categoria" %>
+        <%= f.select :expense_category_id, ExpenseCategory.all.map{|category| [category.description, category.id]}, { include_blank: 'Selecione' } || [], class: 'form-control', placeholder: 'SEFIN' %>
+        <%= link_to new_expense_category_path, class: 'text-primary small' do %>
+            <i class="bi bi-plus-lg"></i> Adicionar
+        <% end %>
+        <div class="text-danger">
+        <% if @expense.errors.include?(:expense_category_id) %>
+            <% @expense.errors.full_messages_for(:expense_category_id).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12 col-sm-12">
+        <%= f.label :date, "Data" %>
+        <%= f.text_field :date, class: 'form-control datepicker-dd-mm-yyyy', placeholder: "#{Time.now.strftime("%d/%m/%Y")}" %>
+        <div class="text-danger">
+        <% if @expense.errors.include?(:date) %>
+            <% @expense.errors.full_messages_for(:date).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+</div>
+<div class="row mb-3">
+    <div class="col-12 col-lg-6 mb-3 mb-lg-0">
+        <%= f.label :payment_method, "Método de Pagamento" %>
+        <%= f.select :payment_method, Expense.payment_methods.keys, { include_blank: 'Selecione' }, class: 'form-control', id: 'payment-method', placeholder: 'SEFIN' %>
+        <div class="text-danger">
+        <% if @expense.errors.include?(:payment_method) %>
+            <% @expense.errors.full_messages_for(:payment_method).each do |error_message| %>
+                <%= error_message %>.
+            <% end %>
+        <% end %>
+        </div>
+    </div>
+    <div class="col-12 col-lg-6 d-none mb-3 mb-lg-0" id="cards">
+        <%= f.label :card_id, "Cartão" %>
+        <%= f.select :card_id, @cards || [], { include_blank: 'Selecione' }, class: 'form-control' %>
+    </div>
+</div>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h3 class="mb-0">Items</h3>
+    <span class="btn btn-sm btn-neutral" id="add-item"><i class="bi bi-plus me-1"></i> Adicionar</span>
+</div>
+
+<div id="expense-items">
+<%= f.fields_for :items do |ff| %>
+    <div class="row mb-3">
+        <div class="col-12 col-sm-2">
+            <%= ff.label :quantity, "Quantidade" %>
+            <%= ff.text_field :quantity, class: 'form-control' %>
+        </div>
+        <div class="col-12 col-sm-5">
+            <%= ff.label :description, "Descrição" %>
+            <%= ff.text_field :description, class: 'form-control' %>
+        </div>
+        <div class="col-12 col-sm-3 mb-5 mb-sm-0">
+            <%= ff.label :value, "Valor", class: 'd-block' %>
+            <%= ff.text_field :value, class: 'form-control real-currency d-inline-block' %>
+        </div>
+        <div class="col-12 col-sm-2 mb-3 mb-sm-0">
+            <label for="" class="d-none d-sm-inline-block text-white">Remover</label>
+            <span class="btn btn-neutral d-block remove-item" id="<%= ff.index %>"><i class="bi bi-x-lg"></i></span>
+        </div>
+
+        <%= ff.hidden_field :_destroy %>
+    </div>
+<% end %>
+</div>
+<% end %>

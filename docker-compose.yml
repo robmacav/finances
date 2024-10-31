@@ -1,0 +1,51 @@
+version: '2'
+services:
+  app:
+    mem_limit: 4290772992
+    image: dockerhub.sefin.ro.gov.br/ruby-rails-oracle:2.6.5
+    stdin_open: true
+    dns_search:
+    - sefin.ro.gov.br
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /storage/fisconforme/app:/app
+    - /storage/fisconforme/bundle:/usr/local/bundle
+    - /storage/fisconforme/app/start.sh:/start.sh
+    dns:
+    - 172.22.0.10
+    tty: true
+    ports:
+    - 93:3000/tcp
+    labels:
+      io.rancher.scheduler.affinity:host_label: srv-fisconforme=true
+  app-background:
+    image: dockerhub.sefin.ro.gov.br/ruby-rails-oracle:2.6.5
+    stdin_open: true
+    dns_search:
+    - sefin.ro.gov.br
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /storage/fisconforme-background/app:/app
+    - /storage/fisconforme-background/app/start.sh:/start.sh
+    - /storage/fisconforme-background/bundle:/usr/local/bundle
+    dns:
+    - 172.22.0.10
+    tty: true
+    labels:
+      io.rancher.scheduler.affinity:host_label: srv-fisconforme-bkg=true
+  app-desenv:
+    image: dockerhub.sefin.ro.gov.br/ruby-rails-oracle:2.6.5
+    stdin_open: true
+    dns_search:
+    - sefin.ro.gov.br
+    volumes:
+    - /etc/localtime:/etc/localtime:ro
+    - /storage/fisconforme/app-desenv:/app
+    - /storage/fisconforme/bundle-desenv:/usr/local/bundle
+    dns:
+    - 172.22.0.10
+    tty: true
+    ports:
+    - 94:3000/tcp
+    labels:
+      io.rancher.scheduler.affinity:host_label: srv-fisconforme=true

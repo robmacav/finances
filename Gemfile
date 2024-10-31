@@ -10,3 +10,5 @@ gem "stimulus-rails", "1.3.4"
 gem "jbuilder", "2.13.0"
 gem "tzinfo-data", platforms: %i[ windows jruby ]
 gem "bootsnap", "1.18.4", require: false
+gem "ransack", "4.2.1"
+gem "pagy", "3.5"

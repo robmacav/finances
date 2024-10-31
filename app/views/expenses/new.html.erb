@@ -1,0 +1,3 @@
+<%= render "shared/modal", title: "Adicionar despesa", size: 'modal-xl modal-dialog-scrollable', url: "/expenses/", form_id: @expense.class.table_name do %>
+    <%= render 'form', expense: @expense %>
+<% end %>

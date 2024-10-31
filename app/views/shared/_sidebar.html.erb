@@ -29,6 +29,32 @@
             <i class="bi bi-graph-up-arrow"></i> Dashboard
           <% end %>
         </li>
+  
+        <hr class="d-none d-lg-block">
+  
+        <li class="nav-item">
+          <%= link_to incomes_path, class: 'nav-link' do %>
+            <i class="bi bi-graph-up-arrow"></i> Receitas
+          <% end %>
+        </li>
+        <li class="nav-item">
+          <%= link_to expenses_path, class: 'nav-link' do %>
+            <i class="bi bi-graph-down-arrow"></i> Despesas
+          <% end %>
+        </li>
+  
+        <hr class="d-none d-lg-block">
+  
+        <li class="nav-item">
+          <%= link_to cards_path, class: 'nav-link' do %>
+            <i class="bi bi-credit-card"></i> Cartões
+          <% end %>
+        </li>
+        <li class="nav-item">
+          <%= link_to expense_categories_path, class: 'nav-link' do %>
+            <i class="bi bi-pie-chart"></i> Categorias
+          <% end %>
+        </li>
       </ul>
   
       <div class="mt-auto d-none d-lg-block"></div>

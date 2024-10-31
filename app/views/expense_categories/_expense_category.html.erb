@@ -1,0 +1,12 @@
+<tr id="<%= dom_id(expense_category) %>">
+    <td class="align-middle"><%= expense_category.description %></td>
+    <td class="align-middle"><i class="bi bi-circle-fill" style="color: #<%= "#{expense_category.color}" %>;"></i></td>
+    <td class="text-center">
+        <%= link_to edit_expense_category_path(expense_category), class: 'btn btn-sm btn-neutral', data: { turbo_frame: 'modal' } do %>
+            <i class="bi bi-pencil"></i>
+        <% end %>
+        <%= link_to expense_category_path(expense_category), class: 'btn btn-sm btn-neutral', data: { turbo_method: :delete, turbo_confirm: 'Você tem certeza?' } do %>
+            <i class="bi bi-trash"></i>
+        <% end %>
+    </td>
+</tr>

@@ -1,0 +1,43 @@
+<%= turbo_frame_tag "modal" do %>
+<div class="modal fade" id="shareRecipeModal" tabindex="-1" aria-labelledby="newItemModalLabel" aria-hidden="true"
+  data-controller="modal" data-action="turbo:before-render@document->modal#hideBeforeRender">
+  <div class="modal-dialog modal-dialog-centered <%= size %>" role="document">
+    <div class="modal-content" id="modal_content">
+      <div class="modal-header">
+        <h5 class="modal-title"><%= title %></h5>
+        <div class="text-xs ms-auto">
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+      </div>
+      <div class="modal-body modal_body" id="modal_body">
+        <%= yield %>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-sm btn-danger me-1" data-bs-dismiss="modal">Fechar</button>
+        <% if defined?(form_id) %>
+        <button class="btn btn-sm btn-success" value="Enviar" form="<%= form_id %>">Enviar</button>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  function submitForm() {
+    document.querySelector("form#<%= form_id%>").submit();
+  }
+
+  const btnSubmit = document.querySelector('button[form="<%= form_id %>"]');
+
+  btnSubmit.addEventListener("click", function() {
+    submitForm();
+  })
+
+  document.addEventListener("keydown", function(e) {
+    if (e.code == "Enter") {
+      submitForm();
+    }
+  })
+</script>
+
+<% end %>
