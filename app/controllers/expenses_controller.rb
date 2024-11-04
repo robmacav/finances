@@ -4,7 +4,7 @@ class ExpensesController < ApplicationController
 
   def index
     if params[:q].present?
-      @q = Expense.all_by_current_user(current_user).ransack(params[:q])
+      @q = Expense.all_by_current_user(1).ransack(params[:q])
     else
       @q = Expense.all_by_current_user(1).all_by_current_month_year.ransack(params[:q])
     end
@@ -20,8 +20,7 @@ class ExpensesController < ApplicationController
     @expense = Expense.new
     @expense.items.build
 
-    @cards = Card.all_by_current_user(current_user).map{|card| [card.description, card.id]} || []
-    @tags = Tag.all_by_current_user(current_user).map{|t| [t.description, t.id]} || [] 
+    @cards = Card.all_by_current_user(1).map{|card| [card.description, card.id]} || []
   end
 
   def create
