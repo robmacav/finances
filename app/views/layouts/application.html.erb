@@ -8,26 +8,21 @@
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
-    <%= javascript_include_tag 'add_item', 'remove_item', 'payment_method' if controller_name == 'expenses' %>
     <%= javascript_importmap_tags %>
+
+    <link rel="canonical" href="https://preview.keenthemes.com/axel-html-pro"/>
+    <link rel="shortcut icon" href="https://preview.keenthemes.com/oswald-html-free/assets/media/logos/favicon.ico"/>
+
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Inter:300,400,500,600,700"/>        <!--end::Fonts-->
+
+    <link href="https://preview.keenthemes.com/oswald-html-free/assets/plugins/custom/fullcalendar/fullcalendar.bundle.css" rel="stylesheet" type="text/css"/>
+    <link href="https://preview.keenthemes.com/oswald-html-free/assets/plugins/custom/datatables/datatables.bundle.css" rel="stylesheet" type="text/css"/>
+
+    <link href="https://preview.keenthemes.com/oswald-html-free/assets/plugins/global/plugins.bundle.css" rel="stylesheet" type="text/css"/>
+    <link href="https://preview.keenthemes.com/oswald-html-free/assets/css/style.bundle.css" rel="stylesheet" type="text/css"/>
   </head>
 
-  <body>
-    <div class="d-flex flex-column flex-lg-row h-lg-full bg-surface-secondary">
-      <nav class="navbar show navbar-vertical h-lg-screen navbar-expand-lg px-0 py-3 navbar-light bg-light border-bottom border-bottom-lg-0 border-end-lg" id="navbarVertical">
-        <%= render 'shared/sidebar' %>
-      </nav>
-      <div class="h-screen flex-grow-1 overflow-y-lg-auto">
-        <main class="pt-7 pb-3 px-3 bg-surface-secondary">
-          <div class="container-fluid">
-            <%= yield %>
-            <%= turbo_frame_tag "modal", target: '_top' %>
-          </div>
-        </main>
-      </div>
-    </div>
-
-    <%= render 'shared/toastr' %>
+  <body id="kt_body" data-kt-app-header-stacked="true" data-kt-app-header-primary-enabled="true" data-kt-app-header-secondary-enabled="true" data-kt-app-toolbar-enabled="true" class="app-default">
+    <%= yield %>
   </body>
 </html>
