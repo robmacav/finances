@@ -1,7 +1,7 @@
 source "https://rubygems.org"
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-ruby "3.0.1"
+ruby "3.1.0"
 
 gem "rails", "~> 7.0.4"
 gem "sprockets-rails"
@@ -17,6 +17,7 @@ gem "pagy", "3.5"
 gem "ransack", "4.1.1"
 gem "devise", "4.9.3"
 gem "sidekiq", "7.2.0"
+gem 'concurrent-ruby', '1.3.4'
 gem "redis", "5.0.8"
 gem "bundler-audit", "0.9.1"
 

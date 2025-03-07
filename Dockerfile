@@ -1,10 +1,12 @@
-FROM ruby:3.0.1-slim
+FROM ruby:3.1.0-slim
 
 RUN apt update -qq && apt install -y build-essential libpq-dev nodejs
 
 WORKDIR /app
 
-COPY Gemfile Gemfile.lock .
+COPY Gemfile .
+
+COPY Gemfile.lock .
 
 RUN bundle install
 
