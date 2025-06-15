@@ -4,7 +4,7 @@ class V1::ExpensesController < ApplicationController
   def index
     @expenses = Expense.all
 
-    render json: @expenses
+    render json: @expenses.as_json( include: [:category, :user])
   end
 
   def show
