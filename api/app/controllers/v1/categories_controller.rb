@@ -2,9 +2,14 @@ class V1::CategoriesController < ApplicationController
   before_action :set_category, only: %i[ show update destroy ]
 
   def index
-    @categories = Category.all
+    @categories = Category.page(params[:page]).per(params[:per_page] || 50)
 
-    render json: @categories
+    render json: {
+      current_page: @categorys.current_page,
+      total_pages: @categorys.total_pages,
+      total_count: @categorys.total_count,
+      categories: @categories
+    }
   end
 
   def show

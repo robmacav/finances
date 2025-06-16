@@ -2,9 +2,14 @@ class V1::IncomesController < ApplicationController
   before_action :set_income, only: %i[ show update destroy ]
 
   def index
-    @incomes = Income.all
+    @incomes = Income.page(params[:page]).per(params[:per_page] || 50)
 
-    render json: @incomes
+    render json: {
+      current_page: @incomes.current_page,
+      total_pages: @incomes.total_pages,
+      total_count: @incomes.total_count,
+      incomes: @incomes
+    }
   end
 
   def show
