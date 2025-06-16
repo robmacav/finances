@@ -1,0 +1,6 @@
+services:
+  app:
+    build: .
+    container_name: finances_app
+    volumes:
+      - .:/app
