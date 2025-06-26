@@ -1,14 +1,14 @@
-development:
+default: &default
+  adapter: postgresql
+  encoding: unicode
   pool: <%= ENV.fetch("RAILS_DB_MAX_THREADS") { 5 } %>
-  timeout: 5000
+
+development:
   database: storage/development.sqlite3
 
 production:
   primary:
     <<: *default
-    adapter: postgresql
-    encoding: unicode
-    pool: <%= ENV.fetch("RAILS_DB_MAX_THREADS") { 5 } %>
     host: <%= Rails.application.credentials.production.database.host %>
     database: <%= Rails.application.credentials.production.database.database %>
     username: <%= Rails.application.credentials.production.database.username %>
