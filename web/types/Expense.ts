@@ -3,7 +3,22 @@ export type Expense = {
   summary: string;
   details: string;
   value: string;
-  date: string;
-  category_id: string;
-  user_id: string;
+  
+  date: {
+    full: string;
+    day: string;
+    month: string;
+    year: string;
+  }
+
+  category: {
+    summary: string;
+    color: string;
+    icon: string;
+  }
+
+  user: {
+    first_name: string;
+    last_name: string;
+  }
 };

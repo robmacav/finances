@@ -6,26 +6,35 @@ class Expense < ApplicationRecord
     belongs_to :category, class_name: 'Category', foreign_key: 'category_id'
 
     def as_json(options = {})
-    {
-        id: id,
-        summary: summary,
-        details: details,
-        value: value,
-        date: date,
-        status: {
-            id: status&.id,
-            summary: status&.summary
-        },
-        category: {
-            id: category.id,
-            summary: category.summary,
-            color: category.color
-        },
-        user: {
-            id: user.id,
-            first_name: user.first_name,
-            last_name: user.last_name
-        }
+        {
+            id: id,
+            summary: summary,
+            details: details,
+            value: "R$ #{value}",
+
+            date: {
+                full: Date.strptime(date, "%d%m%Y").strftime("%d/%m/%Y"),
+                day: Date.strptime(date, "%d%m%Y").day,
+                month: Date.strptime(date, "%d%m%Y").month,
+                year: Date.strptime(date, "%d%m%Y").year
+            },
+
+            status: {
+                id: status&.id,
+                summary: status&.summary
+            },
+
+            category: {
+                id: category.id,
+                summary: category.summary,
+                color: category.color
+            },
+
+            user: {
+                id: user.id,
+                first_name: user.first_name,
+                last_name: user.last_name
+            }
         }
     end
 end

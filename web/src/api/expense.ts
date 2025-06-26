@@ -1,15 +1,42 @@
 import type { Expense } from '../../types/Expense';
 
-export async function fetchExpenses(): Promise<Expense[]> {
-  const response = await fetch('https://finances-atwj.onrender.com/v1/expenses');
+type FetchExpensesResponse = {
+  current_page: number;
+  total_pages: number;
+  total_count: number;
+  expenses: Expense[];
+};
 
-  console.log("Iniciando...");
+export async function fetchExpenses(): Promise<FetchExpensesResponse> {
+  let currentPage = 1;
+  let totalPages = 1;
+  const allExpenses: Expense[] = [];
 
-  if (!response.ok) {
-    console.log("deu ruim");
+  do {
+    const res = await fetch(`http://localhost:3000/v1/expenses?page=${currentPage}`);
 
-    throw new Error('Erro ao buscar despesas');
-  }
+    if (!res.ok) {
+      throw new Error(`Erro ao buscar página ${currentPage}`);
+    }
 
-  return await response.json();
+    const json = await res.json() as {
+      current_page: number;
+      total_pages: number;
+      total_count: number;
+      expenses: Expense[];
+    };
+
+    allExpenses.push(...json.expenses);
+
+    totalPages = json.total_pages;
+    currentPage++;
+  } while (currentPage <= totalPages);
+
+  return {
+    current_page: 1,
+    total_pages: totalPages,
+    total_count: allExpenses.length,
+    expenses: allExpenses,
+  };
 }
+

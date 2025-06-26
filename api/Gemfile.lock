@@ -178,6 +178,9 @@ GEM
     raabro (1.4.0)
     racc (1.8.1)
     rack (3.1.16)
+    rack-cors (3.0.0)
+      logger
+      rack (>= 3.0.14)
     rack-session (2.1.1)
       base64 (>= 0.1.0)
       rack (>= 3.0.0)
@@ -282,6 +285,7 @@ DEPENDENCIES
   kaminari (= 1.2.2)
   pg (= 1.5.9)
   puma (= 6.6.0)
+  rack-cors (= 3.0.0)
   rails (= 8.0.2)
   solid_cable (= 3.0.11)
   solid_cache (= 1.0.7)

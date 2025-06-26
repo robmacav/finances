@@ -13,7 +13,7 @@ import {
   useReactTable,
   type VisibilityState,
 } from "@tanstack/react-table"
-import { ArrowUpDown, ChevronDown, MoreHorizontal } from "lucide-react"
+import { ChevronDown, MoreHorizontal } from "lucide-react"
 
 import type { Expense } from './../types/Expense';
 
@@ -38,9 +38,8 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { useExpenses } from '../src/hooks/useExpense';
+import { useExpense } from '../src/hooks/useExpense';
 
-const { data, loading, error } = useExpenses();
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -82,23 +81,23 @@ export const columns: ColumnDef<Expense>[] = [
   {
     accessorKey: "date",
     header: "Data",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("date")}</div>
-    ),
+    cell: ({ row }) => {
+      const date = row.original.date;
+      return <div className="capitalize">{date?.full || "—"}</div>;
+    },
   },
   {
-    accessorKey: "category_id",
+    accessorKey: "category",
     header: "Categoria",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("category_id")}</div>
-    ),
+    cell: ({ row }) => {
+      const category = row.original.category;
+      return <div className="capitalize">{category?.summary || "—"}</div>;
+    },
   },
   {
     id: "actions",
     enableHiding: false,
     cell: ({ row }) => {
-      const payment = row.original
-
       return (
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
@@ -108,15 +107,9 @@ export const columns: ColumnDef<Expense>[] = [
             </Button>
           </DropdownMenuTrigger>
           <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.id)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
+            <DropdownMenuLabel>Acões</DropdownMenuLabel>
+            <DropdownMenuItem>Exibir</DropdownMenuItem>
+            <DropdownMenuItem>Excluir</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -125,6 +118,8 @@ export const columns: ColumnDef<Expense>[] = [
 ]
 
 function App() {
+  const { data, loading, error } = useExpense();
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -151,6 +146,16 @@ function App() {
       rowSelection,
     },
   })
+
+  if (loading) return <p>Carregando...</p>;
+  if (error) return <p>Erro: {error}</p>;
+
+  const TableColumnLabels: Record<string, string> = {
+    summary: "Descrição",
+    value: "Valor",
+    date: "Data",
+    category: "Categoria",
+  };
 
   return (
     <div className="max-w-6xl mx-auto px-4">
@@ -179,16 +184,15 @@ function App() {
                     key={column.id}
                     className="capitalize"
                     checked={column.getIsVisible()}
-                    onCheckedChange={(value) =>
-                      column.toggleVisibility(!!value)
-                    }
+                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
                   >
-                    {column.id}
+                    {TableColumnLabels[column.id] ?? column.id}
                   </DropdownMenuCheckboxItem>
-                )
+                );
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+
       </div>
       <div className="rounded-md border">
         <Table>
@@ -252,7 +256,7 @@ function App() {
             onClick={() => table.previousPage()}
             disabled={!table.getCanPreviousPage()}
           >
-            Anterior
+            Anterior 
           </Button>
           <Button
             variant="outline"
