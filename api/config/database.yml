@@ -1,0 +1,27 @@
+development:
+  pool: <%= ENV.fetch("RAILS_DB_MAX_THREADS") { 5 } %>
+  timeout: 5000
+  database: storage/development.sqlite3
+
+production:
+  primary:
+    <<: *default
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV.fetch("RAILS_DB_MAX_THREADS") { 5 } %>
+    host: <%= Rails.application.credentials.production.database.host %>
+    database: <%= Rails.application.credentials.production.database.database %>
+    username: <%= Rails.application.credentials.production.database.username %>
+    password: <%= Rails.application.credentials.production.database.password %>
+  cache:
+    <<: *default
+    database: storage/production_cache.sqlite3
+    migrations_paths: db/cache_migrate
+  queue:
+    <<: *default
+    database: storage/production_queue.sqlite3
+    migrations_paths: db/queue_migrate
+  cable:
+    <<: *default
+    database: storage/production_cable.sqlite3
+    migrations_paths: db/cable_migrate
