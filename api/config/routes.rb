@@ -5,5 +5,13 @@ Rails.application.routes.draw do
     resources :incomes
     resources :expenses
     resources :categories
+
+    namespace :reports do
+      get "expenses/by-category-and-month-year" => "expenses#by_category_and_month_year"
+    end
+
+    namespace :utils do
+      get "expenses/month-availables" => "expenses#month_availables"
+    end
   end
 end
