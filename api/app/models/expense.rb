@@ -28,12 +28,6 @@ class Expense < ApplicationRecord
                 id: category.id,
                 summary: category.summary,
                 color: category.color
-            },
-
-            user: {
-                id: user.id,
-                first_name: user.first_name,
-                last_name: user.last_name
             }
         }
     end
