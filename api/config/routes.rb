@@ -11,7 +11,10 @@ Rails.application.routes.draw do
     end
 
     namespace :utils do
-      get "expenses/month-availables" => "expenses#month_availables"
+      scope :expenses do
+        get "month-availables" => "expenses#month_availables"
+        get "categories" => "expenses#categories"
+      end
     end
   end
 end
