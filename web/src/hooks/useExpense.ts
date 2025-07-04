@@ -8,13 +8,13 @@ type UseExpenseResult = {
   error: string | null;
 };
 
-export function useExpense(): UseExpenseResult {
+export function useExpense(month_year: string): UseExpenseResult {
   const [data, setData] = useState<Expense[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchExpenses()
+    fetchExpenses(month_year)
       .then((res) => {
         setData(res.expenses);
         setLoading(false);

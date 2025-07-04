@@ -1,22 +1,22 @@
 import { useEffect, useState } from 'react';
-import type { Category } from '../../types/Category';
-import { fetchCategories } from '../api/category';
+import type { MonthAvailables } from '../../../../types/utils/expenses/MonthAvailables';
+import { fetchUtilsExpensesMonthAvailables } from '../../../api/utils/expenses/monthAvailables';
 
 type UseCategoryResult = {
-  data: Category[];
+  data: MonthAvailables[];
   loading: boolean;
   error: string | null;
 };
 
-export function useCategory(): UseCategoryResult {
-  const [data, setData] = useState<Category[] | null>(null);
+export function useMonthAvailables(): UseCategoryResult {
+  const [data, setData] = useState<MonthAvailables[] | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
-    fetchCategories()
+    fetchUtilsExpensesMonthAvailables()
       .then((res) => {
-        setData(res.categories);
+        setData(res.months);
         setLoading(false);
       })
       .catch((err) => {

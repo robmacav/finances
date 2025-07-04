@@ -1,9 +1,16 @@
 class V1::Utils::ExpensesController < ApplicationController
     def month_availables
-        render json: Expense.select("DISTINCT TO_DATE(date, 'DDMMYYYY') AS parsed_date").map { |e| e.parsed_date.strftime('%m/%Y') }.uniq.sort
+        render json: Expense.select("DISTINCT TO_DATE(date, 'DDMMYYYY') AS parsed_date").map { |e| e.parsed_date.strftime('%m/%Y') }.uniq.sort.page(params[:page]).per(params[:per_page] || 50)
     end
 
     def categories
-        render json: Category.where(id: Expense.select(:category_id).distinct)
+        @categories = Category.where(id: Expense.select(:category_id).distinct).page(params[:page]).per(params[:per_page] || 50)
+
+        render json: {
+            current_page: @categories.current_page,
+            total_pages: @categories.total_pages,
+            total_count: @categories.total_count,
+            categories: @categories.as_json(include: [:status, :category, :user])
+        }
     end
 end

@@ -1,6 +1,8 @@
 "use client"
 
 import * as React from "react"
+import { useState } from "react";
+
 import {
   type ColumnDef,
   type ColumnFiltersState,
@@ -25,7 +27,6 @@ import {
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuLabel,
-  DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Input } from "@/components/ui/input"
@@ -38,8 +39,18 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import { useExpense } from '../src/hooks/useExpense';
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
+import { useExpense } from '../src/hooks/useExpense';
+import { CategoriesExpensesSelect } from "./categoriesExpensesSelect";
+import { DateExpensesSelect } from "./DateExpensesSelect";
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -79,20 +90,16 @@ export const columns: ColumnDef<Expense>[] = [
     ),
   },
   {
-    accessorKey: "date",
+    id: "date_full",
     header: "Data",
-    cell: ({ row }) => {
-      const date = row.original.date;
-      return <div className="capitalize">{date?.full || "—"}</div>;
-    },
+    accessorFn: (row) => row.date?.full ?? "",
+    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
   },
   {
-    accessorKey: "category",
+    id: "category_summary",
     header: "Categoria",
-    cell: ({ row }) => {
-      const category = row.original.category;
-      return <div className="capitalize">{category?.summary || "—"}</div>;
-    },
+    accessorFn: (row) => row.category?.summary ?? "",
+    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
   },
   {
     id: "actions",
@@ -117,9 +124,7 @@ export const columns: ColumnDef<Expense>[] = [
   },
 ]
 
-function App() {
-  const { data, loading, error } = useExpense();
-
+function Expenses() {
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -128,33 +133,57 @@ function App() {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
+  const [monthYear, setMonthYear] = useState(() => {
+    const today = new Date();
+    const month = String(today.getMonth() + 1).padStart(2, '0');
+    const year = String(today.getFullYear());
+    return `${month}${year}`;
+  });
+  
+  const changeMonth = (delta: number) => {
+    const month = parseInt(monthYear.slice(0, 2));
+    const year = parseInt(monthYear.slice(2));
+    
+    const newDate = new Date(year, month - 1 + delta);
+    const newMonth = String(newDate.getMonth() + 1).padStart(2, '0');
+  const newYear = String(newDate.getFullYear());
+  
+  setMonthYear(`${newMonth}${newYear}`);
+};
+
+console.log(monthYear);
+
+const { data, loading: expensesLoading, error: expensesError } = useExpense(monthYear);
+
+console.log("data expenses.tsx: ", {monthYear}, {data});
+
   const table = useReactTable({
     data,
     columns,
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    getCoreRowModel: getCoreRowModel(),
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getFilteredRowModel: getFilteredRowModel(),
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection,
+    getCoreRowModel: getCoreRowModel(),
     state: {
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection,
+      rowSelection
     },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection
   })
 
-  if (loading) return <p>Carregando...</p>;
-  if (error) return <p>Erro: {error}</p>;
+  if (expensesLoading) return <p>Carregando...</p>;
+  if (expensesError) return <p>Erro: {expensesError}</p>;
 
   const TableColumnLabels: Record<string, string> = {
     summary: "Descrição",
     value: "Valor",
-    date: "Data",
-    category: "Categoria",
+    date_full: "Data",
+    category_summary: "Categoria"
   };
 
   return (
@@ -166,11 +195,13 @@ function App() {
           onChange={(event) =>
             table.getColumn("summary")?.setFilterValue(event.target.value)
           }
-          className="max-w-sm"
+          className="max-w-sm mr-3"
         />
-        <DropdownMenu>
+        < CategoriesExpensesSelect table={table} />
+        < DateExpensesSelect monthYear={monthYear} changeMonth={changeMonth} />
+        <DropdownMenu >
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto">
+            <Button variant="outline" className="ml-auto mr-3">
               Colunas <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
@@ -192,25 +223,51 @@ function App() {
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-
+        <Select
+          value={table.getState().pagination.pageSize.toString()}
+          onValueChange={(value) => {
+            table.setPageSize(Number(value));
+          }}
+        >
+          <SelectTrigger className="">
+            <SelectValue placeholder="Registros por página" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {[10, 15, 20, 25, 50, 100].map((size) => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
       </div>
       <div className="rounded-md border">
         <Table>
           <TableHeader>
             {table.getHeaderGroups().map((headerGroup) => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => {
-                  return (
-                    <TableHead key={header.id}>
-                      {header.isPlaceholder
-                        ? null
-                        : flexRender(
-                            header.column.columnDef.header,
-                            header.getContext()
-                          )}
-                    </TableHead>
-                  )
-                })}
+                {headerGroup.headers.map((header) => (
+                  <TableHead
+                    key={header.id}
+                    onClick={header.column.getToggleSortingHandler()}
+                    className="cursor-pointer select-none"
+                  >
+                    {header.isPlaceholder ? null : (
+                      <div className="flex items-center gap-1">
+                        {flexRender(
+                          header.column.columnDef.header,
+                          header.getContext()
+                        )}
+                        {{
+                          asc: "↑",
+                          desc: "↓"
+                        }[header.column.getIsSorted() as string] ?? null}
+                      </div>
+                    )}
+                  </TableHead>
+                ))}
               </TableRow>
             ))}
           </TableHeader>
@@ -250,27 +307,27 @@ function App() {
           {table.getFilteredRowModel().rows.length} linha(s) selecionadas.
         </div>
         <div className="space-x-2">
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.previousPage()}
-            disabled={!table.getCanPreviousPage()}
-          >
-            Anterior 
-          </Button>
-          <Button
-            variant="outline"
-            size="sm"
-            onClick={() => table.nextPage()}
-            disabled={!table.getCanNextPage()}
-          >
-            Próxima
-          </Button>
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.previousPage()}
+          disabled={!table.getCanPreviousPage()}
+        >
+          Anterior 
+        </Button>
+
+        <Button
+          variant="outline"
+          size="sm"
+          onClick={() => table.nextPage()}
+          disabled={!table.getCanNextPage()}
+        >
+          Próxima
+        </Button>
         </div>
       </div>
     </div>
   )
 }
 
-
-export default App
+export default Expenses

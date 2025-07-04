@@ -7,13 +7,21 @@ type FetchExpensesResponse = {
   expenses: Expense[];
 };
 
-export async function fetchExpenses(): Promise<FetchExpensesResponse> {
+export async function fetchExpenses(month_year: string): Promise<FetchExpensesResponse> {
   let currentPage = 1;
   let totalPages = 1;
   const allExpenses: Expense[] = [];
 
   do {
-    const res = await fetch(`http://localhost:3000/v1/expenses?page=${currentPage}`);
+    let url: string;
+
+    if (month_year?.trim()) {
+      url = `http://localhost:3000/v1/reports/expenses/all-by-month-year?month_year=${encodeURIComponent(month_year)}&page=${currentPage}`;
+    } else {
+      url = `http://localhost:3000/v1/expenses?page=${currentPage}`;
+    }
+
+    const res = await fetch(url);
 
     if (!res.ok) {
       throw new Error(`Erro ao buscar página ${currentPage}`);
@@ -39,4 +47,5 @@ export async function fetchExpenses(): Promise<FetchExpensesResponse> {
     expenses: allExpenses,
   };
 }
+
 

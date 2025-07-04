@@ -3,9 +3,6 @@ default: &default
   encoding: unicode
   pool: <%= ENV.fetch("RAILS_DB_MAX_THREADS") { 5 } %>
 
-development:
-  database: storage/development.sqlite3
-
 production:
   primary:
     <<: *default

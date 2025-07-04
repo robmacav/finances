@@ -1,19 +1,19 @@
-import type { Category } from '../../types/Category';
+import type { MonthAvailables } from '../../../../types/utils/expenses/MonthAvailables';
 
 type FetchCategoriesResponse = {
   current_page: number;
   total_pages: number;
   total_count: number;
-  categories: Category[];
+  months: MonthAvailables[];
 };
 
-export async function fetchCategories(): Promise<FetchCategoriesResponse> {
+export async function fetchUtilsExpensesMonthAvailables(): Promise<FetchCategoriesResponse> {
   let currentPage = 1;
   let totalPages = 1;
-  const allCategories: Category[] = [];
+  const allMonths: MonthAvailables[] = [];
 
   do {
-    const res = await fetch(`http://localhost:3000/v1/categories?page=${currentPage}`);
+    const res = await fetch(`http://localhost:3000/v1/utils/expenses/categories?page=${currentPage}`);
 
     if (!res.ok) {
       throw new Error(`Erro ao buscar página ${currentPage}`);
@@ -23,10 +23,10 @@ export async function fetchCategories(): Promise<FetchCategoriesResponse> {
       current_page: number;
       total_pages: number;
       total_count: number;
-      categories: Category[];
+      months: MonthAvailables[];
     };
 
-    allCategories.push(...json.categories);
+    allMonths.push(...json.months);
 
     totalPages = json.total_pages;
     currentPage++;
@@ -35,7 +35,7 @@ export async function fetchCategories(): Promise<FetchCategoriesResponse> {
   return {
     current_page: 1,
     total_pages: totalPages,
-    total_count: allCategories.length,
-    categories: allCategories,
+    total_count: allMonths.length,
+    months: allMonths,
   };
 }

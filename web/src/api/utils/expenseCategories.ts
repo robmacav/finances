@@ -1,4 +1,4 @@
-import type { Category } from '../../types/Category';
+import type { Category } from '../../../types/Category';
 
 type FetchCategoriesResponse = {
   current_page: number;
@@ -13,7 +13,7 @@ export async function fetchCategories(): Promise<FetchCategoriesResponse> {
   const allCategories: Category[] = [];
 
   do {
-    const res = await fetch(`http://localhost:3000/v1/categories?page=${currentPage}`);
+    const res = await fetch(`http://localhost:3000/v1/utils/expenses/categories?page=${currentPage}`);
 
     if (!res.ok) {
       throw new Error(`Erro ao buscar página ${currentPage}`);

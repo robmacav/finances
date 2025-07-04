@@ -12,6 +12,8 @@ class V1::ExpensesController < ApplicationController
     }
   end
 
+
+
   def show
     render json: @expense
   end

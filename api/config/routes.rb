@@ -7,13 +7,16 @@ Rails.application.routes.draw do
     resources :categories
 
     namespace :reports do
-      get "expenses/by-category-and-month-year" => "expenses#by_category_and_month_year"
+      scope :expenses do 
+        get "by-category-and-month-year", to: "expenses#by_category_and_month_year"
+        get "all-by-month-year", to: "expenses#all_by_month_year"
+      end
     end
 
     namespace :utils do
       scope :expenses do
-        get "month-availables" => "expenses#month_availables"
-        get "categories" => "expenses#categories"
+        get "month-availables", to: "expenses#month_availables"
+        get "categories", to: "expenses#categories"
       end
     end
   end
