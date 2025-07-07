@@ -17,7 +17,7 @@ import {
 } from "@tanstack/react-table"
 import { ChevronDown, MoreHorizontal } from "lucide-react"
 
-import type { Expense } from './../types/Expense';
+import type { Expense } from '../../../../types/Expense';
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -48,9 +48,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { useExpense } from '../src/hooks/useExpense';
+import { useExpense } from '../../../hooks/useExpense';
 import { CategoriesExpensesSelect } from "./categoriesExpensesSelect";
 import { DateExpensesSelect } from "./DateExpensesSelect";
+import TabsContentPage from "./TabsContentPage";
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -99,6 +100,18 @@ export const columns: ColumnDef<Expense>[] = [
     id: "category_summary",
     header: "Categoria",
     accessorFn: (row) => row.category?.summary ?? "",
+    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+  },
+  {
+    id: "subcategory_summary",
+    header: "Sub-categoria",
+    accessorFn: (row) => row.subcategory?.summary ?? "",
+    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+  },
+  {
+    id: "status_summary",
+    header: "Status",
+    accessorFn: (row) => row.status?.summary ?? "",
     cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
   },
   {
@@ -151,14 +164,12 @@ function Expenses() {
   setMonthYear(`${newMonth}${newYear}`);
 };
 
-console.log(monthYear);
-
 const { data, loading: expensesLoading, error: expensesError } = useExpense(monthYear);
 
-console.log("data expenses.tsx: ", {monthYear}, {data});
+const memoizedData = React.useMemo(() => data ?? [], [data]);
 
   const table = useReactTable({
-    data,
+    data: memoizedData,
     columns,
     getPaginationRowModel: getPaginationRowModel(),
     getSortedRowModel: getSortedRowModel(),
@@ -183,11 +194,13 @@ console.log("data expenses.tsx: ", {monthYear}, {data});
     summary: "Descrição",
     value: "Valor",
     date_full: "Data",
-    category_summary: "Categoria"
+    category_summary: "Categoria",
+    status_summary: "Status"
   };
 
   return (
     <div className="max-w-6xl mx-auto px-4">
+      < TabsContentPage />
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrar despesa..."

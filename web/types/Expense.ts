@@ -14,11 +14,18 @@ export type Expense = {
   category: {
     summary: string;
     color: string;
-    icon: string;
+  }
+
+  subcategory: {
+    summary: string;
   }
 
   user: {
     first_name: string;
     last_name: string;
+  }
+
+  status: {
+    summary: string;
   }
 };

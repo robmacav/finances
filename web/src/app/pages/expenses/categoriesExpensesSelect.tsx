@@ -1,4 +1,4 @@
-import { useCategory } from "./hooks/useCategory"
+import { useCategory } from "../../../hooks/useCategory"
 
 import {
   Select,
