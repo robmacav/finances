@@ -9,7 +9,7 @@ class V1::Reports::ExpensesController < ApplicationController
     end
 
     def all_by_month_year
-        @expenses = Expense.where("date like '%#{params[:month_year]}'").page(params[:page]).per(params[:per_page] || 50)
+        @expenses = Expense.all_by_month_year(params[]).page(params[:page]).per(params[:per_page] || 50)
 
         render json: {
             current_page: @expenses.current_page,
@@ -17,5 +17,11 @@ class V1::Reports::ExpensesController < ApplicationController
             total_count: @expenses.total_count,
             expenses: @expenses.as_json(include: [:status, :category, :user])
         }
+    end
+
+    def current_year_total_months
+        @expenses = Expense.current_year_total_months
+
+        render json: @expenses.map{|g| { month_year: g.month_year, total: g.total.to_f } }
     end
 end

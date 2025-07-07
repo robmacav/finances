@@ -13,4 +13,15 @@ class V1::Utils::ExpensesController < ApplicationController
             categories: @categories.as_json(include: [:status, :category, :user])
         }
     end
+
+    def first
+        @expenses = Expense.first(params[:quantity]).page(params[:page]).per(params[:per_page] || 50)
+
+        render json: {
+            current_page: @expenses.current_page,
+            total_pages: @expenses.total_pages,
+            total_count: @expenses.total_count,
+            expenses: @expenses.as_json(include: [:status, :category, :user])
+        }
+    end
 end

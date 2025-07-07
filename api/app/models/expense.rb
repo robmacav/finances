@@ -5,7 +5,18 @@ class Expense < ApplicationRecord
     belongs_to :user, class_name: 'User', foreign_key: 'user_id'
     belongs_to :category, class_name: 'Category', foreign_key: 'category_id'
 
-    def as_json(options = {})
+    scope :all_by_month_year, ->(month_year) { 
+        where("date like '%#{month_year}'") 
+    }
+
+    scope :current_year_total_months, -> { 
+        where("date LIKE ?", "%#{Date.today.year}")
+        .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
+        .group("SUBSTR(date, 3, 6)") 
+        .order(month_year: :asc)
+    }
+
+    def as_jsonn(options = {})
         {
             id: id,
             summary: summary,
