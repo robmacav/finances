@@ -25,5 +25,5 @@ export function useMonthAvailables(): UseCategoryResult {
       });
   }, []);
 
-  return { data, loading, error };
+  return { data: data || [], loading, error };
 }

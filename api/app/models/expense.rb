@@ -9,6 +9,10 @@ class Expense < ApplicationRecord
         where("date like '%#{month_year}'") 
     }
 
+    scope :all_by_month_year_sum, ->(month_year) {
+        where("date like ?", "%#{month_year}%").sum(:value)
+    }
+
     scope :current_year_total_months, -> { 
         where("date LIKE ?", "%#{Date.today.year}")
         .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
@@ -16,7 +20,7 @@ class Expense < ApplicationRecord
         .order(month_year: :asc)
     }
 
-    def as_jsonn(options = {})
+    def as_json(options = {})
         {
             id: id,
             summary: summary,

@@ -51,7 +51,6 @@ import {
 import { useExpense } from '../../../hooks/useExpense';
 import { CategoriesExpensesSelect } from "./categoriesExpensesSelect";
 import { DateExpensesSelect } from "./DateExpensesSelect";
-import TabsContentPage from "./TabsContentPage";
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -199,8 +198,10 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4">
-      < TabsContentPage />
+    <section className="mt-5">
+      <div className="flex items-center justify-between">
+        <h3 className="text-2xl font-bold tracking-tight">DESPESAS</h3>
+      </div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrar despesa..."
@@ -211,7 +212,7 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           className="max-w-sm mr-3"
         />
         < CategoriesExpensesSelect table={table} />
-        < DateExpensesSelect monthYear={monthYear} changeMonth={changeMonth} />
+        
         <DropdownMenu >
           <DropdownMenuTrigger asChild>
             <Button variant="outline" className="ml-auto mr-3">
@@ -236,25 +237,6 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        <Select
-          value={table.getState().pagination.pageSize.toString()}
-          onValueChange={(value) => {
-            table.setPageSize(Number(value));
-          }}
-        >
-          <SelectTrigger className="">
-            <SelectValue placeholder="Registros por página" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {[10, 15, 20, 25, 50, 100].map((size) => (
-                <SelectItem key={size} value={size.toString()}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
       </div>
       <div className="rounded-md border">
         <Table>
@@ -319,6 +301,25 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           {table.getFilteredSelectedRowModel().rows.length} of{" "}
           {table.getFilteredRowModel().rows.length} linha(s) selecionadas.
         </div>
+                <Select
+          value={table.getState().pagination.pageSize.toString()}
+          onValueChange={(value) => {
+            table.setPageSize(Number(value));
+          }}
+        >
+          <SelectTrigger className="">
+            <SelectValue placeholder="Registros por página" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              {[10, 15, 20, 25, 50, 100].map((size) => (
+                <SelectItem key={size} value={size.toString()}>
+                  {size}
+                </SelectItem>
+              ))}
+            </SelectGroup>
+          </SelectContent>
+        </Select>
         <div className="space-x-2">
         <Button
           variant="outline"
@@ -338,8 +339,9 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           Próxima
         </Button>
         </div>
+        
       </div>
-    </div>
+    </section>
   )
 }
 

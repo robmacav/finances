@@ -5,6 +5,10 @@ class Income < ApplicationRecord
     belongs_to :user, class_name: 'User', foreign_key: 'user_id'
     belongs_to :category, class_name: 'Category', foreign_key: 'category_id'
 
+    scope :all_by_month_year_sum, ->(month_year) {
+        where("date like ?", "%#{month_year}%").sum(:value)
+    }
+
     def as_json(options = {})
         {
         id: id,

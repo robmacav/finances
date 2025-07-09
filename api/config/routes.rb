@@ -15,10 +15,17 @@ Rails.application.routes.draw do
     end
 
     namespace :utils do
+      scope :incomes do
+      end
+      
       scope :expenses do
         get "month-availables", to: "expenses#month_availables"
         get "categories", to: "expenses#categories"
         get "first", to: "expenses#first"
+      end
+
+      scope :dashboard do
+        get "incomes-expenses-available-by-month-year", to: "dashboard#incomes_expenses_available_by_month_year"
       end
     end
   end

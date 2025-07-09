@@ -9,7 +9,7 @@ class V1::Reports::ExpensesController < ApplicationController
     end
 
     def all_by_month_year
-        @expenses = Expense.all_by_month_year(params[]).page(params[:page]).per(params[:per_page] || 50)
+        @expenses = Expense.all_by_month_year(params[:month_year]).page(params[:page]).per(params[:per_page] || 50)
 
         render json: {
             current_page: @expenses.current_page,
@@ -20,8 +20,28 @@ class V1::Reports::ExpensesController < ApplicationController
     end
 
     def current_year_total_months
-        @expenses = Expense.current_year_total_months
+        dados = Expense.current_year_total_months
 
-        render json: @expenses.map{|g| { month_year: g.month_year, total: g.total.to_f } }
+        # Cria hash { "MMYYYY" => total }
+        dados_hash = dados.index_by(&:month_year)
+
+        # Meses abreviados em português
+        meses = %w[Jan Fev Mar Abr Mai Jun Jul Ago Set Out Nov Dez]
+
+        # Ano atual
+        ano = Time.current.year
+
+        # Garante os 12 meses, preenchendo com 0.0 se não tiver dados
+        resultado = (1..12).map do |mes|
+            chave = format('%02d%04d', mes, ano) # exemplo: "012025"
+
+            {
+                name: meses[mes - 1],
+                total: dados_hash[chave]&.total.to_f
+            }
+        end
+
+        render json: resultado
     end
+
 end
