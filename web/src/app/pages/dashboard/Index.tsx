@@ -5,6 +5,7 @@ import Incomes from "../incomes/Index";
 import TabsContentPage from "./TabsContentPage";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { DialogDemo } from "../expenses/New";
 
 function Index() {
     const [month, setMonth] = useState(new Date().getMonth() + 1); // 1 a 12
@@ -20,6 +21,8 @@ function Index() {
         <div className="mx-auto p-5 lg:p-10">
             <section className="flex items-center justify-between">
                 <h3 className="text-2xl font-bold tracking-tight">DASHBOARD</h3>
+
+                < DialogDemo />
             
                 < DateExpensesSelect month={month} year={year} changeMonth={changeMonth} />
             </section>
