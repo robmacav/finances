@@ -1,25 +1,23 @@
 import {
   Card,
   CardContent,
-  CardDescription,
   CardHeader,
   CardTitle,
 } from "../../../components/ui/card"
 
-import { RecentExpensesPage } from "./RecentsExpensesPage"
-
-import { Overview } from "../dashboard/Overview"
+// import { Overview } from "../dashboard/Overview"
 
 import { useIncomesExpensesAvailableByMonthYear } from '../../../hooks/utils/dashboard/useIncomesExpensesAvailableByMonthYear';
-import { useState } from "react";
+import { Overview2 } from "./Overview2";
+import PieChart1 from "./PieChart1";
 
-function TabsContentPage() {
-      const [monthYear] = useState(() => {
-          const today = new Date();
-          const month = String(today.getMonth() + 1).padStart(2, '0');
-          const year = String(today.getFullYear());
-          return `${month}${year}`;
-      });
+type Props = {
+  month: number;
+  year: number;
+};
+
+function TabsContentPage({ month, year }: Props) {
+  const monthYear = `${String(month).padStart(2, "0")}${year}`;
 
     const { data, loading, error } = useIncomesExpensesAvailableByMonthYear(monthYear);
 
@@ -73,26 +71,17 @@ function TabsContentPage() {
                 </Card>
 
               </div>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
-                <Card className="col-span-4">
+              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-12">
+                <Card className="col-span-8">
                   <CardHeader>
                     <CardTitle>Overview</CardTitle>
                   </CardHeader>
                   <CardContent className="pl-2">
-                    <Overview />
+                    <Overview2 />
                   </CardContent>
                 </Card>
-                <Card className="col-span-3">
-                  <CardHeader>
-                    <CardTitle>Despesas</CardTitle>
-                    <CardDescription>
-                      Você registrou 265 despesas esse mês.
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <RecentExpensesPage />
-                  </CardContent>
-                </Card>
+                < PieChart1 month={month} year={year} />
+                {/* < ChartPieInteractive /> */}
               </div>
       </section>
     )

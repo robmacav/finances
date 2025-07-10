@@ -10,6 +10,7 @@ Rails.application.routes.draw do
       scope :expenses do 
         get "by-category-and-month-year", to: "expenses#by_category_and_month_year"
         get "all-by-month-year", to: "expenses#all_by_month_year"
+        get "all-by-month-year-by-category", to: "expenses#all_by_month_year_by_category"
         get 'current-year-total-months', to: 'expenses#current_year_total_months'
       end
     end
@@ -26,6 +27,7 @@ Rails.application.routes.draw do
 
       scope :dashboard do
         get "incomes-expenses-available-by-month-year", to: "dashboard#incomes_expenses_available_by_month_year"
+        get "incomes-expenses-total-months-by-year", to: "dashboard#incomes_expenses_total_months_by_year"
       end
     end
   end

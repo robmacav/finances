@@ -19,6 +19,22 @@ class V1::Reports::ExpensesController < ApplicationController
         }
     end
 
+    def all_by_month_year_by_category
+        @expenses = Expense.all_by_month_year_by_category(params[:month_year]).page(params[:page]).per(params[:per_page] || 50)
+
+        resultado = @expenses.map do |expense|
+            {
+                category: {
+                    summary: expense.category.summary,
+                    color: expense.category.color
+                },
+                total: expense.total.to_f 
+            }
+        end
+        
+        render json: resultado
+    end
+
     def current_year_total_months
         dados = Expense.current_year_total_months
 
@@ -43,5 +59,4 @@ class V1::Reports::ExpensesController < ApplicationController
 
         render json: resultado
     end
-
 end

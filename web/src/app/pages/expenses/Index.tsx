@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react";
 
 import {
   type ColumnDef,
@@ -39,18 +38,9 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
 import { useExpense } from '../../../hooks/useExpense';
 import { CategoriesExpensesSelect } from "./categoriesExpensesSelect";
-import { DateExpensesSelect } from "./DateExpensesSelect";
+import { DataTablePagination } from "./DataTablePagination";
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -136,7 +126,14 @@ export const columns: ColumnDef<Expense>[] = [
   },
 ]
 
-function Expenses() {
+type Props = {
+  month: number;
+  year: number;
+};
+
+function Expenses({ month, year }: Props) {
+  const monthYear = `${String(month).padStart(2, "0")}${year}`;
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -144,24 +141,8 @@ function Expenses() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  
 
-  const [monthYear, setMonthYear] = useState(() => {
-    const today = new Date();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = String(today.getFullYear());
-    return `${month}${year}`;
-  });
-  
-  const changeMonth = (delta: number) => {
-    const month = parseInt(monthYear.slice(0, 2));
-    const year = parseInt(monthYear.slice(2));
-    
-    const newDate = new Date(year, month - 1 + delta);
-    const newMonth = String(newDate.getMonth() + 1).padStart(2, '0');
-  const newYear = String(newDate.getFullYear());
-  
-  setMonthYear(`${newMonth}${newYear}`);
-};
 
 const { data, loading: expensesLoading, error: expensesError } = useExpense(monthYear);
 
@@ -194,14 +175,12 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
     value: "Valor",
     date_full: "Data",
     category_summary: "Categoria",
+    subcategory_summary: "Sub-categoria",
     status_summary: "Status"
   };
 
   return (
     <section className="mt-5">
-      <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-bold tracking-tight">DESPESAS</h3>
-      </div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrar despesa..."
@@ -296,50 +275,8 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} linha(s) selecionadas.
-        </div>
-                <Select
-          value={table.getState().pagination.pageSize.toString()}
-          onValueChange={(value) => {
-            table.setPageSize(Number(value));
-          }}
-        >
-          <SelectTrigger className="">
-            <SelectValue placeholder="Registros por página" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {[10, 15, 20, 25, 50, 100].map((size) => (
-                <SelectItem key={size} value={size.toString()}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <div className="space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Anterior 
-        </Button>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Próxima
-        </Button>
-        </div>
-        
+      <div className="">
+        < DataTablePagination table={table} />
       </div>
     </section>
   )

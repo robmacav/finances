@@ -9,6 +9,20 @@ class Income < ApplicationRecord
         where("date like ?", "%#{month_year}%").sum(:value)
     }
 
+    scope :current_year_total_months, -> { 
+        where("date LIKE ?", "%#{Date.today.year}")
+        .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
+        .group("SUBSTR(date, 3, 6)") 
+        .order(month_year: :asc)
+    }
+
+    scope :total_months_by_year, ->(year) { 
+        where("date LIKE ?", "%#{year}")
+        .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
+        .group("SUBSTR(date, 3, 6)") 
+        .order(month_year: :asc)
+    }
+
     def as_json(options = {})
         {
         id: id,

@@ -20,6 +20,22 @@ class Expense < ApplicationRecord
         .order(month_year: :asc)
     }
 
+    # Expense.where("date like '%052025'").select("category_id, SUM(value) as total").group("category_id").joins(:category)[0].category.summary
+
+    scope :all_by_month_year_by_category, ->(month_year) {
+        where("date like '%#{month_year}'")
+        .select("category_id, SUM(value) as total")
+        .group("category_id")
+        .joins(:category)
+    }
+
+    scope :total_months_by_year, ->(year) { 
+        where("date LIKE ?", "%#{year}")
+        .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
+        .group("SUBSTR(date, 3, 6)") 
+        .order(month_year: :asc)
+    }
+
     def as_json(options = {})
         {
             id: id,

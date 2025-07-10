@@ -1,7 +1,6 @@
 "use client"
 
 import * as React from "react"
-import { useState } from "react";
 
 import {
   type ColumnDef,
@@ -135,7 +134,14 @@ export const columns: ColumnDef<Expense>[] = [
   },
 ]
 
-function Incomes() {
+type Props = {
+  month: number;
+  year: number;
+};
+
+function Incomes({ month, year }: Props) {
+  const monthYear = `${String(month).padStart(2, "0")}${year}`;
+
   const [sorting, setSorting] = React.useState<SortingState>([])
   const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
     []
@@ -143,24 +149,6 @@ function Incomes() {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-
-  const [monthYear, setMonthYear] = useState(() => {
-    const today = new Date();
-    const month = String(today.getMonth() + 1).padStart(2, '0');
-    const year = String(today.getFullYear());
-    return `${month}${year}`;
-  });
-  
-  const changeMonth = (delta: number) => {
-    const month = parseInt(monthYear.slice(0, 2));
-    const year = parseInt(monthYear.slice(2));
-    
-    const newDate = new Date(year, month - 1 + delta);
-    const newMonth = String(newDate.getMonth() + 1).padStart(2, '0');
-  const newYear = String(newDate.getFullYear());
-  
-  setMonthYear(`${newMonth}${newYear}`);
-};
 
 const { data, loading: expensesLoading, error: expensesError } = useExpense(monthYear);
 
@@ -193,14 +181,12 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
     value: "Valor",
     date_full: "Data",
     category_summary: "Categoria",
+    subcategory_summary: "Sub-categoria",
     status_summary: "Status"
   };
 
   return (
     <section className="mt-5">
-      <div className="flex items-center justify-between">
-        <h3 className="text-2xl font-bold tracking-tight">RECEITAS</h3>
-      </div>
       <div className="flex items-center py-4">
         <Input
           placeholder="Filtrar despesa..."

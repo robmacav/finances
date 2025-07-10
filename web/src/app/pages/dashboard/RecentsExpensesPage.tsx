@@ -8,11 +8,11 @@ import {
 import { useExpense } from '../../../hooks/useExpense';
 
 export function RecentExpensesPage() {
-    const [monthYear, setMonthYear] = useState(() => {
-        const today = new Date();
-        const month = String(today.getMonth() + 1).padStart(2, '0');
-        const year = String(today.getFullYear());
-        return `${month}${year}`;
+    const [monthYear] = useState(() => {
+      const today = new Date();
+      const month = String(today.getMonth() + 1).padStart(2, '0');
+      const year = String(today.getFullYear());
+      return `${month}${year}`;
     });
 
   const { data, loading: expensesLoading, error: expensesError } = useExpense(monthYear);

@@ -68,6 +68,9 @@ importers:
       '@tanstack/react-table':
         specifier: ^8.21.3
         version: 8.21.3(react-dom@19.1.0(react@19.1.0))(react@19.1.0)
+      Pie:
+        specifier: link:recharts/types/polar/Pie
+        version: link:recharts/types/polar/Pie
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

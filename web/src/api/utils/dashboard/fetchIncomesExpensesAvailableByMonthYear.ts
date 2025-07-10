@@ -1,8 +1,6 @@
 import { type IncomesExpensesData } from '../../../hooks/utils/dashboard/useIncomesExpensesAvailableByMonthYear';
 
 export async function fetchIncomesExpensesAvailableByMonthYear(monthYear: string): Promise<IncomesExpensesData> {
-  console.log("fetchIncomesExpensesAvailableByMonthYear aaa", monthYear);
-
   const response = await fetch(
     `http://localhost:3000/v1/utils/dashboard/incomes-expenses-available-by-month-year?month_year=${monthYear}`
   );
@@ -12,8 +10,6 @@ export async function fetchIncomesExpensesAvailableByMonthYear(monthYear: string
   }
 
   const data: IncomesExpensesData = await response.json();
-
-  console.log("fetchIncomesExpensesAvailableByMonthYear", data);
 
   return data;
 }
