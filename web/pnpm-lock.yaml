@@ -71,6 +71,9 @@ importers:
       Pie:
         specifier: link:recharts/types/polar/Pie
         version: link:recharts/types/polar/Pie
+      app:
+        specifier: link:nuqs/adapters/next/app
+        version: link:nuqs/adapters/next/app
       class-variance-authority:
         specifier: ^0.7.1
         version: 0.7.1

@@ -42,43 +42,37 @@ export function Overview2() {
  
     const { data: chartData, loading, error } = useIncomesExpensesTotalMonthsByYear("2025");
 
-    console.log("chartData", chartData);
- 
     if (loading) return <p>Carregando...</p>;
     if (error) return <p>Erro: {error}</p>;
  
-    console.log("chartData", chartData);
- 
   return (
     <ResponsiveContainer width="100%" height={450}>
-    <ChartContainer config={chartConfig} className="mx-auto aspect-square max-h-[450px]">
-          <BarChart accessibilityLayer data={chartData ?? []}>
-            <CartesianGrid vertical={false} />
-                  <YAxis
-                    stroke="#888888"
-                    fontSize={12}
-                    tickLine={false}
-                    axisLine={false}
- 
-                  />
-            <XAxis
-              dataKey="month"
-              tickLine={false}
-              tickMargin={10}
-              axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
-            />
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent indicator="dashed" />}
-            />
-            <ChartLegend content={<ChartLegendContent />} />
-            <Bar dataKey="incomes" fill="var(--color-incomes)" radius={4} />
-            <Bar dataKey="expenses" fill="var(--color-expenses)" radius={4} />
-            
-          </BarChart>
-        </ChartContainer>
-        </ResponsiveContainer>
+      <ChartContainer config={chartConfig} className="mx-auto max-h-[450px]">
+        <BarChart accessibilityLayer data={chartData ?? []}>
+          <CartesianGrid vertical={false} />
+                <YAxis
+                  stroke="#888888"
+                  fontSize={12}
+                  tickLine={false}
+                  axisLine={false}
+                />
+          <XAxis
+            dataKey="month"
+            tickLine={false}
+            tickMargin={10}
+            axisLine={false}
+            tickFormatter={(value) => value.slice(0, 3)}
+          />
+          <ChartTooltip
+            cursor={false}
+            content={<ChartTooltipContent indicator="dashed" />}
+          />
+          <ChartLegend content={<ChartLegendContent />} />
+          <Bar dataKey="incomes" fill="var(--color-incomes)" radius={4} />
+          <Bar dataKey="expenses" fill="var(--color-expenses)" radius={4} />
+        </BarChart>
+      </ChartContainer>
+    </ResponsiveContainer>
   )
 }
  

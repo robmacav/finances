@@ -1,3 +1,4 @@
+import { CircleDollarSign, TrendingDown, TrendingUp } from "lucide-react";
 import {
   Card,
   CardContent,
@@ -32,7 +33,7 @@ function TabsContentPage({ month, year }: Props) {
                     <CardTitle className="text-sm font-medium">
                       Disponível
                     </CardTitle>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-circle-dollar-sign-icon lucide-circle-dollar-sign"><circle cx="12" cy="12" r="10"/><path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"/><path d="M12 18V6"/></svg>
+                    <CircleDollarSign />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{data?.available}</div>
@@ -46,7 +47,7 @@ function TabsContentPage({ month, year }: Props) {
                     <CardTitle className="text-sm font-medium">
                       Receitas
                     </CardTitle>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-trending-up-icon lucide-trending-up"><path d="M16 7h6v6"/><path d="m22 7-8.5 8.5-5-5L2 17"/></svg>
+                    <TrendingUp className="inline mr-2" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{data?.incomes}</div>
@@ -60,7 +61,7 @@ function TabsContentPage({ month, year }: Props) {
                     <CardTitle className="text-sm font-medium">
                       Despesas
                     </CardTitle>
-                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="lucide lucide-trending-down-icon lucide-trending-down"><path d="M16 17h6v-6"/><path d="m22 17-8.5-8.5-5 5L2 7"/></svg>
+                    <TrendingDown className="inline mr-2" />
                   </CardHeader>
                   <CardContent>
                     <div className="text-2xl font-bold">{data?.expenses}</div>
@@ -71,8 +72,8 @@ function TabsContentPage({ month, year }: Props) {
                 </Card>
 
               </div>
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-12">
-                <Card className="col-span-8">
+              <div className="grid md:grid-cols-2 lg:grid-cols-12 gap-4">
+                <Card className="col-span-6">
                   <CardHeader>
                     <CardTitle>Overview</CardTitle>
                   </CardHeader>
@@ -81,7 +82,6 @@ function TabsContentPage({ month, year }: Props) {
                   </CardContent>
                 </Card>
                 < PieChart1 month={month} year={year} />
-                {/* < ChartPieInteractive /> */}
               </div>
       </section>
     )

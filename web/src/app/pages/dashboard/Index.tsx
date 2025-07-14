@@ -6,6 +6,7 @@ import TabsContentPage from "./TabsContentPage";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { DialogDemo } from "../expenses/New";
+import { SiteHeader } from "../site-header";
 
 function Index() {
     const [month, setMonth] = useState(new Date().getMonth() + 1); // 1 a 12
@@ -19,29 +20,31 @@ function Index() {
     
     return (
         <div className="mx-auto p-5 lg:p-10">
-            <section className="flex items-center justify-between">
-                <h3 className="text-2xl font-bold tracking-tight">DASHBOARD</h3>
-
-                < DialogDemo />
+            <div className="">
+                <SiteHeader />
             
-                < DateExpensesSelect month={month} year={year} changeMonth={changeMonth} />
-            </section>
+                <section className="flex items-center justify-between mt-5">
+                    <h3 className="text-2xl font-bold tracking-tight">DASHBOARD</h3>
+                    < DialogDemo />
+                    < DateExpensesSelect month={month} year={year} changeMonth={changeMonth} />
+                </section>
 
-            < TabsContentPage month={month} year={year} />
-            
-            <section>
-                <Tabs defaultValue="expenses" className="">
-                    <div className="flex items-center justify-between mt-5">
-                        <h3 className="text-2xl font-bold tracking-tight">TRANSAÇÕES</h3>
-                        <TabsList>
-                            <TabsTrigger value="expenses">Despesas</TabsTrigger>
-                            <TabsTrigger value="incomes">Receitas</TabsTrigger>
-                        </TabsList>
-                    </div>
-                    <TabsContent value="expenses">< Expenses month={month} year={year} /></TabsContent>
-                    <TabsContent value="incomes">< Incomes month={month} year={year} /></TabsContent>
-                </Tabs>
-            </section>
+                < TabsContentPage month={month} year={year} />
+                
+                <section>
+                    <Tabs defaultValue="expenses" className="">
+                        <div className="flex items-center justify-between mt-5">
+                            <h3 className="text-2xl font-bold tracking-tight">TRANSAÇÕES</h3>
+                            <TabsList>
+                                <TabsTrigger value="expenses">Despesas</TabsTrigger>
+                                <TabsTrigger value="incomes">Receitas</TabsTrigger>
+                            </TabsList>
+                        </div>
+                        <TabsContent value="expenses">< Expenses month={month} year={year} /></TabsContent>
+                        <TabsContent value="incomes">< Incomes month={month} year={year} /></TabsContent>
+                    </Tabs>
+                </section>
+            </div>
         </div>
     )
 }

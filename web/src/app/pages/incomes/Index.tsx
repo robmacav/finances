@@ -16,7 +16,7 @@ import {
 } from "@tanstack/react-table"
 import { ChevronDown, MoreHorizontal } from "lucide-react"
 
-import type { Expense } from '../../../../types/Expense';
+import type { Income } from '../../../../types/Income';
 
 import { Button } from "@/components/ui/button"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -38,19 +38,11 @@ import {
   TableRow,
 } from "@/components/ui/table"
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
+import { useIncome } from '../../../hooks/useIncome';
+import { CategoriesExpensesSelect } from "@/app/pages/expenses/categoriesExpensesSelect";
+import { DataTablePagination } from "@/app/pages/expenses/DataTablePagination";
 
-import { useExpense } from '../../../hooks/useExpense';
-import { CategoriesExpensesSelect } from "../expenses/categoriesExpensesSelect";
-
-export const columns: ColumnDef<Expense>[] = [
+export const columns: ColumnDef<Income>[] = [
   {
     id: "select",
     header: ({ table }) => (
@@ -150,7 +142,9 @@ function Incomes({ month, year }: Props) {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-const { data, loading: expensesLoading, error: expensesError } = useExpense(monthYear);
+  const { data, loading: incomesLoading, error: incomesError } = useIncome(monthYear);
+
+  console.log("Incomes:", data);
 
 const memoizedData = React.useMemo(() => data ?? [], [data]);
 
@@ -173,8 +167,8 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
     onRowSelectionChange: setRowSelection
   })
 
-  if (expensesLoading) return <p>Carregando...</p>;
-  if (expensesError) return <p>Erro: {expensesError}</p>;
+  if (incomesLoading) return <p>Carregando...</p>;
+  if (incomesError) return <p>Erro: {incomesError}</p>;
 
   const TableColumnLabels: Record<string, string> = {
     summary: "Descrição",
@@ -281,50 +275,8 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           </TableBody>
         </Table>
       </div>
-      <div className="flex items-center justify-end space-x-2 py-4">
-        <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredSelectedRowModel().rows.length} of{" "}
-          {table.getFilteredRowModel().rows.length} linha(s) selecionadas.
-        </div>
-                <Select
-          value={table.getState().pagination.pageSize.toString()}
-          onValueChange={(value) => {
-            table.setPageSize(Number(value));
-          }}
-        >
-          <SelectTrigger className="">
-            <SelectValue placeholder="Registros por página" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              {[10, 15, 20, 25, 50, 100].map((size) => (
-                <SelectItem key={size} value={size.toString()}>
-                  {size}
-                </SelectItem>
-              ))}
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-        <div className="space-x-2">
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.previousPage()}
-          disabled={!table.getCanPreviousPage()}
-        >
-          Anterior 
-        </Button>
-
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={() => table.nextPage()}
-          disabled={!table.getCanNextPage()}
-        >
-          Próxima
-        </Button>
-        </div>
-        
+      <div className="">
+        < DataTablePagination table={table} />
       </div>
     </section>
   )

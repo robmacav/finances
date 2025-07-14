@@ -19,6 +19,16 @@ import {
 } from '@/components/ui/chart'
 import { useAllByMonthYearByCategories } from "@/hooks/reports/expenses/useAllByMonthYearByCategories"
 
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectLabel,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
+
 const chartData = [
   { browser: "chrome", visitors: 275, fill: "#8884d8" },
   { browser: "safari", visitors: 200, fill: "#82ca9d" },
@@ -83,26 +93,37 @@ function PieChart1({ month, year }: Props) {
   if (error) return <p>Erro: {error}</p>;
 
   return (
-    <Card className="col-span-4">
-      <CardHeader className="items-center pb-0">
+    <Card className="col-span-6">
+      <CardHeader className="items-center pb-0 flex flex-row justify-between">
         <CardTitle>Categorias</CardTitle>
+          <Select>
+            <SelectTrigger className="w-[180px]">
+              <SelectValue placeholder="Despesas" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectGroup>
+                <SelectItem value="apple">Despesas</SelectItem>
+                <SelectItem value="banana">Receitas</SelectItem>
+              </SelectGroup>
+            </SelectContent>
+          </Select>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ResponsiveContainer width="100%" height={450}>
-        <ChartContainer
-          config={chartConfig}
-          className="mx-auto aspect-square max-h-[450px]"
-        >
-          <ResponsiveContainer width="100%" height={350}>
-          <PieChart>
-            <ChartTooltip
-              cursor={false}
-              content={<ChartTooltipContent hideLabel />}
-            />
-            <Pie data={chartData} dataKey="total" nameKey="category" />
-          </PieChart>
-          </ResponsiveContainer>
-        </ChartContainer>
+          <ChartContainer
+            config={chartConfig}
+            className="mx-auto aspect-square max-h-[450px]"
+          >
+            <ResponsiveContainer width="100%" height={350}>
+            <PieChart>
+              <ChartTooltip
+                cursor={false}
+                content={<ChartTooltipContent hideLabel />}
+              />
+              <Pie data={chartData} dataKey="total" nameKey="category" />
+            </PieChart>
+            </ResponsiveContainer>
+          </ChartContainer>
         </ResponsiveContainer>
       </CardContent>
     </Card>
