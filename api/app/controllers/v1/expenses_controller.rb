@@ -19,7 +19,7 @@ class V1::ExpensesController < ApplicationController
   def create
     @expense = Expense.new(expense_params)
 
-    if @expense.save
+    if @expense.save!
       render json: @expense, status: :created, location: @expense
     else
       render json: @expense.errors, status: :unprocessable_entity
@@ -44,6 +44,6 @@ class V1::ExpensesController < ApplicationController
     end
 
     def expense_params
-      params.permit(:summary, :details, :value, :date, :category_id, :user_id)
+      params.permit(:summary, :details, :value, :date, :category_id, :status_id, :user_id)
     end
 end
