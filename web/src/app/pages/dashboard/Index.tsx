@@ -5,7 +5,6 @@ import Incomes from "../incomes/Index";
 import TabsContentPage from "./TabsContentPage";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { DialogDemo } from "../expenses/New";
 import { SiteHeader } from "../site-header";
 
 function Index() {
@@ -25,7 +24,7 @@ function Index() {
             
                 <section className="flex items-center justify-between mt-5">
                     <h3 className="text-2xl font-bold tracking-tight">DASHBOARD</h3>
-                    < DialogDemo />
+                    
                     < DateExpensesSelect month={month} year={year} changeMonth={changeMonth} />
                 </section>
 

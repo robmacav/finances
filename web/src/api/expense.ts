@@ -48,4 +48,16 @@ export async function fetchExpenses(month_year: string): Promise<FetchExpensesRe
   };
 }
 
+export async function deleteExpense(id: string) { 
+  const res = await fetch(`http://localhost:3000/v1/expenses/${id}`, {
+    method: 'DELETE',
+  });
+
+  if (!res.ok) {
+    throw new Error(`Erro ao excluir despesa com ID ${id}`);
+  }
+
+  return res.json();
+}
+
 

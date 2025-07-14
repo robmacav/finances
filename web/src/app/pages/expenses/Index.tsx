@@ -41,6 +41,48 @@ import {
 import { useExpense } from '../../../hooks/useExpense';
 import { CategoriesExpensesSelect } from "./categoriesExpensesSelect";
 import { DataTablePagination } from "./DataTablePagination";
+import { New } from "./New";
+
+import { toast } from "sonner"
+
+function formatCurrentDateTime() {
+  const date = new Date()
+
+  const datePart = new Intl.DateTimeFormat("en-US", {
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "2-digit",
+  }).format(date)
+
+  const timePart = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    hour12: true,
+  }).format(date)
+
+  return `${datePart} at ${timePart}`
+}
+
+async function handleDeleteExpense(id: string) {
+  const confirm = window.confirm("Tem certeza que deseja excluir esta despesa?")
+  
+  if (!confirm) return
+
+  try {
+    const response = await fetch(`http://localhost:3000/v1/expenses/${id}`, {
+      method: "DELETE",
+    })
+    
+    if (response.ok) {
+      toast.success("Despesa excluída com sucesso!");
+    } else {
+      toast.error("Ocorreu um erro ao excluir a despesa!");
+    }
+  } catch (error) {
+    toast.error("Ocorreu um erro ao excluir a despesa!");
+  }
+}
 
 export const columns: ColumnDef<Expense>[] = [
   {
@@ -118,7 +160,7 @@ export const columns: ColumnDef<Expense>[] = [
           <DropdownMenuContent align="end">
             <DropdownMenuLabel>Acões</DropdownMenuLabel>
             <DropdownMenuItem>Exibir</DropdownMenuItem>
-            <DropdownMenuItem>Excluir</DropdownMenuItem>
+            <DropdownMenuItem onClick={() => handleDeleteExpense(row.original.id)} >Excluir</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>
       )
@@ -141,8 +183,6 @@ function Expenses({ month, year }: Props) {
   const [columnVisibility, setColumnVisibility] =
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
-  
-
 
 const { data, loading: expensesLoading, error: expensesError } = useExpense(monthYear);
 
@@ -194,7 +234,7 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
         
         <DropdownMenu >
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto mr-3">
+            <Button variant="outline" className="ml-auto mr-1">
               Colunas <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
@@ -216,6 +256,7 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        < New  />
       </div>
       <div className="rounded-md border">
         <Table>
