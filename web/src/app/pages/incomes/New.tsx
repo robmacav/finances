@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectLabel } from "@/components/ui/select"
 import { useCategory } from "@/hooks/useCategory"
-import React, { useState } from "react"
+import React from "react"
 
 import { Calendar } from "@/components/ui/calendar"
 
@@ -26,10 +26,6 @@ import {
 import { CalendarIcon, Plus } from "lucide-react"
 
 import { toast } from "sonner"
-
-type NewProps = {
-  onExpenseCreated: () => void;
-};
 
 function formatDate(date: Date | undefined) {
   if (!date) {
@@ -63,12 +59,10 @@ function formatToDDMMYYYY(dateStr: string | null): string {
   return `${day}${month}${year}`
 }
 
-export function New({ onExpenseCreated }: NewProps) {
+export function New() {
   const { data, loading, error } = useCategory();
 
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
-  const [selectedStatus, setSelectedStatus] = useState("2")
-
+  const [selectedCategory, setSelectedCategory] = React.useState<string | undefined>(undefined)
 
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(
@@ -89,9 +83,9 @@ export function New({ onExpenseCreated }: NewProps) {
       </DialogTrigger>
       <DialogContent className="md:min-w-3xl xl:min-w-6xl">
         <DialogHeader>
-          <DialogTitle>Cadastro de Despesas</DialogTitle>
+          <DialogTitle>Cadastro de Receitas</DialogTitle>
           <DialogDescription>
-            Preencha os campos abaixo para cadastrar uma nova despesa.
+            Preencha os campos abaixo para cadastrar uma nova receita.
           </DialogDescription>
         </DialogHeader>
         <form
@@ -104,14 +98,14 @@ export function New({ onExpenseCreated }: NewProps) {
               summary: formData.get("summary"),
               value: parseFloat(formData.get("value")?.toString() || "0"),
               date: formatToDDMMYYYY(formData.get("date")?.toString() || ""),
-              category_id: formData.get("category_id"),
+              category_id: "2", // formData.get("category_id")
               details: formData.get("details"),
               status_id: "2",
               user_id: "2"
             }
 
             try {
-              const response = await fetch("http://localhost:3000/v1/expenses", {
+              const response = await fetch("http://localhost:3000/v1/incomes", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",
@@ -120,11 +114,9 @@ export function New({ onExpenseCreated }: NewProps) {
               })
 
               if (response.ok) {
-                toast.success("Despesa cadastrada com sucesso!");
+                toast.success("Receita cadastrada com sucesso!");
 
-                onExpenseCreated();
-
-                e.currentTarget.reset() // limpa o form
+                e.currentTarget.reset()
               } else {
                 const contentType = response.headers.get("Content-Type")
                 let errorMessage = "Erro desconhecido"
@@ -136,10 +128,10 @@ export function New({ onExpenseCreated }: NewProps) {
                   errorMessage = await response.text()
                 }
 
-                toast.error("Falha ao cadastrar despesa");
+                toast.error("Falha ao cadastrar receita");
               }
             } catch (err) {
-              toast.error("Falha ao cadastrar despesa");
+              toast.error("Falha ao cadastrar receita");
               console.error("Erro ao enviar dados:", err)
             } 
           }}
@@ -215,7 +207,7 @@ export function New({ onExpenseCreated }: NewProps) {
           </div>
           <div className="grid gap-3">
             <Label>Categoria</Label>
-            <Select name="category_id" value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select name="category_id" value={selectedCategory} onValueChange={(value) => setSelectedCategory(value)}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
@@ -223,7 +215,7 @@ export function New({ onExpenseCreated }: NewProps) {
                 <SelectGroup>
                   <SelectLabel>Categorias</SelectLabel>
                   {data.map((category) => (
-                    <SelectItem key={category.id} value={category.id.toString()}>
+                    <SelectItem key={category.id} value={category.id}>
                       {category.summary}
                     </SelectItem>
                   ))}
@@ -233,7 +225,7 @@ export function New({ onExpenseCreated }: NewProps) {
           </div>
           <div className="grid gap-3">
             <Label>Status</Label>
-            <Select name="status_id" value={selectedStatus} onValueChange={setSelectedStatus}>
+            <Select name="status_id">
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione um status" />
               </SelectTrigger>
@@ -242,9 +234,6 @@ export function New({ onExpenseCreated }: NewProps) {
                   <SelectLabel>Status</SelectLabel>
                     <SelectItem key="2" value="2">
                       Pendente
-                    </SelectItem>
-                    <SelectItem key="1" value="1">
-                      Concluído
                     </SelectItem>
                 </SelectGroup>
               </SelectContent>

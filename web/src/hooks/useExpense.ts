@@ -6,6 +6,7 @@ type UseExpenseResult = {
   data: Expense[] | null;
   loading: boolean;
   error: string | null;
+  refetch: () => void;
 };
 
 type CacheEntry = {
@@ -61,6 +62,31 @@ export function useExpense(month_year: string): UseExpenseResult {
   const dataRef = useRef<Expense[] | null>(null);
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
 
+  const triggerRefetch = useRef<() => void>(() => {});
+
+  async function fetchAndUpdate() {
+    try {
+      const res = await fetchExpenses(month_year);
+      const newData = res.expenses;
+
+      if (!dataRef.current || !isSameExpenses(dataRef.current, newData)) {
+        setData(newData);
+        dataRef.current = newData;
+
+        const cacheUpdated = loadCache();
+        cacheUpdated[month_year] = {
+          timestamp: Date.now(),
+          data: newData,
+        };
+        saveCache(cacheUpdated);
+      }
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.message || "Erro ao buscar despesas");
+      setLoading(false);
+    }
+  }
+
   useEffect(() => {
     let isMounted = true;
     const cache = loadCache();
@@ -76,33 +102,10 @@ export function useExpense(month_year: string): UseExpenseResult {
     }
     setError(null);
 
-    async function fetchAndUpdate() {
-      try {
-        const res = await fetchExpenses(month_year);
-        if (!isMounted) return;
+    triggerRefetch.current = () => {
+      if (isMounted) fetchAndUpdate();
+    };
 
-        const newData = res.expenses;
-
-        if (!dataRef.current || !isSameExpenses(dataRef.current, newData)) {
-          setData(newData);
-          dataRef.current = newData;
-
-          const cacheUpdated = loadCache();
-          cacheUpdated[month_year] = {
-            timestamp: Date.now(),
-            data: newData,
-          };
-          saveCache(cacheUpdated);
-        }
-        setLoading(false);
-      } catch (err: any) {
-        if (!isMounted) return;
-        setError(err.message || "Erro ao buscar despesas");
-        setLoading(false);
-      }
-    }
-
-    // Busca inicial se cache expirou ou inexistente
     if (!cacheEntry || now - cacheEntry.timestamp >= CACHE_TTL_MS) {
       fetchAndUpdate();
     }
@@ -149,5 +152,12 @@ export function useExpense(month_year: string): UseExpenseResult {
     };
   }, [month_year]);
 
-  return { data, loading, error };
+  return { 
+    data, 
+    loading, 
+    error, 
+    refetch: () => {
+      triggerRefetch.current();
+    } 
+  };
 }

@@ -41,6 +41,7 @@ import {
 import { useIncome } from '../../../hooks/useIncome';
 import { CategoriesExpensesSelect } from "@/app/pages/expenses/categoriesExpensesSelect";
 import { DataTablePagination } from "@/app/pages/expenses/DataTablePagination";
+import { New } from "./New";
 
 export const columns: ColumnDef<Income>[] = [
   {
@@ -216,6 +217,7 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+        < New  />
       </div>
       <div className="rounded-md border">
         <Table>

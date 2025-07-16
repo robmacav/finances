@@ -5,6 +5,8 @@ class Expense < ApplicationRecord
     belongs_to :user, class_name: 'User', foreign_key: 'user_id', optional: true
     belongs_to :category, class_name: 'Category', foreign_key: 'category_id', optional: true
 
+    default_scope { order(date: :asc, summary: :asc) }
+
     scope :all_by_month_year, ->(month_year) { 
         where("date like '%#{month_year}'") 
     }
@@ -14,7 +16,8 @@ class Expense < ApplicationRecord
     }
 
     scope :current_year_total_months, -> { 
-        where("date LIKE ?", "%#{Date.today.year}")
+        unscope(:order)
+        .where("date LIKE ?", "%#{Date.today.year}")
         .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
         .group("SUBSTR(date, 3, 6)") 
         .order(month_year: :asc)
@@ -23,14 +26,16 @@ class Expense < ApplicationRecord
     # Expense.where("date like '%052025'").select("category_id, SUM(value) as total").group("category_id").joins(:category)[0].category.summary
 
     scope :all_by_month_year_by_category, ->(month_year) {
-        where("date like '%#{month_year}'")
+        unscope(:order)
+        .where("date like '%#{month_year}'")
         .select("category_id, SUM(value) as total")
         .group("category_id")
         .joins(:category)
     }
 
     scope :total_months_by_year, ->(year) { 
-        where("date LIKE ?", "%#{year}")
+        unscope(:order)
+        .where("date LIKE ?", "%#{year}")
         .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
         .group("SUBSTR(date, 3, 6)") 
         .order(month_year: :asc)

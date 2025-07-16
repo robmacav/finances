@@ -2,7 +2,7 @@ class V1::ExpensesController < ApplicationController
   before_action :set_expense, only: %i[ show update destroy ]
 
   def index
-    @expenses = Expense.page(params[:page]).per(params[:per_page] || 50)
+    @expenses = Expense.order(date: :asc).page(params[:page]).per(params[:per_page] || 50)
 
     render json: {
       current_page: @expenses.current_page,
@@ -20,7 +20,7 @@ class V1::ExpensesController < ApplicationController
     @expense = Expense.new(expense_params)
 
     if @expense.save!
-      render json: @expense, status: :created, location: @expense
+      render json: @expense, status: :created, location: v1_expense_url(@expense)
     else
       render json: @expense.errors, status: :unprocessable_entity
     end

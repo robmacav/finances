@@ -45,128 +45,103 @@ import { New } from "./New";
 
 import { toast } from "sonner"
 
-function formatCurrentDateTime() {
-  const date = new Date()
+import {
+  AlertDialog,
+  AlertDialogTrigger,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog"
 
-  const datePart = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    year: "numeric",
-    month: "long",
-    day: "2-digit",
-  }).format(date)
-
-  const timePart = new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  }).format(date)
-
-  return `${datePart} at ${timePart}`
-}
-
-async function handleDeleteExpense(id: string) {
-  const confirm = window.confirm("Tem certeza que deseja excluir esta despesa?")
-  
-  if (!confirm) return
-
-  try {
-    const response = await fetch(`http://localhost:3000/v1/expenses/${id}`, {
-      method: "DELETE",
-    })
-    
-    if (response.ok) {
-      toast.success("Despesa excluída com sucesso!");
-    } else {
-      toast.error("Ocorreu um erro ao excluir a despesa!");
-    }
-  } catch (error) {
-    toast.error("Ocorreu um erro ao excluir a despesa!");
-  }
-}
-
-export const columns: ColumnDef<Expense>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "summary",
-    header: "Descrição",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("summary")}</div>
-    ),
-  },
+export function getColumns(openDeleteDialog: (id: string) => void): ColumnDef<Expense>[] {
+  return [
     {
-    accessorKey: "value",
-    header: "Valor",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("value")}</div>
-    ),
-  },
-  {
-    id: "date_full",
-    header: "Data",
-    accessorFn: (row) => row.date?.full ?? "",
-    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
-  },
-  {
-    id: "category_summary",
-    header: "Categoria",
-    accessorFn: (row) => row.category?.summary ?? "",
-    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
-  },
-  {
-    id: "subcategory_summary",
-    header: "Sub-categoria",
-    accessorFn: (row) => row.subcategory?.summary ?? "",
-    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
-  },
-  {
-    id: "status_summary",
-    header: "Status",
-    accessorFn: (row) => row.status?.summary ?? "",
-    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Acões</DropdownMenuLabel>
-            <DropdownMenuItem>Exibir</DropdownMenuItem>
-            <DropdownMenuItem onClick={() => handleDeleteExpense(row.original.id)} >Excluir</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
     },
-  },
-]
+    {
+      accessorKey: "summary",
+      header: "Descrição",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("summary")}</div>
+      ),
+    },
+      {
+      accessorKey: "value",
+      header: "Valor",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("value")}</div>
+      ),
+    },
+    {
+      id: "date_full",
+      header: "Data",
+      accessorFn: (row) => row.date?.full ?? "",
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+    },
+    {
+      id: "category_summary",
+      header: "Categoria",
+      accessorFn: (row) => row.category?.summary ?? "",
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+    },
+    {
+      id: "subcategory_summary",
+      header: "Sub-categoria",
+      accessorFn: (row) => row.subcategory?.summary ?? "",
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+    },
+    {
+      id: "status_summary",
+      header: "Status",
+      accessorFn: (row) => row.status?.summary ?? "",
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Acões</DropdownMenuLabel>
+              <DropdownMenuItem>Exibir</DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openDeleteDialog(row.original.id)}>Excluir</DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      }
+    }
+  ]
+}
 
 type Props = {
   month: number;
@@ -184,7 +159,42 @@ function Expenses({ month, year }: Props) {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-const { data, loading: expensesLoading, error: expensesError } = useExpense(monthYear);
+const { data, loading: expensesLoading, error: expensesError, refetch } = useExpense(monthYear);
+
+const [deletingExpenseId, setDeletingExpenseId] = React.useState<string | null>(null);
+
+const [isAlertOpen, setIsAlertOpen] = React.useState(false);
+
+function openDeleteDialog(id: string) {
+  setDeletingExpenseId(id);
+  setIsAlertOpen(true);
+}
+
+  async function confirmDelete() {
+    if (!deletingExpenseId) return;
+
+    try {
+      const response = await fetch(`http://localhost:3000/v1/expenses/${deletingExpenseId}`, {
+        method: "DELETE",
+      });
+
+      if (response.ok) {
+        toast.success("Despesa excluída com sucesso!");
+        refetch();
+      } else {
+        toast.error("Ocorreu um erro ao excluir a despesa!");
+      }
+    } catch {
+      toast.error("Ocorreu um erro ao excluir a despesa!");
+    } finally {
+      setIsAlertOpen(false);
+      setDeletingExpenseId(null);
+    }
+  }
+
+const columns = getColumns((id: string) => {
+    openDeleteDialog(id);
+  });
 
 const memoizedData = React.useMemo(() => data ?? [], [data]);
 
@@ -256,7 +266,7 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        < New  />
+        < New onExpenseCreated={refetch} />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -319,6 +329,21 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
       <div className="">
         < DataTablePagination table={table} />
       </div>
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza que deseja excluir esta despesa?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita, a despesa será removida permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Excluir</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </section>
   )
 }
