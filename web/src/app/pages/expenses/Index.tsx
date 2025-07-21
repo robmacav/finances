@@ -59,7 +59,6 @@ import {
 
 import { StatusCell } from "./StatusCell";
 
-
 export function getColumns({
   openDeleteDialog,
   expensesRefetch
@@ -129,6 +128,8 @@ export function getColumns({
       cell: ({ row }) => {
         const expense = row.original;
         const statusId = expense.status?.id?.toString() ?? "";
+
+        console.log(expense.id, statusId);
 
         return (
           <StatusCell
@@ -212,10 +213,6 @@ function Expenses({ month, year }: Props) {
       setDeletingExpenseId(null);
     }
   }
-
-// const columns = getColumns((id: string) => {
-//     openDeleteDialog(id);
-//   }, expensesRefetch);
 
 const columns = getColumns({
   openDeleteDialog: (id: string) => openDeleteDialog(id),

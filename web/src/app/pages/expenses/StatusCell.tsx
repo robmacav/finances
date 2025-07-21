@@ -29,6 +29,7 @@ export function StatusCell({ expenseId, statusId, expensesRefetch }: Props) {
       });
 
       toast.success("Status atualizado com sucesso!");
+
       expensesRefetch(); // Aqui está a função correta
     } catch (error) {
       toast.error("Erro ao atualizar status.");
