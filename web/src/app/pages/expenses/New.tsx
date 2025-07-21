@@ -26,6 +26,7 @@ import {
 import { CalendarIcon, Plus } from "lucide-react"
 
 import { toast } from "sonner"
+import { useStatus } from "@/hooks/useStatus"
 
 type NewProps = {
   onExpenseCreated: () => void;
@@ -64,11 +65,12 @@ function formatToDDMMYYYY(dateStr: string | null): string {
 }
 
 export function New({ onExpenseCreated }: NewProps) {
-  const { data, loading, error } = useCategory();
+  const { data: categoryData, loading: categoryLoading, error: categoryError } = useCategory();
+   const { data: statusData, loading: statusLoading, error: statusError } = useStatus();
 
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
-  const [selectedStatus, setSelectedStatus] = useState("2")
 
+  const [selectedStatus, setSelectedStatus] = useState("2")
 
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(
@@ -76,9 +78,6 @@ export function New({ onExpenseCreated }: NewProps) {
   )
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
-
-  if (loading) return <div>Loading...</div>;
-  if (error) return <div>Error: {error}</div>;
 
   return (
     <Dialog>
@@ -98,7 +97,8 @@ export function New({ onExpenseCreated }: NewProps) {
           onSubmit={async (e) => {
             e.preventDefault()
 
-            const formData = new FormData(e.currentTarget);
+            const form = e.currentTarget;
+            const formData = new FormData(form);
 
             const payload = {
               summary: formData.get("summary"),
@@ -106,7 +106,7 @@ export function New({ onExpenseCreated }: NewProps) {
               date: formatToDDMMYYYY(formData.get("date")?.toString() || ""),
               category_id: formData.get("category_id"),
               details: formData.get("details"),
-              status_id: "2",
+              status_id: formData.get("status_id"),
               user_id: "2"
             }
 
@@ -124,7 +124,7 @@ export function New({ onExpenseCreated }: NewProps) {
 
                 onExpenseCreated();
 
-                e.currentTarget.reset() // limpa o form
+                form.reset()
               } else {
                 const contentType = response.headers.get("Content-Type")
                 let errorMessage = "Erro desconhecido"
@@ -222,7 +222,7 @@ export function New({ onExpenseCreated }: NewProps) {
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Categorias</SelectLabel>
-                  {data.map((category) => (
+                  {(categoryData ?? []).map((category) => (
                     <SelectItem key={category.id} value={category.id.toString()}>
                       {category.summary}
                     </SelectItem>
@@ -235,17 +235,16 @@ export function New({ onExpenseCreated }: NewProps) {
             <Label>Status</Label>
             <Select name="status_id" value={selectedStatus} onValueChange={setSelectedStatus}>
               <SelectTrigger className="w-full">
-                <SelectValue placeholder="Selecione um status" />
+                <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
               <SelectContent>
                 <SelectGroup>
                   <SelectLabel>Status</SelectLabel>
-                    <SelectItem key="2" value="2">
-                      Pendente
+                  {(statusData ?? []).map((status) => (
+                    <SelectItem key={status.id} value={status.id.toString()}>
+                      {status.summary}
                     </SelectItem>
-                    <SelectItem key="1" value="1">
-                      Concluído
-                    </SelectItem>
+                  ))}
                 </SelectGroup>
               </SelectContent>
             </Select>

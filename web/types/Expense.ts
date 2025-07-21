@@ -26,6 +26,7 @@ export type Expense = {
   }
 
   status: {
+    id: any;
     summary: string;
   }
 };

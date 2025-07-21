@@ -57,7 +57,16 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
 
-export function getColumns(openDeleteDialog: (id: string) => void): ColumnDef<Expense>[] {
+import { StatusCell } from "./StatusCell";
+
+
+export function getColumns({
+  openDeleteDialog,
+  expensesRefetch
+}: {
+  openDeleteDialog: (id: string) => void;
+  expensesRefetch: () => void;
+}): ColumnDef<Expense>[] {
   return [
     {
       id: "select",
@@ -117,7 +126,18 @@ export function getColumns(openDeleteDialog: (id: string) => void): ColumnDef<Ex
       id: "status_summary",
       header: "Status",
       accessorFn: (row) => row.status?.summary ?? "",
-      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+      cell: ({ row }) => {
+        const expense = row.original;
+        const statusId = expense.status?.id?.toString() ?? "";
+
+        return (
+          <StatusCell
+            expenseId={expense.id}
+            statusId={statusId}
+            expensesRefetch={expensesRefetch}
+          />
+        );
+      }
     },
     {
       id: "actions",
@@ -159,16 +179,16 @@ function Expenses({ month, year }: Props) {
     React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-const { data, loading: expensesLoading, error: expensesError, refetch } = useExpense(monthYear);
+  const { data, loading: expensesLoading, error: expensesError, refetch: expensesRefetch } = useExpense(monthYear);
 
-const [deletingExpenseId, setDeletingExpenseId] = React.useState<string | null>(null);
+  const [deletingExpenseId, setDeletingExpenseId] = React.useState<string | null>(null);
 
-const [isAlertOpen, setIsAlertOpen] = React.useState(false);
+  const [isAlertOpen, setIsAlertOpen] = React.useState(false);
 
-function openDeleteDialog(id: string) {
-  setDeletingExpenseId(id);
-  setIsAlertOpen(true);
-}
+  function openDeleteDialog(id: string) {
+    setDeletingExpenseId(id);
+    setIsAlertOpen(true);
+  }
 
   async function confirmDelete() {
     if (!deletingExpenseId) return;
@@ -180,7 +200,8 @@ function openDeleteDialog(id: string) {
 
       if (response.ok) {
         toast.success("Despesa excluída com sucesso!");
-        refetch();
+
+        expensesRefetch();
       } else {
         toast.error("Ocorreu um erro ao excluir a despesa!");
       }
@@ -192,9 +213,14 @@ function openDeleteDialog(id: string) {
     }
   }
 
-const columns = getColumns((id: string) => {
-    openDeleteDialog(id);
-  });
+// const columns = getColumns((id: string) => {
+//     openDeleteDialog(id);
+//   }, expensesRefetch);
+
+const columns = getColumns({
+  openDeleteDialog: (id: string) => openDeleteDialog(id),
+  expensesRefetch: expensesRefetch
+});
 
 const memoizedData = React.useMemo(() => data ?? [], [data]);
 
@@ -241,6 +267,10 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           className="max-w-sm mr-3"
         />
         < CategoriesExpensesSelect table={table} />
+
+            <Button onClick={expensesRefetch}>
+      Atualizar despesas
+    </Button>
         
         <DropdownMenu >
           <DropdownMenuTrigger asChild>
@@ -266,7 +296,7 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
               })}
           </DropdownMenuContent>
         </DropdownMenu>
-        < New onExpenseCreated={refetch} />
+        < New onExpenseCreated={expensesRefetch} />
       </div>
       <div className="rounded-md border">
         <Table>
