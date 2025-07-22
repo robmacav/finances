@@ -43,6 +43,7 @@ import { CategoriesExpensesSelect } from "./categoriesExpensesSelect";
 import { DataTablePagination } from "./DataTablePagination";
 
 import { Show } from "./Show";
+import { Edit } from "./Edit";
 import { New } from "./New";
 
 import { toast } from "sonner"
@@ -64,10 +65,12 @@ import { StatusCell } from "./StatusCell";
 export function getColumns({
   openDeleteDialog,
   openViewDialog,
+  openEditDialog,
   expensesRefetch
 }: {
   openDeleteDialog: (id: string) => void;
   openViewDialog: (expense: Expense) => void;
+  openEditDialog: (expense: Expense) => void;
   expensesRefetch: () => void;
 }): ColumnDef<Expense>[] {
   return [
@@ -161,6 +164,9 @@ export function getColumns({
               <DropdownMenuItem onClick={() => openViewDialog(row.original)}>
                 Exibir
               </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => openEditDialog(row.original)}>
+                Editar
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => openDeleteDialog(row.original.id)}>Excluir</DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>
@@ -206,6 +212,12 @@ function Expenses({ month, year }: Props) {
   }
 
 
+  function openEditDialog(expense: Expense) {
+    setSelectedExpense(expense);
+    setIsDialogOpen(true);
+  }
+
+
   async function confirmDelete() {
     if (!deletingExpenseId) return;
 
@@ -231,7 +243,8 @@ function Expenses({ month, year }: Props) {
 
 const columns = getColumns({
   openDeleteDialog: (id: string) => openDeleteDialog(id),
-  openViewDialog: (expense: Expense) => openViewDialog(expense), // ✅ adicionado
+  openViewDialog: (expense: Expense) => openViewDialog(expense),
+  openEditDialog: (expense: Expense) => openEditDialog(expense),
   expensesRefetch: expensesRefetch
 });
 
@@ -281,10 +294,6 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           className="max-w-sm mr-3"
         />
         < CategoriesExpensesSelect table={table} />
-
-        <Button onClick={expensesRefetch}>
-          Atualizar despesas
-        </Button>
         
         <DropdownMenu >
           <DropdownMenuTrigger asChild>
@@ -312,6 +321,15 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
         </DropdownMenu>
         < New onExpenseCreated={expensesRefetch} />
         <Show
+          onExpenseCreated={() => {
+            expensesRefetch();
+            setIsDialogOpen(false);
+          }}
+          initialExpense={selectedExpense}
+          open={isDialogOpen}
+          onOpenChange={setIsDialogOpen}
+        />
+        <Edit
           onExpenseCreated={() => {
             expensesRefetch();
             setIsDialogOpen(false);

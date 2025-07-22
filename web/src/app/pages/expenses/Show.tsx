@@ -91,11 +91,6 @@ export function Show({ onExpenseCreated, initialExpense, open, onOpenChange }: N
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogTrigger asChild>
-        <Button variant="outline">
-          Cadastrar <Plus className="" />
-        </Button>
-      </DialogTrigger>
       <DialogContent className="md:min-w-3xl xl:min-w-6xl">
         <DialogHeader>
           <DialogTitle>{initialExpense ? "Visualizar Despesa" : "Cadastro de Despesas"}</DialogTitle>
@@ -219,7 +214,7 @@ export function Show({ onExpenseCreated, initialExpense, open, onOpenChange }: N
           </div>
           <DialogFooter className="mt-4">
             <DialogClose asChild>
-              <Button variant="outline">Cancelar</Button>
+              <Button className="px-10">Voltar</Button>
             </DialogClose>
             {!initialExpense && <Button type="submit">Salvar</Button>}
           </DialogFooter>

@@ -64,7 +64,7 @@ function formatToDDMMYYYY(dateStr: string | null): string {
   return `${day}${month}${year}`
 }
 
-export function New({ onExpenseCreated }: NewProps) {
+export function Edit({ onExpenseCreated }: NewProps) {
   const { data: categoryData, loading: categoryLoading, error: categoryError } = useCategory();
    const { data: statusData, loading: statusLoading, error: statusError } = useStatus();
 
