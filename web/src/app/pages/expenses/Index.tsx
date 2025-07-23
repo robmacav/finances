@@ -50,7 +50,6 @@ import { toast } from "sonner"
 
 import {
   AlertDialog,
-  AlertDialogTrigger,
   AlertDialogContent,
   AlertDialogHeader,
   AlertDialogTitle,
@@ -60,13 +59,10 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
 
-import { StatusCell } from "./StatusCell";
-
 export function getColumns({
   openDeleteDialog,
   openViewDialog,
-  openEditDialog,
-  expensesRefetch
+  openEditDialog
 }: {
   openDeleteDialog: (id: string) => void;
   openViewDialog: (expense: Expense) => void;
@@ -77,21 +73,25 @@ export function getColumns({
     {
       id: "select",
       header: ({ table }) => (
-        <Checkbox
-          checked={
-            table.getIsAllPageRowsSelected() ||
-            (table.getIsSomePageRowsSelected() && "indeterminate")
-          }
-          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-          aria-label="Select all"
-        />
+        <div className="hidden sm:flex">
+          <Checkbox
+            checked={
+              table.getIsAllPageRowsSelected() ||
+              (table.getIsSomePageRowsSelected() && "indeterminate")
+            }
+            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+            aria-label="Select all"
+          />
+        </div>
       ),
       cell: ({ row }) => (
-        <Checkbox
-          checked={row.getIsSelected()}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-        />
+        <div className="hidden sm:flex">
+          <Checkbox
+            checked={row.getIsSelected()}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+          />
+        </div>
       ),
       enableSorting: false,
       enableHiding: false,
@@ -126,26 +126,13 @@ export function getColumns({
       id: "subcategory_summary",
       header: "Sub-categoria",
       accessorFn: (row) => row.subcategory?.summary ?? "",
-      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>
     },
     {
       id: "status_summary",
       header: "Status",
       accessorFn: (row) => row.status?.summary ?? "",
-      cell: ({ row }) => {
-        const expense = row.original;
-        const statusId = expense.status?.id?.toString() ?? "";
-
-        console.log(expense.id, statusId);
-
-        return (
-          <StatusCell
-            expenseId={expense.id}
-            statusId={statusId}
-            expensesRefetch={expensesRefetch}
-          />
-        );
-      }
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>
     },
     {
       id: "actions",
@@ -198,25 +185,26 @@ function Expenses({ month, year }: Props) {
 
   const [isAlertOpen, setIsAlertOpen] = React.useState(false);
 
+  const [selectedEditExpense, setSelectedEditExpense] = React.useState<Expense | null>(null);
+  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+
+  const [selectedViewExpense, setSelectedViewExpense] = React.useState<Expense | null>(null);
+  const [isViewDialogOpen, setIsViewDialogOpen] = React.useState(false);
+
+  function openViewDialog(expense: Expense) {
+    setSelectedViewExpense(expense);
+    setIsViewDialogOpen(true);
+  }
+
+  function openEditDialog(expense: Expense) {
+    setSelectedEditExpense(expense);
+    setIsEditDialogOpen(true);
+  }
+
   function openDeleteDialog(id: string) {
     setDeletingExpenseId(id);
     setIsAlertOpen(true);
   }
-
-  const [selectedExpense, setSelectedExpense] = React.useState<Expense | null>(null);
-  const [isDialogOpen, setIsDialogOpen] = React.useState(false);
-
-  function openViewDialog(expense: Expense) {
-    setSelectedExpense(expense);
-    setIsDialogOpen(true);
-  }
-
-
-  function openEditDialog(expense: Expense) {
-    setSelectedExpense(expense);
-    setIsDialogOpen(true);
-  }
-
 
   async function confirmDelete() {
     if (!deletingExpenseId) return;
@@ -247,7 +235,6 @@ const columns = getColumns({
   openEditDialog: (expense: Expense) => openEditDialog(expense),
   expensesRefetch: expensesRefetch
 });
-
 
 const memoizedData = React.useMemo(() => data ?? [], [data]);
 
@@ -293,11 +280,12 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           }
           className="max-w-sm mr-3"
         />
-        < CategoriesExpensesSelect table={table} />
+
+        < CategoriesExpensesSelect  table={table}  />
         
         <DropdownMenu >
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto mr-1">
+            <Button variant="outline" className="hidden sm:inline-flex ml-auto mr-1">
               Colunas <ChevronDown />
             </Button>
           </DropdownMenuTrigger>
@@ -319,25 +307,8 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
               })}
           </DropdownMenuContent>
         </DropdownMenu>
+
         < New onExpenseCreated={expensesRefetch} />
-        <Show
-          onExpenseCreated={() => {
-            expensesRefetch();
-            setIsDialogOpen(false);
-          }}
-          initialExpense={selectedExpense}
-          open={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-        />
-        <Edit
-          onExpenseCreated={() => {
-            expensesRefetch();
-            setIsDialogOpen(false);
-          }}
-          initialExpense={selectedExpense}
-          open={isDialogOpen}
-          onOpenChange={setIsDialogOpen}
-        />
       </div>
       <div className="rounded-md border">
         <Table>
@@ -415,6 +386,26 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <Show
+        onExpenseCreated={() => {
+          expensesRefetch();
+          setIsViewDialogOpen(false);
+        }}
+        initialExpense={selectedViewExpense}
+        open={isViewDialogOpen}
+        onOpenChange={setIsViewDialogOpen}
+      />
+
+      <Edit
+        onExpenseEdited={() => {
+          expensesRefetch();
+          setIsEditDialogOpen(false);
+        }}
+        initialExpense={selectedEditExpense}
+        open={isEditDialogOpen}
+        onOpenChange={setIsEditDialogOpen}
+      />
     </section>
   )
 }

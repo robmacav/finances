@@ -24,45 +24,9 @@ import {
   SelectContent,
   SelectGroup,
   SelectItem,
-  SelectLabel,
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-
-const chartData = [
-  { browser: "chrome", visitors: 275, fill: "#8884d8" },
-  { browser: "safari", visitors: 200, fill: "#82ca9d" },
-  { browser: "firefox", visitors: 187, fill: "#ffc658" },
-  { browser: "edge", visitors: 173, fill: "#ff8042" },
-  { browser: "other", visitors: 90, fill: "#d0ed57" }
-];
-
-
-const chartConfig = {
-  visitors: {
-    label: "Visitors",
-  },
-  chrome: {
-    label: "Chrome",
-    color: "#8884d8",
-  },
-  safari: {
-    label: "Safari",
-    color: "#82ca9d",
-  },
-  firefox: {
-    label: "Firefox",
-    color: "#ffc658",
-  },
-  edge: {
-    label: "Edge",
-    color: "#ff8042",
-  },
-  other: {
-    label: "Other",
-    color: "#d0ed57",
-  }
-} satisfies ChartConfig
 
 type Props = {
   month: number;
@@ -96,6 +60,7 @@ function PieChart1({ month, year }: Props) {
     <Card className="col-span-6">
       <CardHeader className="items-center pb-0 flex flex-row justify-between">
         <CardTitle>Categorias</CardTitle>
+        <div className="hidden sm:flex">
           <Select>
             <SelectTrigger className="w-[180px]">
               <SelectValue placeholder="Despesas" />
@@ -107,6 +72,7 @@ function PieChart1({ month, year }: Props) {
               </SelectGroup>
             </SelectContent>
           </Select>
+        </div>
       </CardHeader>
       <CardContent className="flex-1 pb-0">
         <ResponsiveContainer width="100%" height={450}>

@@ -145,8 +145,6 @@ function Incomes({ month, year }: Props) {
 
   const { data, loading: incomesLoading, error: incomesError } = useIncome(monthYear);
 
-  console.log("Incomes:", data);
-
 const memoizedData = React.useMemo(() => data ?? [], [data]);
 
   const table = useReactTable({

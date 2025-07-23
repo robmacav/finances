@@ -28,9 +28,14 @@ import { CalendarIcon, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { useStatus } from "@/hooks/useStatus"
 
+import { type Expense } from "../../../../types/Expense"
+
 type NewProps = {
-  onExpenseCreated: () => void;
-};
+  onExpenseEdited: () => void;
+  initialExpense?: Expense | null;
+  open?: boolean;
+  onOpenChange?: (open: boolean) => void;
+}
 
 function formatDate(date: Date | undefined) {
   if (!date) {
@@ -64,7 +69,7 @@ function formatToDDMMYYYY(dateStr: string | null): string {
   return `${day}${month}${year}`
 }
 
-export function Edit({ onExpenseCreated }: NewProps) {
+export function Edit({ onExpenseEdited }: NewProps) {
   const { data: categoryData, loading: categoryLoading, error: categoryError } = useCategory();
    const { data: statusData, loading: statusLoading, error: statusError } = useStatus();
 
@@ -82,9 +87,6 @@ export function Edit({ onExpenseCreated }: NewProps) {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button variant="outline">
-          Cadastrar <Plus className="" />
-        </Button>
       </DialogTrigger>
       <DialogContent className="md:min-w-3xl xl:min-w-6xl">
         <DialogHeader>
@@ -93,7 +95,7 @@ export function Edit({ onExpenseCreated }: NewProps) {
             Preencha os campos abaixo para cadastrar uma nova despesa.
           </DialogDescription>
         </DialogHeader>
-        <form
+        {/* <form
           onSubmit={async (e) => {
             e.preventDefault()
 
@@ -122,7 +124,7 @@ export function Edit({ onExpenseCreated }: NewProps) {
               if (response.ok) {
                 toast.success("Despesa cadastrada com sucesso!");
 
-                onExpenseCreated();
+                onExpenseEdited();
 
                 form.reset()
               } else {
@@ -260,7 +262,7 @@ export function Edit({ onExpenseCreated }: NewProps) {
           </DialogClose>
           <Button type="submit">Salvar</Button>
         </DialogFooter>
-        </form>
+        </form> */}
       </DialogContent>
     </Dialog>
   )

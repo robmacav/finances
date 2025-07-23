@@ -6,24 +6,10 @@ import {
   DialogDescription,
   DialogFooter,
   DialogHeader,
-  DialogTitle,
-  DialogTrigger,
+  DialogTitle
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectLabel } from "@/components/ui/select"
-import { useCategory } from "@/hooks/useCategory"
-import { useStatus } from "@/hooks/useStatus"
-import React, { useEffect, useState } from "react"
-
-import { Calendar } from "@/components/ui/calendar"
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { CalendarIcon, Plus } from "lucide-react"
+import { useEffect, useState } from "react"
 
 import { type Expense } from "../../../../types/Expense"
 
@@ -34,58 +20,38 @@ type NewProps = {
   onOpenChange?: (open: boolean) => void;
 }
 
-function formatDate(date: Date | undefined) {
-  if (!date) return ""
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  })
+function formatToDDMMYYYY(date: Date): string {
+  const day = date.getDate().toString().padStart(2, '0');
+  const month = (date.getMonth() + 1).toString().padStart(2, '0');
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 }
 
-function isValidDate(date: Date | undefined) {
-  if (!date) return false
-  return !isNaN(date.getTime())
-}
-
-export function Show({ onExpenseCreated, initialExpense, open, onOpenChange }: NewProps) {
-  const { data: categoryData = [] } = useCategory()
-  const { data: statusData = [] } = useStatus()
-
+export function Show({ initialExpense, open, onOpenChange }: NewProps) {
   const [summary, setSummary] = useState("")
-  const [valueInput, setValueInput] = useState("")
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>()
-  const [selectedStatus, setSelectedStatus] = useState("2")
-  const [details, setDetails] = useState("")
-  const [date, setDate] = useState<Date | undefined>()
-  const [month, setMonth] = useState<Date | undefined>(new Date())
   const [value, setValue] = useState("")
+  const [category, setSelectedCategory] = useState<string | undefined>()
+  const [status, setSelectedStatus] = useState("2")
+  const [details, setDetails] = useState("")
+  const [date, setDate] = useState("")
 
-  const [calendarOpen, setCalendarOpen] = useState(false)
-
-  // Atualiza campos ao receber nova `initialExpense`
   useEffect(() => {
     if (initialExpense) {
       setSummary(initialExpense.summary ?? "")
-      setValueInput(initialExpense.value?.toString() ?? "")
-      setSelectedCategory(initialExpense.category?.id?.toString())
-      setSelectedStatus(initialExpense.status?.id?.toString() ?? "2")
+      setValue(initialExpense.value?.toString() ?? "")
+      setSelectedCategory(initialExpense.category?.summary?.toString())
+      setSelectedStatus(initialExpense.status?.summary?.toString())
       setDetails(initialExpense.details ?? "")
-      const parsedDate = initialExpense.date?.full ? new Date(initialExpense.date.full) : new Date()
-      setDate(parsedDate)
-      setMonth(parsedDate)
-      setValue(formatDate(parsedDate))
+
+      const parsedDate = initialExpense.date?.full ? new Date(initialExpense.date.full) : new Date();
+      setDate(formatToDDMMYYYY(parsedDate));
     } else {
-      // limpa campos
       setSummary("")
-      setValueInput("")
-      setSelectedCategory(undefined)
-      setSelectedStatus("2")
+      setValue("")
+      setSelectedCategory("")
+      setSelectedStatus("")
       setDetails("")
-      const today = new Date()
-      setDate(today)
-      setMonth(today)
-      setValue(formatDate(today))
+      setDate("");
     }
   }, [initialExpense])
 
@@ -93,132 +59,48 @@ export function Show({ onExpenseCreated, initialExpense, open, onOpenChange }: N
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="md:min-w-3xl xl:min-w-6xl">
         <DialogHeader>
-          <DialogTitle>{initialExpense ? "Visualizar Despesa" : "Cadastro de Despesas"}</DialogTitle>
+          <DialogTitle>{summary}</DialogTitle>
           <DialogDescription>
-            {initialExpense
-              ? "Visualize os detalhes da despesa."
-              : "Preencha os campos abaixo para cadastrar uma nova despesa."}
+            Visualize os detalhes da despesa.
           </DialogDescription>
         </DialogHeader>
-        <form>
-          <div className="grid gap-4">
-            <div className="grid gap-3">
-              <Label>Título</Label>
-              <Input
-                id="summary"
-                name="summary"
-                value={summary}
-                onChange={(e) => setSummary(e.target.value)}
-                readOnly={!!initialExpense}
-              />
-            </div>
-
-            <div className="grid gap-3">
-              <Label htmlFor="value">Valor</Label>
-              <Input
-                id="value"
-                name="value"
-                value={valueInput}
-                onChange={(e) => setValueInput(e.target.value)}
-                disabled={!!initialExpense}
-              />
-            </div>
-
-            <div className="grid gap-3">
-              <Label>Data</Label>
-              <div className="relative flex gap-2">
-                <Input
-                  id="date"
-                  name="date"
-                  value={value}
-                  placeholder="June 01, 2025"
-                  className="bg-background pr-10"
-                  onChange={(e) => {
-                    const d = new Date(e.target.value)
-                    setValue(e.target.value)
-                    if (isValidDate(d)) {
-                      setDate(d)
-                      setMonth(d)
-                    }
-                  }}
-                  onKeyDown={(e) => {
-                    if (e.key === "ArrowDown") {
-                      e.preventDefault()
-                      setCalendarOpen(true)
-                    }
-                  }}
-                  disabled={!!initialExpense}
-                />
-
-              </div>
-            </div>
-
-            <div className="grid gap-3">
-              <Label>Categoria</Label>
-              <Select
-                name="category_id"
-                value={selectedCategory}
-                onValueChange={setSelectedCategory}
-                disabled={!!initialExpense}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione uma categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Categorias</SelectLabel>
-                    {(categoryData ?? []).map((category) => (
-                      <SelectItem key={category.id} value={category.id.toString()}>
-                        {category.summary}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-3">
-              <Label>Status</Label>
-              <Select
-                name="status_id"
-                value={selectedStatus}
-                onValueChange={setSelectedStatus}
-              >
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione um status" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Status</SelectLabel>
-                    {statusData.map((status) => (
-                      <SelectItem key={status.id} value={status.id.toString()}>
-                        {status.summary}
-                      </SelectItem>
-                    ))}
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
-
-            <div className="grid gap-3">
-              <Label>Descrição</Label>
-              <Textarea
-                id="details"
-                name="details"
-                value={details}
-                onChange={(e) => setDetails(e.target.value)}
-                rows={10}
-                disabled={!!initialExpense}
-              />
-            </div>
+        <div className="grid gap-6 mt-5">
+          <div className="flex items-start justify-between gap-4 border-b pb-3">
+            <Label className="text-muted-foreground min-w-[100px]">Valor</Label>
+            <span className="text-right font-medium break-words max-w-sm text-foreground">
+              {value || <span className="italic text-muted-foreground">Não informado</span>}
+            </span>
           </div>
-          <DialogFooter className="mt-4">
-            <DialogClose asChild>
-              <Button className="px-10">Voltar</Button>
-            </DialogClose>
-            {!initialExpense && <Button type="submit">Salvar</Button>}
-          </DialogFooter>
-        </form>
+          <div className="flex items-start justify-between gap-4 border-b pb-3">
+            <Label className="text-muted-foreground min-w-[100px]">Data</Label>
+            <span className="text-right font-medium break-words max-w-sm text-foreground">
+              {date || <span className="italic text-muted-foreground">Não informado</span>}
+            </span>
+          </div>
+          <div className="flex items-start justify-between gap-4 border-b pb-3">
+            <Label className="text-muted-foreground min-w-[100px]">Categoria</Label>
+            <span className="text-right font-medium break-words max-w-sm text-foreground">
+              {category || <span className="italic text-muted-foreground">Não informado</span>}
+            </span>
+          </div>
+          <div className="flex items-start justify-between gap-4 border-b pb-3">
+            <Label className="text-muted-foreground min-w-[100px]">Status</Label>
+            <span className="text-right font-medium break-words max-w-sm text-foreground">
+              {status || <span className="italic text-muted-foreground">Não informado</span>}
+            </span>
+          </div>
+          <div className="flex items-start justify-between gap-4">
+            <Label className="text-muted-foreground min-w-[100px]">Descrição</Label>
+            <span className="text-right font-medium break-words max-w-sm text-foreground">
+              {details || <span className="italic text-muted-foreground">Não informado</span>}
+            </span>
+          </div>
+        </div>
+        <DialogFooter className="mt-4">
+          <DialogClose asChild>
+            <Button className="px-10">Voltar</Button>
+          </DialogClose>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   )

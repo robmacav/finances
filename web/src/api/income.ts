@@ -40,8 +40,6 @@ export async function fetchIncomes(month_year: string): Promise<FetchIncomesResp
     currentPage++;
   } while (currentPage <= totalPages);
 
-  console.log("fetchIncome:", allIncomes);
-
   return {
     current_page: 1,
     total_pages: totalPages,

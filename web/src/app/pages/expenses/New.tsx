@@ -83,7 +83,7 @@ export function New({ onExpenseCreated }: NewProps) {
     <Dialog>
       <DialogTrigger asChild>
         <Button variant="outline">
-          Cadastrar <Plus className="" />
+          <span className="hidden sm:inline">Cadastrar</span><Plus className="" />
         </Button>
       </DialogTrigger>
       <DialogContent className="md:min-w-3xl xl:min-w-6xl">

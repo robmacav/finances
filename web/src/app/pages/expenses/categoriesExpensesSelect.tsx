@@ -21,25 +21,27 @@ export function CategoriesExpensesSelect<TData>({
   const { data } = useCategory();
 
   return (
-    <Select
-      onValueChange={(value) => {
-        const filterValue = value === "all" ? undefined : value;
-        table.getColumn("category_summary")?.setFilterValue(filterValue);
-      }}
-    >
-      <SelectTrigger className="w-[180px] mr-3">
-        <SelectValue placeholder="Categorias" />
-      </SelectTrigger>
-      <SelectContent>
-        <SelectGroup>
-          <SelectItem value="all">Todas as categorias</SelectItem>
-          {data?.map((category) => (
-            <SelectItem key={category.summary} value={category.summary.toString()}>
-              {category.summary}
-            </SelectItem>
-          ))}
-        </SelectGroup>
-      </SelectContent>
-    </Select>
+    <div className="hidden sm:block">
+      <Select
+        onValueChange={(value) => {
+          const filterValue = value === "all" ? undefined : value;
+          table.getColumn("category_summary")?.setFilterValue(filterValue);
+        }}
+      >
+        <SelectTrigger className="w-[180px] mr-3">
+          <SelectValue placeholder="Categorias" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectGroup>
+            <SelectItem value="all">Todas as categorias</SelectItem>
+            {data?.map((category) => (
+              <SelectItem key={category.summary} value={category.summary.toString()}>
+                {category.summary}
+              </SelectItem>
+            ))}
+          </SelectGroup>
+        </SelectContent>
+      </Select>
+    </div>
   );
 }
