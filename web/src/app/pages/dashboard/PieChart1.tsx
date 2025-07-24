@@ -60,9 +60,9 @@ function PieChart1({ month, year }: Props) {
     <Card className="col-span-6">
       <CardHeader className="items-center pb-0 flex flex-row justify-between">
         <CardTitle>Categorias</CardTitle>
-        <div className="hidden sm:flex">
+        <div className="">
           <Select>
-            <SelectTrigger className="w-[180px]">
+            <SelectTrigger className="w-[120px] h-8 text-sm px-2">
               <SelectValue placeholder="Despesas" />
             </SelectTrigger>
             <SelectContent>

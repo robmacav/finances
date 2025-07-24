@@ -6,7 +6,14 @@ import {
   CardTitle,
 } from "../../../components/ui/card"
 
-// import { Overview } from "../dashboard/Overview"
+import {
+  Select,
+  SelectContent,
+  SelectGroup,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select"
 
 import { useIncomesExpensesAvailableByMonthYear } from '../../../hooks/utils/dashboard/useIncomesExpensesAvailableByMonthYear';
 import { Overview2 } from "./Overview2";
@@ -74,8 +81,22 @@ function TabsContentPage({ month, year }: Props) {
               </div>
               <div className="grid md:grid-cols-2 lg:grid-cols-12 gap-4">
                 <Card className="col-span-6">
-                  <CardHeader>
+                  <CardHeader className="items-center pb-0 flex flex-row justify-between">
                     <CardTitle>Overview</CardTitle>
+                    <div className="">
+                      <Select>
+                        <SelectTrigger className="w-[120px] h-8 text-sm px-2">
+                          <SelectValue placeholder="Anual" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectGroup>
+                            <SelectItem value="semanal">Semanal</SelectItem>
+                            <SelectItem value="mensal">Mensal</SelectItem>
+                            <SelectItem value="anual">Anual</SelectItem>
+                          </SelectGroup>
+                        </SelectContent>
+                      </Select>
+                    </div>
                   </CardHeader>
                   <CardContent className="pl-2">
                     <Overview2 />
