@@ -32,12 +32,12 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 type Expense = {
   summary: string;
   value: string;
-  day: string;
+  date: string;
 };
 
 export default function ExpenseForm() {
   const [expenses, setExpenses] = useState<Expense[]>([
-    { summary: "", value: "", day: "" },
+    { summary: "", value: "", date: "" },
   ]);
 
   const handleChange = (index: number, field: keyof Expense, value: string) => {
@@ -47,7 +47,7 @@ export default function ExpenseForm() {
   };
 
   const handleAdd = () => {
-    setExpenses([...expenses, { summary: "", value: "", day: "" }]);
+    setExpenses([...expenses, { summary: "", value: "", date: "" }]);
   };
 
   const handleRemove = (index: number) => {
@@ -60,8 +60,8 @@ export default function ExpenseForm() {
       {expenses.map((expense, index) => (
         <div key={index} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 items-end">
           <div className="grid gap-3">
-            <label htmlFor={`summary-${index}`}>Descrição</label>
-            <input
+            <Label htmlFor={`summary-${index}`}>Descrição</Label>
+            <Input
               id={`summary-${index}`}
               name={`summary-${index}`}
               value={expense.summary}
@@ -70,8 +70,8 @@ export default function ExpenseForm() {
             />
           </div>
           <div className="grid gap-3">
-            <label htmlFor={`value-${index}`}>Valor</label>
-            <input
+            <Label htmlFor={`value-${index}`}>Valor</Label>
+            <Input
               id={`value-${index}`}
               name={`value-${index}`}
               value={expense.value}
@@ -80,18 +80,18 @@ export default function ExpenseForm() {
             />
           </div>
           <div className="grid gap-3">
-            <label htmlFor={`day-${index}`}>Dia</label>
-            <input
-              id={`day-${index}`}
-              name={`day-${index}`}
-              value={expense.day}
-              onChange={(e) => handleChange(index, "day", e.target.value)}
+            <Label htmlFor={`date-${index}`}>Data</Label>
+            <Input
+              id={`date-${index}`}
+              name={`date-${index}`}
+              value={expense.date}
+              onChange={(e) => handleChange(index, "date", e.target.value)}
               className="border p-2 rounded"
             />
           </div>
         <Button
           type="button"
-          variant="ghost"
+          variant="outline"
           className="text-red-500"
           onClick={() => handleRemove(index)}
         >
@@ -100,13 +100,13 @@ export default function ExpenseForm() {
         </div>
       ))}
 
-      <button
-        type="button"
+      <Button
+        variant="outline"
         onClick={handleAdd}
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
       >
+        <Plus className="" />
         Adicionar despesa
-      </button>
+      </Button>
     </div>
   );
 }
