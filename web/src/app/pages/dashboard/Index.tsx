@@ -18,7 +18,7 @@ function Index() {
     }
     
     return (
-        <div className="mx-auto p-5 lg:p-10">
+        <div className="mx-auto p-5 sm:p-0 lg:px-10">
             <div className="">
                 <SiteHeader />
             

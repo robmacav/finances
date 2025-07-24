@@ -60,9 +60,9 @@ function PieChart1({ month, year }: Props) {
 
   function dados() {
     return (
-      <ul className="w-90">
+      <ul className="w-full">
         {chartData.map((item: { category: string; total: number; fill: string }, index: number) => (
-          <li key={index} className="border-b pb-3 mt-5">
+          <li key={index} className="border-b last:border-b-0 pb-3 mt-5">
             <div className="flex items-center justify-between gap-4">
               <div className="flex items-center min-w-[100px]">
                 <span

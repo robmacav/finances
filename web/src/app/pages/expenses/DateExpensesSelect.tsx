@@ -15,7 +15,7 @@ export function DateExpensesSelect({ month, year, changeMonth }: Props) {
       <Button variant="outline" onClick={() => changeMonth(-1)}>
         <ChevronLeft />
       </Button>
-      <Button variant="outline" className="hidden sm:flex">
+      <Button variant="outline" className="hidden">
         {new Date(year, month - 1)
           .toLocaleDateString('pt-BR', { month: 'long', year: 'numeric' })
           .replace(/^./, (str) => str.toUpperCase())}
