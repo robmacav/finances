@@ -30,6 +30,7 @@ class Expense < ApplicationRecord
         .where("date like '%#{month_year}'")
         .select("category_id, SUM(value) as total")
         .group("category_id")
+        .order("total desc")
         .joins(:category)
     }
 

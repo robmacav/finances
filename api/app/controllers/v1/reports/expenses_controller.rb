@@ -28,7 +28,7 @@ class V1::Reports::ExpensesController < ApplicationController
                     summary: expense.category.summary,
                     color: expense.category.color
                 },
-                total: expense.total.to_f 
+                total: format('%.2f', expense.total.to_f)
             }
         end
         

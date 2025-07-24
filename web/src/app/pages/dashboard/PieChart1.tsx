@@ -6,6 +6,7 @@ import { Pie, PieChart, ResponsiveContainer } from "recharts"
 import {
   Card,
   CardContent,
+  CardFooter,
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
@@ -27,6 +28,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Label } from "@/components/ui/label"
 
 type Props = {
   month: number;
@@ -55,6 +57,30 @@ function PieChart1({ month, year }: Props) {
 
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>Erro: {error}</p>;
+
+  function dados() {
+    return (
+      <ul className="w-90">
+        {chartData.map((item: { category: string; total: number; fill: string }, index: number) => (
+          <li key={index} className="border-b pb-3 mt-5">
+            <div className="flex items-center justify-between gap-4">
+              <div className="flex items-center min-w-[100px]">
+                <span
+                  className="inline-block w-4 h-4 rounded-full mr-2 flex-shrink-0"
+                  style={{ backgroundColor: item.fill }}
+                  aria-hidden="true"
+                ></span>
+                <Label className="text-muted-foreground whitespace-nowrap">{item.category}</Label>
+              </div>
+              <span className="text-right font-medium break-words max-w-sm text-foreground">
+                R$ {item.total}
+              </span>
+            </div>
+          </li>
+        ))}
+      </ul>
+    );
+  }
 
   return (
     <Card className="col-span-6">
@@ -92,6 +118,9 @@ function PieChart1({ month, year }: Props) {
           </ChartContainer>
         </ResponsiveContainer>
       </CardContent>
+      <CardFooter>
+        {dados()}
+      </CardFooter>
     </Card>
   )
 }
