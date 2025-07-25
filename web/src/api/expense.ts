@@ -1,3 +1,5 @@
+import { apiUrl } from "@/lib/api";
+
 import type { Expense } from '../../types/Expense';
 
 type FetchExpensesResponse = {
@@ -16,9 +18,9 @@ export async function fetchExpenses(month_year: string): Promise<FetchExpensesRe
     let url: string;
 
     if (month_year?.trim()) {
-      url = `http://localhost:3000/v1/reports/expenses/all-by-month-year?month_year=${encodeURIComponent(month_year)}&page=${currentPage}`;
+      url = `${apiUrl}/reports/expenses/all-by-month-year?month_year=${encodeURIComponent(month_year)}&page=${currentPage}`;
     } else {
-      url = `http://localhost:3000/v1/expenses?page=${currentPage}`;
+      url = `${apiUrl}/expenses?page=${currentPage}`;
     }
 
     const res = await fetch(url);
@@ -49,7 +51,7 @@ export async function fetchExpenses(month_year: string): Promise<FetchExpensesRe
 }
 
 export async function deleteExpense(id: string) { 
-  const res = await fetch(`http://localhost:3000/v1/expenses/${id}`, {
+  const res = await fetch(`${apiUrl}/v1/expenses/${id}`, {
     method: 'DELETE',
   });
 

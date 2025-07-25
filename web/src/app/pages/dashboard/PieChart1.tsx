@@ -1,6 +1,6 @@
 "use client"
 
-import { TrendingUp } from "lucide-react"
+import { Label } from "@/components/ui/label"
 import { Pie, PieChart, ResponsiveContainer } from "recharts"
 
 import {
@@ -10,15 +10,12 @@ import {
   CardHeader,
   CardTitle,
 } from '@/components/ui/card'
+
 import {
-  type ChartConfig,
   ChartContainer,
-  ChartLegend,
-  ChartLegendContent,
   ChartTooltip,
-  ChartTooltipContent,
+  ChartTooltipContent
 } from '@/components/ui/chart'
-import { useAllByMonthYearByCategories } from "@/hooks/reports/expenses/useAllByMonthYearByCategories"
 
 import {
   Select,
@@ -28,7 +25,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Label } from "@/components/ui/label"
+
+import { useAllByMonthYearByCategories } from "@/hooks/reports/expenses/useAllByMonthYearByCategories"
 
 type Props = {
   month: number;

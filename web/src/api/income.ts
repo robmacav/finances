@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import type { Income } from '../../types/Income';
 
 type FetchIncomesResponse = {
@@ -16,9 +17,9 @@ export async function fetchIncomes(month_year: string): Promise<FetchIncomesResp
     let url: string;
 
     if (month_year?.trim()) {
-      url = `http://localhost:3000/v1/reports/incomes/all-by-month-year?month_year=${encodeURIComponent(month_year)}&page=${currentPage}`;
+      url = `${apiUrl}/reports/incomes/all-by-month-year?month_year=${encodeURIComponent(month_year)}&page=${currentPage}`;
     } else {
-      url = `http://localhost:3000/v1/incomes?page=${currentPage}`;
+      url = `${apiUrl}/incomes?page=${currentPage}`;
     }
 
     const res = await fetch(url);

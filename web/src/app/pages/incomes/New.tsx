@@ -27,6 +27,8 @@ import { CalendarIcon, Plus } from "lucide-react"
 
 import { toast } from "sonner"
 
+import { apiUrl } from "@/lib/api";
+
 function formatDate(date: Date | undefined) {
   if (!date) {
     return ""
@@ -105,7 +107,7 @@ export function New() {
             }
 
             try {
-              const response = await fetch("http://localhost:3000/v1/incomes", {
+              const response = await fetch("${apiUrl}/v1/incomes", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

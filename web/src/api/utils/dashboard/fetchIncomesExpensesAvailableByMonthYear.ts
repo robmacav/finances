@@ -1,8 +1,9 @@
+import { apiUrl } from "@/lib/api";
 import { type IncomesExpensesData } from '../../../hooks/utils/dashboard/useIncomesExpensesAvailableByMonthYear';
 
 export async function fetchIncomesExpensesAvailableByMonthYear(monthYear: string): Promise<IncomesExpensesData> {
   const response = await fetch(
-    `http://localhost:3000/v1/utils/dashboard/incomes-expenses-available-by-month-year?month_year=${monthYear}`
+    `${apiUrl}/utils/dashboard/incomes-expenses-available-by-month-year?month_year=${monthYear}`
   );
 
   if (!response.ok) {

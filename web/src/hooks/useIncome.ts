@@ -19,14 +19,17 @@ const BACKGROUND_REFRESH_MS = 1000 * 60; // 30 segundos
 
 function loadCache(): Record<string, CacheEntry> {
   if (typeof window === "undefined") return {};
+
   try {
     const cacheString = localStorage.getItem(CACHE_KEY);
-    if (!cacheString) return {};
+    if (!cacheString || cacheString.trim() === "") return {};
     return JSON.parse(cacheString);
-  } catch {
+  } catch (error) {
+    console.warn("Erro ao carregar cache do localStorage:", error);
     return {};
   }
 }
+
 
 function saveCache(cache: Record<string, CacheEntry>) {
   if (typeof window === "undefined") return;

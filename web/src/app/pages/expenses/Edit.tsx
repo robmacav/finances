@@ -30,6 +30,8 @@ import { useStatus } from "@/hooks/useStatus"
 
 import { type Expense } from "../../../../types/Expense"
 
+import { apiUrl } from "@/lib/api";
+
 type NewProps = {
   onExpenseEdited: () => void;
   initialExpense?: Expense | null;
@@ -113,7 +115,7 @@ export function Edit({ onExpenseEdited }: NewProps) {
             }
 
             try {
-              const response = await fetch("http://localhost:3000/v1/expenses", {
+              const response = await fetch("${apiUrl}/v1/expenses", {
                 method: "POST",
                 headers: {
                   "Content-Type": "application/json",

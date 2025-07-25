@@ -1,6 +1,6 @@
-FROM ruby:3.1.0-slim
+FROM ruby:3.4.2-slim
 
-RUN apt update -qq && apt install -y build-essential libpq-dev nodejs
+RUN apt update -qq && apt install -y build-essential libpq-dev libyaml-dev nodejs
 
 WORKDIR /app
 
@@ -8,7 +8,7 @@ COPY Gemfile Gemfile.lock .
 
 RUN gem install bundler:2.5.23
 
-RUN bundle install --without development
+RUN bundle install
 
 # COPY entrypoint.sh /usr/bin/
 
@@ -16,8 +16,8 @@ RUN bundle install --without development
 
 # ENTRYPOINT ["entrypoint.sh"]
 
-EXPOSE 3000
-
 ENV RAILS_ENV=production
+
+EXPOSE 3000
 
 CMD ["rails", "server", "-b", "0.0.0.0"]

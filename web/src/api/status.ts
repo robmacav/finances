@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import type { Status } from '../../types/Status';
 
 type FetchstatusesResponse = {
@@ -13,7 +14,7 @@ export async function fetchStatuses(): Promise<FetchstatusesResponse> {
   const allStatuses: Status[] = [];
 
   do {
-    const res = await fetch(`http://localhost:3000/v1/status?page=${currentPage}`);
+    const res = await fetch(`${apiUrl}/status?page=${currentPage}`);
 
     if (!res.ok) {
       throw new Error(`Erro ao buscar página ${currentPage}`);

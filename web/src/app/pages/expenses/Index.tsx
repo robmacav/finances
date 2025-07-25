@@ -59,6 +59,8 @@ import {
   AlertDialogAction,
 } from "@/components/ui/alert-dialog"
 
+import { apiUrl } from "@/lib/api";
+
 export function getColumns({
   openDeleteDialog,
   openViewDialog,
@@ -210,7 +212,7 @@ function Expenses({ month, year }: Props) {
     if (!deletingExpenseId) return;
 
     try {
-      const response = await fetch(`http://localhost:3000/v1/expenses/${deletingExpenseId}`, {
+      const response = await fetch(`${apiUrl}/v1/expenses/${deletingExpenseId}`, {
         method: "DELETE",
       });
 

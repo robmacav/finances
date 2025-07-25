@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import type { MonthAvailables } from '../../../../types/utils/expenses/MonthAvailables';
 
 type FetchCategoriesResponse = {
@@ -13,7 +14,7 @@ export async function fetchUtilsExpensesMonthAvailables(): Promise<FetchCategori
   const allMonths: MonthAvailables[] = [];
 
   do {
-    const res = await fetch(`http://localhost:3000/v1/utils/expenses/categories?page=${currentPage}`);
+    const res = await fetch(`${apiUrl}/v1/utils/expenses/categories?page=${currentPage}`);
 
     if (!res.ok) {
       throw new Error(`Erro ao buscar página ${currentPage}`);

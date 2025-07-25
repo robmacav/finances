@@ -23,11 +23,82 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { CalendarIcon, Plus } from "lucide-react"
+import { CalendarIcon, Plus, Trash } from "lucide-react"
 
 import { toast } from "sonner"
 import { useStatus } from "@/hooks/useStatus"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+
+import { apiUrl } from "@/lib/api";
+
+function isValidDate(date: Date | undefined) {
+  if (!date) return false
+  return !isNaN(date.getTime())
+}
+
+function formatMonthYear(date: Date | undefined): string {
+  if (!date) return ""
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const year = date.getFullYear()
+  return `${month}/${year}`
+}
+
+export function MonthYearPickerOnly() {
+  const [open, setOpen] = useState(false)
+  const [date, setDate] = useState<Date | undefined>(new Date())
+  const [value, setValue] = useState(formatMonthYear(date))
+
+  return (
+    <div className="grid gap-3">
+      <Label htmlFor="month-year">Mês e Ano</Label>
+      <div className="flex flex-col gap-3">
+        <div className="relative flex gap-2">
+          <Input
+            id="month-year"
+            name="month_year"
+            value={value}
+            placeholder="07/2025"
+            className="bg-background pr-10"
+            readOnly
+          />
+          <Popover open={open} onOpenChange={setOpen}>
+            <PopoverTrigger asChild>
+              <Button
+                variant="ghost"
+                className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+              >
+                <CalendarIcon className="size-3.5" />
+                <span className="sr-only">Selecionar mês e ano</span>
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent
+              className="w-auto overflow-hidden p-0"
+              align="end"
+              alignOffset={-8}
+              sideOffset={10}
+            >
+              <Calendar
+                mode="single"
+                selected={date}
+                onMonthChange={(newDate) => {
+                  setDate(newDate)
+                  setValue(formatMonthYear(newDate))
+                  setOpen(false)
+                }}
+                captionLayout="dropdown"
+                fromYear={2020}
+                toYear={2030}
+                // ⚠️ Bloqueia seleção de dias
+                modifiers={{ disabled: () => true }}
+                showOutsideDays={false}
+              />
+            </PopoverContent>
+          </Popover>
+        </div>
+      </div>
+    </div>
+  )
+}
 
 type Expense = {
   summary: string;
@@ -35,19 +106,16 @@ type Expense = {
   date: string;
 };
 
-export default function ExpenseForm() {
-  const [expenses, setExpenses] = useState<Expense[]>([
-    { summary: "", value: "", date: "" },
-  ]);
+type ExpenseFormProps = {
+  expenses: Expense[];
+  setExpenses: React.Dispatch<React.SetStateAction<Expense[]>>;
+};
 
+function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
   const handleChange = (index: number, field: keyof Expense, value: string) => {
     const updated = [...expenses];
     updated[index][field] = value;
     setExpenses(updated);
-  };
-
-  const handleAdd = () => {
-    setExpenses([...expenses, { summary: "", value: "", date: "" }]);
   };
 
   const handleRemove = (index: number) => {
@@ -55,10 +123,15 @@ export default function ExpenseForm() {
     setExpenses(updated);
   };
 
+  const { data: categoryData } = useCategory();
+
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
+
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 overflow-y-auto p-2">
+      < MonthYearPickerOnly />
       {expenses.map((expense, index) => (
-        <div key={index} className="grid grid-cols-[2fr_1fr_1fr_auto] gap-4 items-end">
+        <div key={index} className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 items-end">
           <div className="grid gap-3">
             <Label htmlFor={`summary-${index}`}>Descrição</Label>
             <Input
@@ -66,7 +139,6 @@ export default function ExpenseForm() {
               name={`summary-${index}`}
               value={expense.summary}
               onChange={(e) => handleChange(index, "summary", e.target.value)}
-              className="border p-2 rounded"
             />
           </div>
           <div className="grid gap-3">
@@ -76,7 +148,6 @@ export default function ExpenseForm() {
               name={`value-${index}`}
               value={expense.value}
               onChange={(e) => handleChange(index, "value", e.target.value)}
-              className="border p-2 rounded"
             />
           </div>
           <div className="grid gap-3">
@@ -86,31 +157,39 @@ export default function ExpenseForm() {
               name={`date-${index}`}
               value={expense.date}
               onChange={(e) => handleChange(index, "date", e.target.value)}
-              className="border p-2 rounded"
             />
           </div>
-        <Button
-          type="button"
-          variant="outline"
-          className="text-red-500"
-          onClick={() => handleRemove(index)}
-        >
-          Remover
-        </Button>
+          <div className="grid gap-3">
+            <Label>Categoria</Label>
+            <Select name="category_id" value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione uma categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Categorias</SelectLabel>
+                  {(categoryData ?? []).map((category) => (
+                    <SelectItem key={category.id} value={category.id.toString()}>
+                      {category.summary}
+                    </SelectItem>
+                  ))}
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+          <Button
+            type="button"
+            variant="outline"
+            className="text-red-500"
+            onClick={() => handleRemove(index)}
+          >
+            < Trash />
+          </Button>
         </div>
       ))}
-
-      <Button
-        variant="outline"
-        onClick={handleAdd}
-      >
-        <Plus className="" />
-        Adicionar despesa
-      </Button>
     </div>
   );
 }
-
 
 type NewProps = {
   onExpenseCreated: () => void;
@@ -128,13 +207,6 @@ function formatDate(date: Date | undefined) {
   })
 }
 
-function isValidDate(date: Date | undefined) {
-  if (!date) {
-    return false
-  }
-  return !isNaN(date.getTime())
-}
-
 function formatToDDMMYYYY(dateStr: string | null): string {
   if (!dateStr) return ""
 
@@ -149,8 +221,8 @@ function formatToDDMMYYYY(dateStr: string | null): string {
 }
 
 export function New({ onExpenseCreated }: NewProps) {
-  const { data: categoryData, loading: categoryLoading, error: categoryError } = useCategory();
-   const { data: statusData, loading: statusLoading, error: statusError } = useStatus();
+  const { data: categoryData } = useCategory();
+  const { data: statusData } = useStatus();
 
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
 
@@ -163,6 +235,12 @@ export function New({ onExpenseCreated }: NewProps) {
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
 
+  const [expenses, setExpenses] = useState<Expense[]>([
+    { summary: "", value: "", date: "" }
+  ]);
+
+  const [tab, setTab] = useState("expenses");
+
   return (
     <Dialog>
       <DialogTrigger asChild>
@@ -170,22 +248,33 @@ export function New({ onExpenseCreated }: NewProps) {
           <span className="hidden sm:inline">Cadastrar</span><Plus className="" />
         </Button>
       </DialogTrigger>
-      <DialogContent className="md:min-w-3xl xl:min-w-6xl max-h-[90vh] overflow-y-auto">
+      <DialogContent className="md:min-w-3xl xl:min-w-6xl h-[90vh] flex flex-col">
         <DialogHeader>
           <DialogTitle>Cadastro de Despesas</DialogTitle>
           <DialogDescription>
             Preencha os campos abaixo para cadastrar uma nova despesa.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="expenses" className="">
-          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-5 gap-4">
-          <h3 className="text-2xl font-bold tracking-tight"></h3>
-          <TabsList>
-              <TabsTrigger value="unico">Único</TabsTrigger>
-              <TabsTrigger value="lote">Lote</TabsTrigger>
-          </TabsList>
+        <Tabs defaultValue="expenses" value={tab} onValueChange={setTab} className="flex-1 flex flex-col overflow-hidden">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between my-5 gap-4">
+            <TabsList>
+                <TabsTrigger value="unico">Único</TabsTrigger>
+                <TabsTrigger value="lote">Lote</TabsTrigger>
+            </TabsList>
+          {tab === "lote" && (
+            <Button
+              variant="outline"
+              onClick={() =>
+                setExpenses([...expenses, { summary: "", value: "", date: "" }])
+              }
+            >
+              <Plus className="mr-2" />
+              Adicionar despesa
+            </Button>
+          )}
+          
           </div>
-          <TabsContent value="unico">
+          <TabsContent value="unico" className="flex-1 overflow-y-auto p-2">
             <form
               onSubmit={async (e) => {
                 e.preventDefault()
@@ -204,7 +293,7 @@ export function New({ onExpenseCreated }: NewProps) {
                 }
 
                 try {
-                  const response = await fetch("http://localhost:3000/v1/expenses", {
+                  const response = await fetch(`${apiUrl}/v1/expenses`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
@@ -220,7 +309,6 @@ export function New({ onExpenseCreated }: NewProps) {
                     form.reset()
                   } else {
                     const contentType = response.headers.get("Content-Type")
-                    let errorMessage = "Erro desconhecido"
 
                     if (contentType?.includes("application/json")) {
                       const errorData = await response.json()
@@ -344,13 +432,13 @@ export function New({ onExpenseCreated }: NewProps) {
                 </div>
                 <div className="grid gap-3">
                   <Label >Descrição</Label>
-                  <Textarea id="details" name="details" defaultValue="" rows={10}  />
+                  <Textarea id="details" name="details" defaultValue="" rows={5}  />
                 </div>
               </div>
             </form>
           </TabsContent>
-          <TabsContent value="lote">
-            {ExpenseForm()}
+          <TabsContent value="lote" className="flex-1 overflow-y-auto">
+            <ExpenseForm expenses={expenses} setExpenses={setExpenses} />
           </TabsContent>
         </Tabs>
         <DialogFooter className="mt-4">

@@ -1,3 +1,4 @@
+import { apiUrl } from "@/lib/api";
 import type { Category } from '../../types/Category';
 
 type FetchCategoriesResponse = {
@@ -13,7 +14,7 @@ export async function fetchCategories(): Promise<FetchCategoriesResponse> {
   const allCategories: Category[] = [];
 
   do {
-    const res = await fetch(`http://localhost:3000/v1/categories?page=${currentPage}`);
+    const res = await fetch(`${apiUrl}/categories?page=${currentPage}`);
 
     if (!res.ok) {
       throw new Error(`Erro ao buscar página ${currentPage}`);
