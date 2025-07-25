@@ -246,32 +246,41 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
             ))}
           </TableHeader>
           <TableBody>
-            {table.getRowModel().rows?.length ? (
-              table.getRowModel().rows.map((row) => (
-                <TableRow
-                  key={row.id}
-                  data-state={row.getIsSelected() && "selected"}
-                >
-                  {row.getVisibleCells().map((cell) => (
-                    <TableCell key={cell.id}>
-                      {flexRender(
-                        cell.column.columnDef.cell,
-                        cell.getContext()
-                      )}
-                    </TableCell>
+            {(() => {
+              const rows = table.getRowModel().rows;
+              const minRows = 10;
+              const emptyRows = Array.from({ length: Math.max(minRows - rows.length, 0) });
+
+              return (
+                <>
+                  {rows.map((row) => (
+                    <TableRow
+                      key={row.id}
+                      data-state={row.getIsSelected() && "selected"}
+                    >
+                      {row.getVisibleCells().map((cell) => (
+                        <TableCell key={cell.id}>
+                          {flexRender(
+                            cell.column.columnDef.cell,
+                            cell.getContext()
+                          )}
+                        </TableCell>
+                      ))}
+                    </TableRow>
                   ))}
-                </TableRow>
-              ))
-            ) : (
-              <TableRow>
-                <TableCell
-                  colSpan={columns.length}
-                  className="h-24 text-center"
-                >
-                  No results.
-                </TableCell>
-              </TableRow>
-            )}
+
+                  {emptyRows.map((_, idx) => (
+                    <TableRow key={`empty-${idx}`}>
+                      {table.getVisibleLeafColumns().map((column) => (
+                        <TableCell key={column.id} className="h-12">
+                          {/* espaço vazio */}
+                        </TableCell>
+                      ))}
+                    </TableRow>
+                  ))}
+                </>
+              );
+            })()}
           </TableBody>
         </Table>
       </div>

@@ -104,6 +104,7 @@ type Expense = {
   summary: string;
   value: string;
   date: string;
+  category_id?: string;
 };
 
 type ExpenseFormProps = {
@@ -125,7 +126,6 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
 
   const { data: categoryData } = useCategory();
 
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
 
   return (
     <div className="space-y-6 overflow-y-auto p-2">
@@ -139,6 +139,7 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
               name={`summary-${index}`}
               value={expense.summary}
               onChange={(e) => handleChange(index, "summary", e.target.value)}
+              placeholder="Amazon"
             />
           </div>
           <div className="grid gap-3">
@@ -148,20 +149,26 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
               name={`value-${index}`}
               value={expense.value}
               onChange={(e) => handleChange(index, "value", e.target.value)}
+              placeholder="85.75"
             />
           </div>
           <div className="grid gap-3">
-            <Label htmlFor={`date-${index}`}>Data</Label>
+            <Label htmlFor={`date-${index}`}>Dia</Label>
             <Input
               id={`date-${index}`}
               name={`date-${index}`}
               value={expense.date}
               onChange={(e) => handleChange(index, "date", e.target.value)}
+              placeholder="07"
             />
           </div>
           <div className="grid gap-3">
             <Label>Categoria</Label>
-            <Select name="category_id" value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select
+              name="category_id"
+              value={expense.category_id ?? ""}
+              onValueChange={(value) => handleChange(index, "category_id", value)}
+            >
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
@@ -176,6 +183,7 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
                 </SelectGroup>
               </SelectContent>
             </Select>
+
           </div>
           <Button
             type="button"
@@ -236,7 +244,7 @@ export function New({ onExpenseCreated }: NewProps) {
   const [value, setValue] = React.useState(formatDate(date))
 
   const [expenses, setExpenses] = useState<Expense[]>([
-    { summary: "", value: "", date: "" }
+    { summary: "", value: "", date: "", category_id: undefined }
   ]);
 
   const [tab, setTab] = useState("expenses");
