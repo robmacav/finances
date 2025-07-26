@@ -1,40 +1,24 @@
 import { LayoutGrid } from "lucide-react";
 import { ModeToggle } from "@/components/mode-toggle";
 import { siteConfig } from "@/config/site";
+import { ProfileDropdown } from "./dashboard/ProfileDropdown";
+import { ThemeSwitch } from "./dashboard/ThemeSwitch";
 
 export function SiteHeader() {
   return (
 <header className="sticky top-0 z-50 w-full border-border/40 border-b bg-background/95 backdrop-blur-sm supports-backdrop-filter:bg-background/60">
-  <div className="container flex h-14 items-center">
+  <div className="flex justify-between h-14 items-center w-full">
     <div className="flex items-center space-x-6">
       <a href="/" className="flex items-center space-x-2">
         <LayoutGrid className="size-4" aria-hidden="true" />
         <span className="font-bold">{siteConfig.name}</span>
       </a>
-      <a
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-foreground/60 transition-colors hover:text-foreground hidden md:flex"
-      >
-        Dashboard
-      </a>
-      <a
-        href="#"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="text-foreground/60 transition-colors hover:text-foreground hidden md:flex"
-      >
-        Transações
-      </a>
     </div>
 
-    {/* Spacer para empurrar o toggle pra direita */}
-    <div className="flex-1" />
-
-    {/* Direita: toggle */}
-    <div className="flex items-center">
-      <ModeToggle />
+    <div className="ml-auto flex items-center gap-4">
+      {/* < ModeToggle /> */}
+      < ThemeSwitch />
+      < ProfileDropdown />
     </div>
   </div>
 </header>

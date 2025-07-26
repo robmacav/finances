@@ -31,6 +31,7 @@
     "@radix-ui/react-tooltip": "^1.2.7",
     "@tabler/icons-react": "^3.34.0",
     "@tailwindcss/vite": "^4.1.8",
+    "@tanstack/react-router": "^1.129.8",
     "@tanstack/react-table": "^8.21.3",
     "Pie": "link:recharts/types/polar/Pie",
     "app": "link:nuqs/adapters/next/app",
@@ -47,6 +48,7 @@
     "sonner": "^2.0.6",
     "tailwind-merge": "^3.3.0",
     "tailwindcss": "^4.1.8",
+    "theme-context": "link:@/context/theme-context",
     "vaul": "^1.1.2",
     "zod": "^3.25.75"
   },
