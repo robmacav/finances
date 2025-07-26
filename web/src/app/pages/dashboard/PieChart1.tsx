@@ -56,29 +56,43 @@ function PieChart1({ month, year }: Props) {
   if (loading) return <p>Carregando...</p>;
   if (error) return <p>Erro: {error}</p>;
 
-  function dados() {
-    return (
-      <ul className="w-full">
-        {chartData.map((item: { category: string; total: number; fill: string }, index: number) => (
-          <li key={index} className="border-b last:border-b-0 pb-3 mt-5">
-            <div className="flex items-center justify-between gap-4">
-              <div className="flex items-center min-w-[100px]">
-                <span
-                  className="inline-block w-4 h-4 rounded-full mr-2 flex-shrink-0"
-                  style={{ backgroundColor: item.fill }}
-                  aria-hidden="true"
-                ></span>
-                <Label className="text-muted-foreground whitespace-nowrap">{item.category}</Label>
+function dados() {
+  return (
+    <div className="w-full sm:max-h-[300px] sm:overflow-y-auto">
+      <ul className="w-full p-5">
+        {chartData.map(
+          (
+            item: { category: string; total: number; fill: string },
+            index: number
+          ) => (
+            <li
+              key={index}
+              className="border-b last:border-b-0 pb-3 mt-5"
+            >
+              <div className="flex items-center justify-between gap-4">
+                <div className="flex items-center min-w-[100px]">
+                  <span
+                    className="inline-block w-4 h-4 rounded-full mr-2 flex-shrink-0"
+                    style={{ backgroundColor: item.fill }}
+                    aria-hidden="true"
+                  ></span>
+                  <Label className="text-muted-foreground whitespace-nowrap">
+                    {item.category}
+                  </Label>
+                </div>
+                <span className="text-right font-medium break-words max-w-sm text-foreground">
+                  R$ {item.total}
+                </span>
               </div>
-              <span className="text-right font-medium break-words max-w-sm text-foreground">
-                R$ {item.total}
-              </span>
-            </div>
-          </li>
-        ))}
+            </li>
+          )
+        )}
       </ul>
-    );
-  }
+    </div>
+  );
+}
+
+
 
   return (
     <Card className="col-span-6">

@@ -259,9 +259,6 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
     onRowSelectionChange: setRowSelection
   })
 
-  if (expensesLoading) return <p>Carregando...</p>;
-  if (expensesError) return <p>Erro: {expensesError}</p>;
-
   const TableColumnLabels: Record<string, string> = {
     summary: "Descrição",
     value: "Valor",
@@ -342,7 +339,9 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
           </TableHeader>
           <TableBody>
             {(() => {
-              const rows = table.getRowModel().rows;
+              const showSkeletons = expensesLoading || !!expensesError;
+              const rows = showSkeletons ? [] : table.getRowModel().rows;
+
               const minRows = 10;
               const emptyRows = Array.from({ length: Math.max(minRows - rows.length, 0) });
 
@@ -368,7 +367,9 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
                     <TableRow key={`empty-${idx}`}>
                       {table.getVisibleLeafColumns().map((column) => (
                         <TableCell key={column.id} className="h-12">
-                          {/* espaço vazio */}
+                          {showSkeletons ? (
+                            <div className="h-4 w-full bg-muted rounded animate-pulse" />
+                          ) : null}
                         </TableCell>
                       ))}
                     </TableRow>

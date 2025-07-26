@@ -12,12 +12,20 @@ export function SiteHeader() {
         <span className="font-bold">{siteConfig.name}</span>
       </a>
       <a
-        href="https://diceui.com/docs/components/data-table"
+        href="#"
         target="_blank"
         rel="noopener noreferrer"
         className="text-foreground/60 transition-colors hover:text-foreground hidden md:flex"
       >
-        Docs
+        Dashboard
+      </a>
+      <a
+        href="#"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="text-foreground/60 transition-colors hover:text-foreground hidden md:flex"
+      >
+        Transações
       </a>
     </div>
 

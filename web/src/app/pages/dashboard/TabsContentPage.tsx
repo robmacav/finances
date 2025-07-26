@@ -35,75 +35,79 @@ function TabsContentPage({ month, year }: Props) {
     return (
       <section>
         <div className="grid gap-4 md:grid-cols-1 lg:grid-cols-3 my-4">
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Disponível
-                    </CardTitle>
-                    <CircleDollarSign />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{data?.available}</div>
-                    <p className="text-xs text-muted-foreground">
-                     +18% em relação ao mês passado
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Receitas
-                    </CardTitle>
-                    <TrendingUp className="inline mr-2" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{data?.incomes}</div>
-                    <p className="text-xs text-muted-foreground">
-                      +20.1% em relação ao mês passado
-                    </p>
-                  </CardContent>
-                </Card>
-                <Card>
-                  <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                    <CardTitle className="text-sm font-medium">
-                      Despesas
-                    </CardTitle>
-                    <TrendingDown className="inline mr-2" />
-                  </CardHeader>
-                  <CardContent>
-                    <div className="text-2xl font-bold">{data?.expenses}</div>
-                    <p className="text-xs text-muted-foreground">
-                      -20.1% em relação ao mês passado
-                    </p>
-                  </CardContent>
-                </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Disponível
+              </CardTitle>
+              <CircleDollarSign />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{data?.available}</div>
+              <p className="text-xs text-muted-foreground">
+                +18% em relação ao mês passado
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Receitas
+              </CardTitle>
+              <TrendingUp className="inline mr-2" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{data?.incomes}</div>
+              <p className="text-xs text-muted-foreground">
+                +20.1% em relação ao mês passado
+              </p>
+            </CardContent>
+          </Card>
+          <Card>
+            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+              <CardTitle className="text-sm font-medium">
+                Despesas
+              </CardTitle>
+              <TrendingDown className="inline mr-2" />
+            </CardHeader>
+            <CardContent>
+              <div className="text-2xl font-bold">{data?.expenses}</div>
+              <p className="text-xs text-muted-foreground">
+                -20.1% em relação ao mês passado
+              </p>
+            </CardContent>
+          </Card>
+        </div>
+<div className="grid md:grid-cols-2 lg:grid-cols-12 gap-4 items-stretch">
+  <Card className="col-span-6 h-full">
+    <CardHeader className="items-center pb-0 flex flex-row justify-between">
+      <CardTitle>Overview</CardTitle>
+      <div>
+        <Select>
+          <SelectTrigger className="w-[120px] h-8 text-sm px-2">
+            <SelectValue placeholder="Anual" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectGroup>
+              <SelectItem value="semanal">Semanal</SelectItem>
+              <SelectItem value="mensal">Mensal</SelectItem>
+              <SelectItem value="anual">Anual</SelectItem>
+            </SelectGroup>
+          </SelectContent>
+        </Select>
+      </div>
+    </CardHeader>
 
-              </div>
-              <div className="grid md:grid-cols-2 lg:grid-cols-12 gap-4">
-                <Card className="col-span-6">
-                  <CardHeader className="items-center pb-0 flex flex-row justify-between">
-                    <CardTitle>Overview</CardTitle>
-                    <div className="">
-                      <Select>
-                        <SelectTrigger className="w-[120px] h-8 text-sm px-2">
-                          <SelectValue placeholder="Anual" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectGroup>
-                            <SelectItem value="semanal">Semanal</SelectItem>
-                            <SelectItem value="mensal">Mensal</SelectItem>
-                            <SelectItem value="anual">Anual</SelectItem>
-                          </SelectGroup>
-                        </SelectContent>
-                      </Select>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pl-2">
-                    <Overview2 />
-                  </CardContent>
-                </Card>
-                < PieChart1 month={month} year={year} />
-              </div>
+    <CardContent className="pl-2 h-full">
+      <Overview2 />
+    </CardContent>
+  </Card>
+
+  <div className="col-span-6 h-full">
+    <PieChart1 month={month} year={year} />
+  </div>
+</div>
+
       </section>
     )
 }

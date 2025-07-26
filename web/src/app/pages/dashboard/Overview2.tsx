@@ -31,8 +31,8 @@ export function Overview2() {
   if (error) return <p>Erro: {error}</p>;
  
   return (
-    <ResponsiveContainer width="100%" height="850">
-      <ChartContainer config={chartConfig} className="mx-auto max-h-[850px] min-h-[850px]">
+    <ResponsiveContainer width="100%" height="100%">
+    <ChartContainer config={chartConfig} className="mx-auto h-full">
         <BarChart accessibilityLayer data={chartData ?? []}>
           <CartesianGrid vertical={false} />
           <YAxis
