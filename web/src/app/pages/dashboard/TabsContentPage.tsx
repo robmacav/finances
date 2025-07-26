@@ -78,36 +78,14 @@ function TabsContentPage({ month, year }: Props) {
             </CardContent>
           </Card>
         </div>
-<div className="grid md:grid-cols-2 lg:grid-cols-12 gap-4 items-stretch">
-  <Card className="col-span-6 h-full">
-    <CardHeader className="items-center pb-0 flex flex-row justify-between">
-      <CardTitle>Overview</CardTitle>
-      <div>
-        <Select>
-          <SelectTrigger className="w-[120px] h-8 text-sm px-2">
-            <SelectValue placeholder="Anual" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectGroup>
-              <SelectItem value="semanal">Semanal</SelectItem>
-              <SelectItem value="mensal">Mensal</SelectItem>
-              <SelectItem value="anual">Anual</SelectItem>
-            </SelectGroup>
-          </SelectContent>
-        </Select>
-      </div>
-    </CardHeader>
-
-    <CardContent className="pl-2 h-full">
-      <Overview2 />
-    </CardContent>
-  </Card>
-
-  <div className="col-span-6 h-full">
-    <PieChart1 month={month} year={year} />
-  </div>
-</div>
-
+        <div className="grid md:grid-cols-2 lg:grid-cols-12 gap-4 items-stretch">
+          <div className="col-span-6">
+            <Overview2 />
+          </div>
+          <div className="col-span-6">
+            <PieChart1 month={month} year={year} />
+          </div>
+        </div>
       </section>
     )
 }
