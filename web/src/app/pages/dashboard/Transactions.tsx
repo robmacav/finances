@@ -12,7 +12,7 @@ function Transactions({ month, year }: Props) {
     return (
         <Tabs defaultValue="expenses" className="">
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-5 gap-4">
-            <h3 className="text-2xl font-bold tracking-tight">TRANSAÇÕES</h3>
+            <h3 className="text-2xl font-bold tracking-tight"></h3>
             <TabsList>
                 <TabsTrigger value="expenses">Despesas</TabsTrigger>
                 <TabsTrigger value="incomes">Receitas</TabsTrigger>

@@ -18,6 +18,9 @@ import {
 import { useIncomesExpensesAvailableByMonthYear } from '../../../hooks/utils/dashboard/useIncomesExpensesAvailableByMonthYear';
 import { Overview2 } from "./Overview2";
 import PieChart1 from "./PieChart1";
+import { ChartBarDefault } from "./bar-chart";
+import { ChartBarHorizontal } from "./bar-chart-horizontal";
+import { ChartBarLabelCustom } from "./char-bar-custom-label";
 
 type Props = {
   month: number;
@@ -79,8 +82,10 @@ function TabsContentPage({ month, year }: Props) {
           </Card>
         </div>
         <div className="grid md:grid-cols-2 lg:grid-cols-12 gap-4 items-stretch">
-          <div className="col-span-6">
-            <Overview2 />
+          <div className="flex flex-col col-span-6 gap-4">
+            < ChartBarDefault title="Resumo Semanal de Despesas" subtitle="Monitoramento Diário das Despesas" /> {/* <Overview2 title="Despesas" /> */}
+            < ChartBarLabelCustom title="Gastos mais frequentes" subtitle="" /> {/* Overview2 title="Gastos mais recorrentes" /> */}
+            <Overview2 title="Fluxo Financeiro Anual" />
           </div>
           <div className="col-span-6">
             <PieChart1 month={month} year={year} />

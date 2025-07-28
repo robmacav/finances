@@ -38,7 +38,7 @@ function Index() {
                 <Tabs defaultValue="expenses" className="">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-5 gap-4">
                         <TabsList>
-                            <TabsTrigger value="expenses">Overview</TabsTrigger>
+                            <TabsTrigger value="expenses">Dashboard</TabsTrigger>
                             <TabsTrigger value="incomes">Transações</TabsTrigger>
                         </TabsList>
                     </div>

@@ -58,7 +58,7 @@ function PieChart1({ month, year }: Props) {
 
 function dados() {
   return (
-    <div className="w-full sm:max-h-[300px] sm:overflow-y-auto">
+    <div className="w-full">
       <ul className="w-full p-5">
         {chartData.map(
           (
@@ -95,7 +95,7 @@ function dados() {
 
 
   return (
-    <Card className="col-span-6">
+    <Card className="h-full">
       <CardHeader className="items-center pb-0 flex flex-row justify-between">
         <CardTitle>Categorias</CardTitle>
         <div className="">

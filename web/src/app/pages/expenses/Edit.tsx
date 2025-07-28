@@ -91,6 +91,8 @@ export function Edit({ onExpenseEdited, initialExpense, open, onOpenChange }: Ne
 
   const [month, setMonth] = React.useState<Date | undefined>(date)
 
+  console.log(date);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
