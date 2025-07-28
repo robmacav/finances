@@ -42,6 +42,24 @@ class Expense < ApplicationRecord
         .order(month_year: :asc)
     }
 
+    scope :all_current_week, -> {
+        start_date = Date.today.beginning_of_week(:monday)
+        end_date = Date.today.end_of_week(:sunday)
+
+        start_str = start_date.strftime("%d%m%Y")
+        end_str = end_date.strftime("%d%m%Y")
+
+        where(date: start_str..end_str)
+    }
+
+    scope :most_frequents_on_current_month, ->(month_year) {
+        unscoped
+        .where("date LIKE ?", "%#{month_year}")
+        .select("summary, COUNT(*) AS qtd, SUM(value) AS total")
+        .group(:summary)
+        .order("qtd DESC")
+    }
+
     def as_json(options = {})
         {
             id: id,

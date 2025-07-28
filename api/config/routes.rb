@@ -14,6 +14,8 @@ Rails.application.routes.draw do
         get "all-by-month-year", to: "expenses#all_by_month_year"
         get "all-by-month-year-by-category", to: "expenses#all_by_month_year_by_category"
         get 'current-year-total-months', to: 'expenses#current_year_total_months'
+        get 'all-current-week', to: 'expenses#all_current_week'
+        get 'most-frequents-by-month-year', to: 'expenses#most_frequents_by_month_year'
       end
 
       scope :incomes do

@@ -59,4 +59,12 @@ class V1::Reports::ExpensesController < ApplicationController
 
         render json: resultado
     end
+
+    def all_current_week
+        render json: Expense.all_current_week
+    end
+
+    def most_frequents_by_month_year
+        render json: Expense.most_frequents_on_current_month(params[:month_year]).map { |e| { summary: e.summary, qtd: e.qtd.to_i, total: e.total.to_f } }
+    end
 end
