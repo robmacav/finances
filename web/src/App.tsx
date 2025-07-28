@@ -1,24 +1,21 @@
-import { useState } from "react";
-
-import Incomes from "./app/pages/incomes/Index"
-import Expenses from "./app/pages/expenses/Index";
 import Dashboard from "./app/pages/dashboard/Index";
+
+import { Toaster } from "@/components/ui/sonner"
 
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 function App() {
-  const [month] = useState(new Date().getMonth() + 1);
-  const [year] = useState(new Date().getFullYear());
-
   return (
-    <Router>
-      <Routes>
-        <Route path="/" element={ < Dashboard />} />
-        
-        <Route path="/receitas" element={< Incomes month={month} year={year} />} />
-        <Route path="/despesas" element={< Expenses month={month} year={year} />} />
-      </Routes>
-    </Router>
+    <>
+      <Router>
+        <Routes>
+          <Route path="/" element={ < Dashboard />} />
+
+        </Routes>
+      </Router>
+
+      <Toaster />
+    </>
   )
 }
 

@@ -7,6 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { SiteHeader } from "../site-header";
 
 import Transactions from './Transactions';
+import { toast } from "sonner";
+import { Button } from "@/components/ui/button";
 
 function Index() {
     const [month, setMonth] = useState(new Date().getMonth() + 1); // 1 a 12
@@ -25,6 +27,20 @@ function Index() {
                 <section className="flex items-center justify-between mt-5">
                     <div>
                         <h3 className="text-2xl font-bold tracking-tight">DASHBOARD</h3>
+                            <Button
+      variant="outline"
+      onClick={() =>
+        toast("Event has been created", {
+          description: "Sunday, December 03, 2023 at 9:00 AM",
+          action: {
+            label: "Undo",
+            onClick: () => console.log("Undo"),
+          },
+        })
+      }
+    >
+      Show Toast
+    </Button>
                         <small>
                             {new Date(year, month - 1)
                                 .toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
