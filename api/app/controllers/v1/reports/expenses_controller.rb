@@ -1,3 +1,5 @@
+require 'ostruct'
+
 class V1::Reports::ExpensesController < ApplicationController
     def by_category_and_month_year
         result = Category.all.each_with_object({}) do |category, hash|
@@ -61,7 +63,7 @@ class V1::Reports::ExpensesController < ApplicationController
     end
 
     def all_current_week
-        render json: Expense.all_current_week
+        render json: Expense.all_current_week_total_by_day.map{|e| { day: e.day_name.strip, total: e.total.to_f }}
     end
 
     def most_frequents_by_month_year

@@ -42,14 +42,18 @@ class Expense < ApplicationRecord
         .order(month_year: :asc)
     }
 
-    scope :all_current_week, -> {
+    scope :all_current_week_total_by_day, -> {
         start_date = Date.today.beginning_of_week(:monday)
         end_date = Date.today.end_of_week(:sunday)
 
-        start_str = start_date.strftime("%d%m%Y")
-        end_str = end_date.strftime("%d%m%Y")
-
-        where(date: start_str..end_str)
+        unscoped
+        .select(
+            "TO_CHAR(to_date(date, 'DDMMYYYY'), 'Day') AS day_name, " \
+            "SUM(value) AS total"
+        )
+        .where("to_date(date, 'DDMMYYYY') BETWEEN ? AND ?", start_date, end_date)
+        .group("day_name")
+        .order(Arel.sql("MIN(to_date(date, 'DDMMYYYY'))"))
     }
 
     scope :most_frequents_on_current_month, ->(month_year) {
@@ -60,30 +64,30 @@ class Expense < ApplicationRecord
         .order("qtd DESC")
     }
 
-    def as_json(options = {})
-        {
-            id: id,
-            summary: summary,
-            details: details,
-            value: "R$ #{value}",
+    # def as_json(options = {})
+    #     {
+    #         id: id,
+    #         summary: summary,
+    #         details: details,
+    #         value: "R$ #{value}",
 
-            date: {
-                full: Date.strptime(date, "%d%m%Y").strftime("%d/%m/%Y"),
-                day: Date.strptime(date, "%d%m%Y").day,
-                month: Date.strptime(date, "%d%m%Y").month,
-                year: Date.strptime(date, "%d%m%Y").year
-            },
+    #         date: {
+    #             full: Date.strptime(date, "%d%m%Y").strftime("%d/%m/%Y"),
+    #             day: Date.strptime(date, "%d%m%Y").day,
+    #             month: Date.strptime(date, "%d%m%Y").month,
+    #             year: Date.strptime(date, "%d%m%Y").year
+    #         },
 
-            status: {
-                id: status&.id,
-                summary: status&.summary
-            },
+    #         status: {
+    #             id: status&.id,
+    #             summary: status&.summary
+    #         },
 
-            category: {
-                id: category.id,
-                summary: category.summary,
-                color: category.color
-            }
-        }
-    end
+    #         category: {
+    #             id: category.id,
+    #             summary: category.summary,
+    #             color: category.color
+    #         }
+    #     }
+    # end
 end

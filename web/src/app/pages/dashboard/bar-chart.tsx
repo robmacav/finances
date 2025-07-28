@@ -18,21 +18,13 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart"
 
+import { useAllCurrentWeek } from "@/hooks/reports/expenses/useAllCurrentWeek"
+
 export const description = "A bar chart"
 
-const chartData = [
-  { month: "Seg", desktop: 186 },
-  { month: "Ter", desktop: 305 },
-  { month: "Qua", desktop: 237 },
-  { month: "Qui", desktop: 73 },
-  { month: "Sex", desktop: 209 },
-  { month: "Sab", desktop: 214 },
-  { month: "Dom", desktop: 290 }
-]
-
 const chartConfig = {
-  desktop: {
-    label: "Desktop",
+  despesas: {
+    label: "Despesas",
     color: "#000000",
   },
 } satisfies ChartConfig
@@ -40,40 +32,84 @@ const chartConfig = {
 type Props = {
   title: string;
   subtitle: string;
-};
+}
+
+const dayMap: Record<string, string> = {
+  Monday: "Seg",
+  Tuesday: "Ter",
+  Wednesday: "Qua",
+  Thursday: "Qui",
+  Friday: "Sex",
+  Saturday: "Sab",
+  Sunday: "Dom",
+}
+
+const weekOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
 export function ChartBarDefault({ title, subtitle }: Props) {
+  const { data } = useAllCurrentWeek()
+
+  // Mescla dias da semana com os dados retornados
+  const chartData = weekOrder.map((day) => {
+    const item = data?.find((d) => d.day === day)
+    return {
+      month: dayMap[day],
+      despesas: item?.total ?? 0,
+    }
+  })
+
   return (
     <Card>
       <CardHeader>
         <CardTitle>{title}</CardTitle>
         <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
+
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer data={chartData}>
             <CartesianGrid vertical={false} />
             <YAxis
-                stroke="#888888"
-                fontSize={12}
-                tickLine={false}
-                axisLine={false}
+              stroke="#888888"
+              fontSize={12}
+              tickLine={false}
+              axisLine={false}
+              tickFormatter={(value) => `R$ ${value.toFixed(2)}`}
             />
             <XAxis
               dataKey="month"
               tickLine={false}
               tickMargin={10}
               axisLine={false}
-              tickFormatter={(value) => value.slice(0, 3)}
+              tick={({ x, y, payload }) => {
+                const currentDayIndex = new Date().getDay() // 0 (Sun) - 6 (Sat)
+                const currentDayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][currentDayIndex]
+                const currentLabel = dayMap[currentDayName]
+
+                const isToday = payload.value === currentLabel
+
+                return (
+                  <text
+                    x={x}
+                    y={y + 15}
+                    textAnchor="middle"
+                    fill="#000"
+                    fontWeight={isToday ? "bold" : "normal"}
+                  >
+                    {payload.value}
+                  </text>
+                )
+              }}
             />
             <ChartTooltip
               cursor={false}
               content={<ChartTooltipContent hideLabel />}
             />
-            <Bar dataKey="desktop" fill="var(--color-desktop)" radius={8} />
+            <Bar dataKey="despesas" fill="var(--color-despesas)" radius={8} />
           </BarChart>
         </ChartContainer>
-      </CardContent> 
+      </CardContent>
+
       <CardFooter className="flex-col items-start gap-2 text-sm">
         <div className="flex gap-2 leading-none font-medium">
           <TrendingUp className="h-4 w-4" /> Despesas aumentaram 5,2% em relação à semana anterior.

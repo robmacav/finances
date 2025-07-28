@@ -284,6 +284,7 @@ export function New({ onExpenseCreated }: NewProps) {
           </div>
           <TabsContent value="unico" className="flex-1 overflow-y-auto p-2">
             <form
+              id="unico"
               onSubmit={async (e) => {
                 e.preventDefault()
 
@@ -301,7 +302,7 @@ export function New({ onExpenseCreated }: NewProps) {
                 }
 
                 try {
-                  const response = await fetch(`${apiUrl}/v1/expenses`, {
+                  const response = await fetch(`${apiUrl}/expenses`, {
                     method: "POST",
                     headers: {
                       "Content-Type": "application/json",
@@ -316,6 +317,7 @@ export function New({ onExpenseCreated }: NewProps) {
 
                     form.reset()
                   } else {
+                    let errorMessage = ""
                     const contentType = response.headers.get("Content-Type")
 
                     if (contentType?.includes("application/json")) {
@@ -453,7 +455,7 @@ export function New({ onExpenseCreated }: NewProps) {
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Button type="submit">Salvar</Button>
+          <Button type="submit" form={tab === "unico" ? "unico" : undefined}>Salvar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>
