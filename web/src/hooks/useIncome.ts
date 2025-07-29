@@ -6,39 +6,10 @@ type UseIncomeResult = {
   data: Income[] | null;
   loading: boolean;
   error: string | null;
+  refetch: () => void;
 };
 
-type CacheEntry = {
-  timestamp: number;
-  data: Income[];
-};
-
-const CACHE_KEY = "income_cache";
-const CACHE_TTL_MS = 1000 * 60 * 120; // 2 horas
-const BACKGROUND_REFRESH_MS = 1000 * 60; // 30 segundos
-
-function loadCache(): Record<string, CacheEntry> {
-  if (typeof window === "undefined") return {};
-
-  try {
-    const cacheString = localStorage.getItem(CACHE_KEY);
-    if (!cacheString || cacheString.trim() === "") return {};
-    return JSON.parse(cacheString);
-  } catch (error) {
-    console.warn("Erro ao carregar cache do localStorage:", error);
-    return {};
-  }
-}
-
-
-function saveCache(cache: Record<string, CacheEntry>) {
-  if (typeof window === "undefined") return;
-  try {
-    localStorage.setItem(CACHE_KEY, JSON.stringify(cache));
-  } catch {
-    // Falha ao salvar cache pode ser ignorada
-  }
-}
+const BACKGROUND_REFRESH_MS = 1000 * 60; // 1 minuto
 
 function isSameIncomes(a: Income[], b: Income[]) {
   if (a.length !== b.length) return false;
@@ -55,7 +26,6 @@ function isSameIncomes(a: Income[], b: Income[]) {
   return true;
 }
 
-
 export function useIncome(month_year: string): UseIncomeResult {
   const [data, setData] = useState<Income[] | null>(null);
   const [loading, setLoading] = useState(true);
@@ -63,56 +33,38 @@ export function useIncome(month_year: string): UseIncomeResult {
 
   const dataRef = useRef<Income[] | null>(null);
   const intervalIdRef = useRef<NodeJS.Timeout | null>(null);
+  const triggerRefetch = useRef<() => void>(() => {});
+
+  async function fetchAndUpdate() {
+    try {
+      const res = await fetchIncomes(month_year);
+      const newData = res.incomes;
+
+      if (!dataRef.current || !isSameIncomes(dataRef.current, newData)) {
+        setData(newData);
+        dataRef.current = newData;
+      }
+      setLoading(false);
+    } catch (err: any) {
+      setError(err.message || "Erro ao buscar receitas");
+      setLoading(false);
+    }
+  }
 
   useEffect(() => {
     let isMounted = true;
-    const cache = loadCache();
-    const cacheEntry = cache[month_year];
-    const now = Date.now();
 
-    if (cacheEntry && now - cacheEntry.timestamp < CACHE_TTL_MS) {
-      setData(cacheEntry.data);
-      dataRef.current = cacheEntry.data;
-      setLoading(false);
-    } else {
-      setLoading(true);
-    }
+    setLoading(true);
     setError(null);
 
-    async function fetchAndUpdate() {
-      try {
-        const res = await fetchIncomes(month_year);
-        if (!isMounted) return;
+    triggerRefetch.current = () => {
+      if (isMounted) fetchAndUpdate();
+    };
 
-        const newData = res.incomes;
+    fetchAndUpdate();
 
-        if (!dataRef.current || !isSameIncomes(dataRef.current, newData)) {
-          setData(newData);
-          dataRef.current = newData;
-
-          const cacheUpdated = loadCache();
-          cacheUpdated[month_year] = {
-            timestamp: Date.now(),
-            data: newData,
-          };
-          saveCache(cacheUpdated);
-        }
-        setLoading(false);
-      } catch (err: any) {
-        if (!isMounted) return;
-        setError(err.message || "Erro ao buscar despesas");
-        setLoading(false);
-      }
-    }
-
-    // Busca inicial se cache expirou ou inexistente
-    if (!cacheEntry || now - cacheEntry.timestamp >= CACHE_TTL_MS) {
-      fetchAndUpdate();
-    }
-
-    // Função para iniciar intervalo
     function startInterval() {
-      if (intervalIdRef.current) return; // já iniciado
+      if (intervalIdRef.current) return;
       intervalIdRef.current = setInterval(() => {
         if (!document.hidden) {
           fetchAndUpdate();
@@ -120,7 +72,6 @@ export function useIncome(month_year: string): UseIncomeResult {
       }, BACKGROUND_REFRESH_MS);
     }
 
-    // Função para limpar intervalo
     function stopInterval() {
       if (intervalIdRef.current) {
         clearInterval(intervalIdRef.current);
@@ -128,22 +79,17 @@ export function useIncome(month_year: string): UseIncomeResult {
       }
     }
 
-    // Evento para escutar visibilidade da aba
     function handleVisibilityChange() {
       if (document.hidden) {
         stopInterval();
       } else {
-        fetchAndUpdate(); // busca imediata ao voltar
+        fetchAndUpdate();
         startInterval();
       }
     }
 
     document.addEventListener("visibilitychange", handleVisibilityChange);
-
-    // Inicia o intervalo se a aba já estiver visível
-    if (!document.hidden) {
-      startInterval();
-    }
+    if (!document.hidden) startInterval();
 
     return () => {
       isMounted = false;
@@ -152,5 +98,12 @@ export function useIncome(month_year: string): UseIncomeResult {
     };
   }, [month_year]);
 
-  return { data, loading, error };
+  return {
+    data,
+    loading,
+    error,
+    refetch: () => {
+      triggerRefetch.current();
+    }
+  };
 }

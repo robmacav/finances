@@ -14,7 +14,7 @@ function App() {
         </Routes>
       </Router>
 
-      <Toaster />
+      <Toaster position="top-right" />
     </>
   )
 }

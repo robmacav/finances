@@ -43,109 +43,173 @@ import { CategoriesExpensesSelect } from "@/app/pages/expenses/categoriesExpense
 import { DataTablePagination } from "@/app/pages/expenses/DataTablePagination";
 import { New } from "./New";
 
-export const columns: ColumnDef<Income>[] = [
-  {
-    id: "select",
-    header: ({ table }) => (
-      <Checkbox
-        checked={
-          table.getIsAllPageRowsSelected() ||
-          (table.getIsSomePageRowsSelected() && "indeterminate")
-        }
-        onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-        aria-label="Select all"
-      />
-    ),
-    cell: ({ row }) => (
-      <Checkbox
-        checked={row.getIsSelected()}
-        onCheckedChange={(value) => row.toggleSelected(!!value)}
-        aria-label="Select row"
-      />
-    ),
-    enableSorting: false,
-    enableHiding: false,
-  },
-  {
-    accessorKey: "summary",
-    header: "Descrição",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("summary")}</div>
-    ),
-  },
-    {
-    accessorKey: "value",
-    header: "Valor",
-    cell: ({ row }) => (
-      <div className="capitalize">{row.getValue("value")}</div>
-    ),
-  },
-  {
-    id: "date_full",
-    header: "Data",
-    accessorFn: (row) => row.date?.full ?? "",
-    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
-  },
-  {
-    id: "category_summary",
-    header: "Categoria",
-    accessorFn: (row) => row.category?.summary ?? "",
-    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
-  },
-  {
-    id: "subcategory_summary",
-    header: "Sub-categoria",
-    accessorFn: (row) => row.subcategory?.summary ?? "",
-    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
-  },
-  {
-    id: "status_summary",
-    header: "Status",
-    accessorFn: (row) => row.status?.summary ?? "",
-    cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
-  },
-  {
-    id: "actions",
-    enableHiding: false,
-    cell: ({ row }) => {
-      return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Acões</DropdownMenuLabel>
-            <DropdownMenuItem>Exibir</DropdownMenuItem>
-            <DropdownMenuItem>Excluir</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
-      )
-    },
-  },
-]
+import { toast } from "sonner";
+
+import {
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogCancel,
+  AlertDialogAction,
+} from "@/components/ui/alert-dialog";
+
+import { apiUrl } from "@/lib/api";
 
 type Props = {
   month: number;
   year: number;
 };
 
+export function getColumns({
+  openDeleteDialog,
+}: {
+  openDeleteDialog: (id: string) => void;
+}): ColumnDef<Income>[] {
+  return [
+    {
+      id: "select",
+      header: ({ table }) => (
+        <Checkbox
+          checked={
+            table.getIsAllPageRowsSelected() ||
+            (table.getIsSomePageRowsSelected() && "indeterminate")
+          }
+          onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+          aria-label="Select all"
+        />
+      ),
+      cell: ({ row }) => (
+        <Checkbox
+          checked={row.getIsSelected()}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+        />
+      ),
+      enableSorting: false,
+      enableHiding: false,
+    },
+    {
+      accessorKey: "summary",
+      header: "Descrição",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("summary")}</div>
+      ),
+    },
+    {
+      accessorKey: "value",
+      header: "Valor",
+      cell: ({ row }) => (
+        <div className="capitalize">{row.getValue("value")}</div>
+      ),
+    },
+    {
+      id: "date_full",
+      header: "Data",
+      accessorFn: (row) => row.date?.full ?? "",
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+    },
+    {
+      id: "category_summary",
+      header: "Categoria",
+      accessorFn: (row) => row.category?.summary ?? "",
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+    },
+    {
+      id: "subcategory_summary",
+      header: "Sub-categoria",
+      accessorFn: (row) => row.subcategory?.summary ?? "",
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+    },
+    {
+      id: "status_summary",
+      header: "Status",
+      accessorFn: (row) => row.status?.summary ?? "",
+      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+    },
+    {
+      id: "actions",
+      enableHiding: false,
+      cell: ({ row }) => {
+        return (
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="ghost" className="h-8 w-8 p-0">
+                <span className="sr-only">Open menu</span>
+                <MoreHorizontal />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuLabel>Ações</DropdownMenuLabel>
+              {/* Aqui você pode adicionar "Exibir" se quiser */}
+              <DropdownMenuItem onClick={() => openDeleteDialog(row.original.id)}>
+                Excluir
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        )
+      },
+    },
+  ]
+}
+
 function Incomes({ month, year }: Props) {
   const monthYear = `${String(month).padStart(2, "0")}${year}`;
 
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
 
-  const { data, loading: incomesLoading, error: incomesError } = useIncome(monthYear);
+  // Hook useIncome agora com refetch
+  const { data, loading: incomesLoading, error: incomesError, refetch: incomesRefetch } = useIncome(monthYear);
 
-const memoizedData = React.useMemo(() => data ?? [], [data]);
+  // Estados para controle de exclusão
+  const [deletingIncomeId, setDeletingIncomeId] = React.useState<string | null>(null);
+  const [isAlertOpen, setIsAlertOpen] = React.useState(false);
+
+  function openDeleteDialog(id: string) {
+    setDeletingIncomeId(id);
+    setIsAlertOpen(true);
+  }
+
+async function confirmDelete() {
+  if (!deletingIncomeId) return;
+
+  try {
+    const response = await fetch(`${apiUrl}/incomes/${deletingIncomeId}`, {
+      method: "DELETE",
+    });
+
+    // Log para verificar status
+    console.log("DELETE status:", response.status);
+
+    if (response.ok) {
+      // Primeiro refetch
+      await incomesRefetch();
+
+      // Aí sim o toast de sucesso
+      toast.success("Receita excluída com sucesso!");
+    } else {
+      // Mensagem de erro com status
+      toast.error("Erro ao excluir a receita!");
+    }
+  } catch (error) {
+    // Log do erro para debugar
+    console.error("Erro no delete");
+    toast.error("Erro ao excluir a receita!");
+  } finally {
+    setIsAlertOpen(false);
+    setDeletingIncomeId(null);
+  }
+}
+
+
+  const columns = React.useMemo(() => getColumns({ openDeleteDialog }), []);
+
+  const memoizedData = React.useMemo(() => data ?? [], [data]);
 
   const table = useReactTable({
     data: memoizedData,
@@ -158,12 +222,12 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
       sorting,
       columnFilters,
       columnVisibility,
-      rowSelection
+      rowSelection,
     },
     onSortingChange: setSorting,
     onColumnFiltersChange: setColumnFilters,
     onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection
+    onRowSelectionChange: setRowSelection,
   })
 
   const TableColumnLabels: Record<string, string> = {
@@ -176,30 +240,30 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
   };
 
   return (
-    <section className="mt-5">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filtrar despesa..."
-          value={(table.getColumn("summary")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("summary")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm mr-3"
-        />
-        < CategoriesExpensesSelect table={table} />
-        
-        <DropdownMenu >
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="ml-auto mr-3">
-              Colunas <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
+    <>
+      <section className="mt-5">
+        <div className="flex items-center py-4">
+          <Input
+            placeholder="Filtrar despesa..."
+            value={(table.getColumn("summary")?.getFilterValue() as string) ?? ""}
+            onChange={(event) =>
+              table.getColumn("summary")?.setFilterValue(event.target.value)
+            }
+            className="max-w-sm mr-3"
+          />
+          <CategoriesExpensesSelect table={table} />
+
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" className="ml-auto mr-3">
+                Colunas <ChevronDown />
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              {table
+                .getAllColumns()
+                .filter((column) => column.getCanHide())
+                .map((column) => (
                   <DropdownMenuCheckboxItem
                     key={column.id}
                     className="capitalize"
@@ -208,88 +272,114 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
                   >
                     {TableColumnLabels[column.id] ?? column.id}
                   </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-        < New  />
-      </div>
-      <div className="rounded-md border">
-        <Table>
-          <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
-              <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className="cursor-pointer select-none"
-                  >
-                    {header.isPlaceholder ? null : (
-                      <div className="flex items-center gap-1">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: "↑",
-                          desc: "↓"
-                        }[header.column.getIsSorted() as string] ?? null}
-                      </div>
-                    )}
-                  </TableHead>
                 ))}
-              </TableRow>
-            ))}
-          </TableHeader>
-          <TableBody>
-            {(() => {
-              const showSkeletons = incomesLoading || !!incomesError;
-              const rows = showSkeletons ? [] : table.getRowModel().rows;
+            </DropdownMenuContent>
+          </DropdownMenu>
 
-              const minRows = 10;
-              const emptyRows = Array.from({ length: Math.max(minRows - rows.length, 0) });
-
-              return (
-                <>
-                  {rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
+          <New onIncomeCreated={incomesRefetch} />
+        </div>
+        <div className="rounded-md border">
+          <Table>
+            <TableHeader>
+              {table.getHeaderGroups().map((headerGroup) => (
+                <TableRow key={headerGroup.id}>
+                  {headerGroup.headers.map((header) => (
+                    <TableHead
+                      key={header.id}
+                      onClick={header.column.getToggleSortingHandler()}
+                      className="cursor-pointer select-none"
                     >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
+                      {header.isPlaceholder ? null : (
+                        <div className="flex items-center gap-1">
                           {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
+                            header.column.columnDef.header,
+                            header.getContext()
                           )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
+                          {{
+                            asc: "↑",
+                            desc: "↓"
+                          }[header.column.getIsSorted() as string] ?? null}
+                        </div>
+                      )}
+                    </TableHead>
                   ))}
+                </TableRow>
+              ))}
+            </TableHeader>
+            <TableBody>
+              {(() => {
+                const showSkeletons = incomesLoading || !!incomesError;
+                const rows = showSkeletons ? [] : table.getRowModel().rows;
 
-                  {emptyRows.map((_, idx) => (
-                    <TableRow key={`empty-${idx}`}>
-                      {table.getVisibleLeafColumns().map((column) => (
-                        <TableCell key={column.id} className="h-12">
-                          {showSkeletons ? (
-                            <div className="h-4 w-full bg-muted rounded animate-pulse" />
-                          ) : null}
-                        </TableCell>
-                      ))}
+                const minRows = 10;
+                const emptyRows = Array.from({ length: Math.max(minRows - rows.length, 0) });
+
+                if (!showSkeletons && rows.length === 0) {
+                  return (
+                    <TableRow>
+                      <TableCell
+                        colSpan={table.getVisibleLeafColumns().length}
+                        className="text-center text-muted-foreground italic h-[30rem]"
+                      >
+                        Sem registros.
+                      </TableCell>
                     </TableRow>
-                  ))}
-                </>
-              );
-            })()}
-          </TableBody>
-        </Table>
-      </div>
-      <div className="">
-        < DataTablePagination table={table} />
-      </div>
-    </section>
+                  );
+                }
+
+                return (
+                  <>
+                    {rows.map((row) => (
+                      <TableRow
+                        key={row.id}
+                        data-state={row.getIsSelected() && "selected"}
+                      >
+                        {row.getVisibleCells().map((cell) => (
+                          <TableCell key={cell.id}>
+                            {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+
+                    {emptyRows.map((_, idx) => (
+                      <TableRow key={`empty-${idx}`}>
+                        {table.getVisibleLeafColumns().map((column) => (
+                          <TableCell key={column.id} className="h-12">
+                            {showSkeletons ? (
+                              <div className="h-4 w-full bg-muted rounded animate-pulse" />
+                            ) : null}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))}
+                  </>
+                );
+              })()}
+            </TableBody>
+          </Table>
+        </div>
+        <div>
+          <DataTablePagination table={table} />
+        </div>
+      </section>
+
+      <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Tem certeza que deseja excluir esta receita?</AlertDialogTitle>
+            <AlertDialogDescription>
+              Esta ação não pode ser desfeita, a receita será removida permanentemente.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>Cancelar</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Excluir</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+    </>
   )
 }
 
-export default Incomes
+export default Incomes;

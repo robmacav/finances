@@ -17,13 +17,25 @@ class V1::ExpensesController < ApplicationController
   end
 
   def create
-    @expense = Expense.new(expense_params)
+    if params[:expenses].present? && params[:expenses].is_a?(Array)
+      expenses = expenses_params.map { |expense_param| Expense.new(expense_param) }
 
-    if @expense.save!
-      render json: @expense, status: :created, location: v1_expense_url(@expense)
+      Expense.transaction do
+        expenses.each(&:save!)
+      end
+
+      render json: expenses, status: :created
     else
-      render json: @expense.errors, status: :unprocessable_entity
+      @expense = Expense.new(expense_params)
+
+      if @expense.save
+        render json: @expense, status: :created, location: v1_expense_url(@expense)
+      else
+        render json: @expense.errors, status: :unprocessable_entity
+      end
     end
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { error: e.record.errors.full_messages }, status: :unprocessable_entity
   end
 
   def update
@@ -41,6 +53,12 @@ class V1::ExpensesController < ApplicationController
   private
     def set_expense
       @expense = Expense.find(params[:id])
+    end
+
+    def expenses_params
+      params.require(:expenses).map do |expense|
+        ActionController::Parameters.new(expense.to_unsafe_h).permit(:summary, :details, :value, :date, :category_id, :status_id, :user_id)
+      end
     end
 
     def expense_params

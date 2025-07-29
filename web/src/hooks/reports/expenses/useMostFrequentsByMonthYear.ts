@@ -24,8 +24,6 @@ export function useMostFrequentsByMonthYear(monthYear: string): UseAvailableResu
   useEffect(() => {
     fetchMostFrequentsByMonthYear(monthYear)
       .then((res: AvailableData) => {
-        console.log("useMost", res);
-        
         setData(res);
         setLoading(false);""
       })

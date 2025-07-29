@@ -7,9 +7,6 @@ export interface IncomesExpensesData {
   available: string;
 }
 
-// cache em memória simples
-const cache: Record<string, IncomesExpensesData> = {};
-
 export function useIncomesExpensesAvailableByMonthYear(monthYear: string) {
   const [data, setData] = useState<IncomesExpensesData | null>(null);
   const [loading, setLoading] = useState<boolean>(true);
@@ -18,19 +15,11 @@ export function useIncomesExpensesAvailableByMonthYear(monthYear: string) {
   useEffect(() => {
     if (!monthYear) return;
 
-    // Se já estiver em cache, retorna imediatamente
-    if (cache[monthYear]) {
-      setData(cache[monthYear]);
-      setLoading(false);
-      return;
-    }
-
     setLoading(true);
     setError(null);
 
     fetchIncomesExpensesAvailableByMonthYear(monthYear)
       .then((res) => {
-        cache[monthYear] = res; // salva no cache
         setData(res);
       })
       .catch((err) => {

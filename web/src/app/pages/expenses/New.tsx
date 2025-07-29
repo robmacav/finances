@@ -16,6 +16,9 @@ import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectVa
 import { useCategory } from "@/hooks/useCategory"
 import React, { useState } from "react"
 
+import { ptBR } from "date-fns/locale";
+
+
 import { Calendar } from "@/components/ui/calendar"
 
 import {
@@ -43,10 +46,23 @@ function formatMonthYear(date: Date | undefined): string {
   return `${month}/${year}`
 }
 
-export function MonthYearPickerOnly() {
+function formatDateDDMMYYYY(date: Date | undefined): string {
+  if (!date) return "";
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Janeiro = 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
+
+
+type MonthYearPickerOnlyProps = {
+  value: string;
+  setValue: (value: string) => void;
+};
+
+export function MonthYearPickerOnly({ value, setValue }: MonthYearPickerOnlyProps) {
   const [open, setOpen] = useState(false)
   const [date, setDate] = useState<Date | undefined>(new Date())
-  const [value, setValue] = useState(formatMonthYear(date))
 
   return (
     <div className="grid gap-3">
@@ -82,13 +98,13 @@ export function MonthYearPickerOnly() {
                 selected={date}
                 onMonthChange={(newDate) => {
                   setDate(newDate)
-                  setValue(formatMonthYear(newDate))
+                  const formatted = formatMonthYear(newDate)
+                  setValue(formatted)
                   setOpen(false)
                 }}
                 captionLayout="dropdown"
                 fromYear={2020}
                 toYear={2030}
-                // ⚠️ Bloqueia seleção de dias
                 modifiers={{ disabled: () => true }}
                 showOutsideDays={false}
               />
@@ -99,6 +115,7 @@ export function MonthYearPickerOnly() {
     </div>
   )
 }
+
 
 type Expense = {
   summary: string;
@@ -126,10 +143,11 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
 
   const { data: categoryData } = useCategory();
 
+  const [monthYearField, setMonthYearField] = useState(formatMonthYear(new Date()))
 
   return (
     <div className="space-y-6 overflow-y-auto p-2">
-      < MonthYearPickerOnly />
+      <MonthYearPickerOnly value={monthYearField} setValue={setMonthYearField} />
       {expenses.map((expense, index) => (
         <div key={index} className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 items-end">
           <div className="grid gap-3">
@@ -204,19 +222,16 @@ type NewProps = {
 };
 
 function formatDate(date: Date | undefined) {
-  if (!date) {
-    return ""
-  }
+  if (!date) return ""
 
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  })
+  return date.toLocaleDateString("pt-BR")
 }
+
 
 function formatToDDMMYYYY(dateStr: string | null): string {
   if (!dateStr) return ""
+
+  console.log("dataaaa", dateStr);
 
   const date = new Date(dateStr)
   if (isNaN(date.getTime())) return ""
@@ -228,20 +243,26 @@ function formatToDDMMYYYY(dateStr: string | null): string {
   return `${day}${month}${year}`
 }
 
+function formatDayMonthYear(day: number | string, monthYear: string): string {
+  const dayStr = String(day).padStart(2, "0");
+  
+  return dayStr + monthYear;
+}
+
+
 export function New({ onExpenseCreated }: NewProps) {
   const { data: categoryData } = useCategory();
   const { data: statusData } = useStatus();
 
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
-
   const [selectedStatus, setSelectedStatus] = useState("2")
 
   const [open, setOpen] = React.useState(false)
-  const [date, setDate] = React.useState<Date | undefined>(
-    new Date("2025-07-14")
-  )
+  const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
+
+  const [monthYearField, setMonthYearField] = useState("07/2025")
 
   const [expenses, setExpenses] = useState<Expense[]>([
     { summary: "", value: "", date: "", category_id: undefined }
@@ -250,7 +271,16 @@ export function New({ onExpenseCreated }: NewProps) {
   const [tab, setTab] = useState("expenses");
 
   return (
-    <Dialog>
+    <Dialog
+      onOpenChange={(isOpen) => {
+        if (!isOpen) {
+          setSelectedCategory(undefined);
+          setSelectedStatus("2");
+          setTab("unico");
+          setExpenses([{ summary: "", value: "", date: "", category_id: undefined }]);
+        }
+      }}
+    >
       <DialogTrigger asChild>
         <Button variant="outline">
           <span className="hidden sm:inline">Cadastrar</span><Plus className="" />
@@ -331,7 +361,6 @@ export function New({ onExpenseCreated }: NewProps) {
                   }
                 } catch (err) {
                   toast.error("Falha ao cadastrar despesa");
-                  console.error("Erro ao enviar dados:", err)
                 } 
               }}
             >
@@ -342,67 +371,71 @@ export function New({ onExpenseCreated }: NewProps) {
                 </div>
                 <div className="grid gap-3">
                   <Label htmlFor="value">Valor</Label>
-                  <Input id="value" name="value" defaultValue="" />
+                  <Input id="value" name="value" defaultValue="" autoComplete="off"/>
                 </div>
 
                 <div className="grid gap-3">
                   <Label htmlFor="name-1">Data</Label>
-                      <div className="flex flex-col gap-3">
-                        <div className="relative flex gap-2">
-                          <Input
-                            id="date"
-                            value={value}
-                            name="date"
-                            placeholder="June 01, 2025"
-                            className="bg-background pr-10"
-                            onChange={(e) => {
-                              const date = new Date(e.target.value)
-                              setValue(e.target.value)
-                              if (isValidDate(date)) {
-                                setDate(date)
-                                setMonth(date)
-                              }
-                            }}
-                            onKeyDown={(e) => {
-                              if (e.key === "ArrowDown") {
-                                e.preventDefault()
-                                setOpen(true)
-                              }
-                            }}
-                          />
-                          <Popover open={open} onOpenChange={setOpen}>
-                            <PopoverTrigger asChild>
-                              <Button
-                                id="date-picker"
-                                variant="ghost"
-                                className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
-                              >
-                                <CalendarIcon className="size-3.5" />
-                                <span className="sr-only">Select date</span>
-                              </Button>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className="w-auto overflow-hidden p-0"
-                              align="end"
-                              alignOffset={-8}
-                              sideOffset={10}
-                            >
-                              <Calendar
-                                mode="single"
-                                selected={date}
-                                captionLayout="dropdown"
-                                month={month}
-                                onMonthChange={setMonth}
-                                onSelect={(date) => {
-                                  setDate(date)
-                                  setValue(formatDate(date))
-                                  setOpen(false)
-                                }}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                        </div>
-                      </div>
+                  <div className="flex flex-col gap-3">
+                    <div className="relative flex gap-2">
+                    <Input
+                      id="date"
+                      value={value}
+                      name="date"
+                      placeholder="June 01, 2025"
+                      className="bg-background pr-10"
+                      onFocus={() => setOpen(true)}
+                      onChange={(e) => {
+                        const date = new Date(e.target.value);
+                        setValue(e.target.value);
+                        if (isValidDate(date)) {
+                          setDate(date);
+                          setMonth(date);
+                          setValue(formatDateDDMMYYYY(date));
+                        }
+                      }}
+                      onKeyDown={(e) => {
+                        if (e.key === "ArrowDown") {
+                          e.preventDefault()
+                          setOpen(true)
+                        }
+                      }}
+                    />
+
+                      <Popover open={open} onOpenChange={setOpen}>
+                        <PopoverTrigger asChild>
+                          <Button
+                            id="date-picker"
+                            variant="ghost"
+                            className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+                          >
+                            <CalendarIcon className="size-3.5" />
+                            <span className="sr-only">Select date</span>
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent
+                          className="w-auto overflow-hidden p-0"
+                          align="end"
+                          alignOffset={-8}
+                          sideOffset={10}
+                        >
+                        <Calendar
+                          mode="single"
+                          selected={date}
+                          captionLayout="dropdown"
+                          month={month}
+                          onMonthChange={setMonth}
+                          onSelect={(date) => {
+                            setDate(date);
+                            setValue(formatDateDDMMYYYY(date));
+                            setOpen(false);
+                          }}
+                          locale={ptBR}
+                        />
+                        </PopoverContent>
+                      </Popover>
+                    </div>
+                  </div>
                 </div>
                 <div className="grid gap-3">
                   <Label>Categoria</Label>
@@ -424,7 +457,11 @@ export function New({ onExpenseCreated }: NewProps) {
                 </div>
                 <div className="grid gap-3">
                   <Label>Status</Label>
-                  <Select name="status_id" value={selectedStatus} onValueChange={setSelectedStatus}>
+                  <Select
+                    name="status_id"
+                    value={selectedStatus ?? ""}
+                    onValueChange={(value) => setSelectedStatus(String(value))}
+                  >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Selecione uma categoria" />
                     </SelectTrigger>
@@ -442,13 +479,63 @@ export function New({ onExpenseCreated }: NewProps) {
                 </div>
                 <div className="grid gap-3">
                   <Label >Descrição</Label>
-                  <Textarea id="details" name="details" defaultValue="" rows={5}  />
+                  <Textarea id="details" name="details" defaultValue="" rows={5} autoComplete="off" />
                 </div>
               </div>
             </form>
           </TabsContent>
           <TabsContent value="lote" className="flex-1 overflow-y-auto">
+            <form
+            onSubmit={async (e) => {
+              e.preventDefault();
+
+              const monthYearCleaned = monthYearField.replace("/", "")
+
+              const formattedExpenses = expenses.map((exp) => ({
+                summary: exp.summary,
+                value: parseFloat(exp.value || "0"),
+                date: formatDayMonthYear(exp.date, monthYearCleaned),
+                category_id: exp.category_id,
+                status_id: "2",
+                user_id: "2",
+              }));
+
+              try {
+                const response = await fetch(`${apiUrl}/expenses`, {
+                  method: "POST",
+                  headers: {
+                    "Content-Type": "application/json",
+                  },
+                  body: JSON.stringify({ expenses: formattedExpenses })
+                });
+
+                if (response.ok) {
+                  toast.success("Despesas cadastradas com sucesso!");
+                  setExpenses([]); // limpa o estado se desejar
+                } else {
+                  let errorMessage = "";
+                  const contentType = response.headers.get("Content-Type");
+
+                  if (contentType?.includes("application/json")) {
+                    const errorData = await response.json();
+                    errorMessage = JSON.stringify(errorData);
+                  } else {
+                    errorMessage = await response.text();
+                  }
+
+                  toast.error("Falha ao cadastrar despesas");
+                }
+              } catch (err) {
+                toast.error("Falha ao cadastrar despesas");
+              }
+            }}
+          >
             <ExpenseForm expenses={expenses} setExpenses={setExpenses} />
+            <div className="mt-6 flex justify-end">
+              <Button type="submit">Salvar Todas</Button>
+            </div>
+          </form>
+
           </TabsContent>
         </Tabs>
         <DialogFooter className="mt-4">

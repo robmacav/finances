@@ -61,6 +61,12 @@ import {
 
 import { apiUrl } from "@/lib/api";
 
+type PaginationState = {
+  pageIndex: number
+  pageSize: number
+}
+
+
 export function getColumns({
   openDeleteDialog,
   openViewDialog,
@@ -208,28 +214,33 @@ function Expenses({ month, year }: Props) {
     setIsAlertOpen(true);
   }
 
-  async function confirmDelete() {
-    if (!deletingExpenseId) return;
+async function confirmDelete() {
+  if (!deletingExpenseId) return;
 
-    try {
-      const response = await fetch(`${apiUrl}/v1/expenses/${deletingExpenseId}`, {
-        method: "DELETE",
-      });
+  const currentPage = table.getState().pagination.pageIndex;
 
-      if (response.ok) {
-        toast.success("Despesa excluída com sucesso!");
+  try {
+    const response = await fetch(`${apiUrl}/expenses/${deletingExpenseId}`, {
+      method: "DELETE",
+    });
 
-        expensesRefetch();
-      } else {
-        toast.error("Ocorreu um erro ao excluir a despesa!");
-      }
-    } catch {
+    if (response.ok) {
+      toast.success("Despesa excluída com sucesso!");
+
+      // Garante que a página atual seja mantida após o refetch
+      setPageIndex(currentPage);
+      expensesRefetch();
+    } else {
       toast.error("Ocorreu um erro ao excluir a despesa!");
-    } finally {
-      setIsAlertOpen(false);
-      setDeletingExpenseId(null);
     }
+  } catch {
+    toast.error("Ocorreu um erro ao excluir a despesa!");
+  } finally {
+    setIsAlertOpen(false);
+    setDeletingExpenseId(null);
   }
+}
+
 
 const columns = getColumns({
   openDeleteDialog: (id: string) => openDeleteDialog(id),
@@ -240,24 +251,36 @@ const columns = getColumns({
 
 const memoizedData = React.useMemo(() => data ?? [], [data]);
 
-  const table = useReactTable({
-    data: memoizedData,
-    columns,
-    getPaginationRowModel: getPaginationRowModel(),
-    getSortedRowModel: getSortedRowModel(),
-    getFilteredRowModel: getFilteredRowModel(),
-    getCoreRowModel: getCoreRowModel(),
-    state: {
-      sorting,
-      columnFilters,
-      columnVisibility,
-      rowSelection
-    },
-    onSortingChange: setSorting,
-    onColumnFiltersChange: setColumnFilters,
-    onColumnVisibilityChange: setColumnVisibility,
-    onRowSelectionChange: setRowSelection
-  })
+const [pageIndex, setPageIndex] = React.useState(0);
+
+const [pagination, setPagination] = React.useState({
+  pageIndex: 0,
+  pageSize: 10, // ou qualquer valor padrão desejado
+})
+
+
+const table = useReactTable({
+  data: memoizedData,
+  columns,
+  getPaginationRowModel: getPaginationRowModel(),
+  getSortedRowModel: getSortedRowModel(),
+  getFilteredRowModel: getFilteredRowModel(),
+  getCoreRowModel: getCoreRowModel(),
+  state: {
+    sorting,
+    columnFilters,
+    columnVisibility,
+    rowSelection,
+    pagination, // agora com pageIndex e pageSize
+  },
+  onSortingChange: setSorting,
+  onColumnFiltersChange: setColumnFilters,
+  onColumnVisibilityChange: setColumnVisibility,
+  onRowSelectionChange: setRowSelection,
+  onPaginationChange: setPagination, // já espera { pageIndex, pageSize }
+})
+
+
 
   const TableColumnLabels: Record<string, string> = {
     summary: "Descrição",
@@ -362,18 +385,28 @@ const memoizedData = React.useMemo(() => data ?? [], [data]);
                       ))}
                     </TableRow>
                   ))}
-
-                  {emptyRows.map((_, idx) => (
-                    <TableRow key={`empty-${idx}`}>
-                      {table.getVisibleLeafColumns().map((column) => (
-                        <TableCell key={column.id} className="h-12">
-                          {showSkeletons ? (
-                            <div className="h-4 w-full bg-muted rounded animate-pulse" />
-                          ) : null}
-                        </TableCell>
-                      ))}
+                  {rows.length === 0 && !showSkeletons ? (
+                    <TableRow>
+                      <TableCell
+                        colSpan={table.getAllColumns().length}
+                        className="h-[480px] text-center text-muted-foreground"
+                      >
+                        Sem registros.
+                      </TableCell>
                     </TableRow>
-                  ))}
+                  ) : (
+                    emptyRows.map((_, idx) => (
+                      <TableRow key={`empty-${idx}`}>
+                        {table.getVisibleLeafColumns().map((column) => (
+                          <TableCell key={column.id} className="h-12">
+                            {showSkeletons ? (
+                              <div className="h-4 w-full bg-muted rounded animate-pulse" />
+                            ) : null}
+                          </TableCell>
+                        ))}
+                      </TableRow>
+                    ))
+                  )}
                 </>
               );
             })()}

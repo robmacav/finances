@@ -19,8 +19,8 @@ class V1::IncomesController < ApplicationController
   def create
     @income = Income.new(income_params)
 
-    if @income.save
-      render json: @income, status: :created, location: @income
+    if @income.save!
+      render json: @income, status: :created, location: v1_income_url(@income)
     else
       render json: @income.errors, status: :unprocessable_entity
     end
