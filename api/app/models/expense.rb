@@ -5,10 +5,13 @@ class Expense < ApplicationRecord
     belongs_to :user, class_name: 'User', foreign_key: 'user_id', optional: true
     belongs_to :category, class_name: 'Category', foreign_key: 'category_id', optional: true
 
-    default_scope { order(date: :asc, summary: :asc) }
-
     scope :all_by_month_year, ->(month_year) { 
-        where("date like '%#{month_year}'") 
+        formatted = "#{month_year[0..1]}/#{month_year[2..5]}"
+
+        start_date = Date.strptime(formatted, "%m/%Y")
+        end_date = start_date.end_of_month
+
+        where(date: start_date..end_date).order(date: :asc, summary: :asc)
     }
 
     scope :all_by_month_year_sum, ->(month_year) {
@@ -16,18 +19,14 @@ class Expense < ApplicationRecord
     }
 
     scope :current_year_total_months, -> { 
-        unscope(:order)
-        .where("date LIKE ?", "%#{Date.today.year}")
+        where("date LIKE ?", "%#{Date.today.year}")
         .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
         .group("SUBSTR(date, 3, 6)") 
         .order(month_year: :asc)
     }
 
-    # Expense.where("date like '%052025'").select("category_id, SUM(value) as total").group("category_id").joins(:category)[0].category.summary
-
     scope :all_by_month_year_by_category, ->(month_year) {
-        unscope(:order)
-        .where("date like '%#{month_year}'")
+        where("date like '%#{month_year}'")
         .select("category_id, SUM(value) as total")
         .group("category_id")
         .order("total desc")
@@ -35,8 +34,7 @@ class Expense < ApplicationRecord
     }
 
     scope :total_months_by_year, ->(year) { 
-        unscope(:order)
-        .where("date LIKE ?", "%#{year}")
+        where("date LIKE ?", "%#{year}")
         .select("SUBSTR(date, 3, 6) AS month_year, SUM(value) as total")
         .group("SUBSTR(date, 3, 6)") 
         .order(month_year: :asc)
@@ -46,8 +44,7 @@ class Expense < ApplicationRecord
         start_date = Date.today.beginning_of_week(:monday)
         end_date = Date.today.end_of_week(:sunday)
 
-        unscoped
-        .select(
+        select(
             "TO_CHAR(to_date(date, 'DDMMYYYY'), 'Day') AS day_name, " \
             "SUM(value) AS total"
         )
@@ -57,8 +54,7 @@ class Expense < ApplicationRecord
     }
 
     scope :most_frequents_on_current_month, ->(month_year) {
-        unscoped
-        .where("date LIKE ?", "%#{month_year}")
+        where("date LIKE ?", "%#{month_year}")
         .select("summary, COUNT(*) AS qtd, SUM(value) AS total")
         .group(:summary)
         .order("qtd DESC")
