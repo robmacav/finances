@@ -112,7 +112,7 @@ function dados() {
           </Select>
         </div>
       </CardHeader>
-      <CardContent className="flex-1 pb-0">
+      <CardContent>
         <ResponsiveContainer width="100%" height={450}>
           <ChartContainer
             config={chartConfig}

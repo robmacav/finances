@@ -1,8 +1,6 @@
 import { LayoutGrid } from "lucide-react";
-import { ModeToggle } from "@/components/mode-toggle";
 import { siteConfig } from "@/config/site";
 import { ProfileDropdown } from "./dashboard/ProfileDropdown";
-import { ThemeSwitch } from "./dashboard/ThemeSwitch";
 
 export function SiteHeader() {
   return (
@@ -16,8 +14,6 @@ export function SiteHeader() {
     </div>
 
     <div className="ml-auto flex items-center gap-4">
-      {/* < ModeToggle /> */}
-      < ThemeSwitch />
       < ProfileDropdown />
     </div>
   </div>

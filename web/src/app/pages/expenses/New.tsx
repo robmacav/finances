@@ -187,7 +187,7 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
               value={expense.category_id ?? ""}
               onValueChange={(value) => handleChange(index, "category_id", value)}
             >
-              <SelectTrigger className="w-full">
+              <SelectTrigger className="min-w-[250px]">
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
               <SelectContent>
@@ -485,51 +485,68 @@ export function New({ onExpenseCreated }: NewProps) {
             </form>
           </TabsContent>
           <TabsContent value="lote" className="flex-1 overflow-y-auto">
-            <form
-            onSubmit={async (e) => {
-              e.preventDefault();
+<form
+  onSubmit={async (e) => {
+    e.preventDefault();
 
-              const monthYearCleaned = monthYearField.replace("/", "")
+    const monthYearCleaned = monthYearField.replace("/", "");
 
-              const formattedExpenses = expenses.map((exp) => ({
-                summary: exp.summary,
-                value: parseFloat(exp.value || "0"),
-                date: formatDayMonthYear(exp.date, monthYearCleaned),
-                category_id: exp.category_id,
-                status_id: "2",
-                user_id: "2",
-              }));
+    // Validação dos campos
+    const hasInvalid = expenses.some((exp, index) => {
+      if (
+        !exp.summary?.trim() ||
+        !exp.value?.toString().trim() ||
+        !exp.date?.trim() ||
+        !exp.category_id
+      ) {
+        toast.error(`Preencha todos os campos da linha ${index + 1}`);
+        return true;
+      }
+      return false;
+    });
 
-              try {
-                const response = await fetch(`${apiUrl}/expenses`, {
-                  method: "POST",
-                  headers: {
-                    "Content-Type": "application/json",
-                  },
-                  body: JSON.stringify({ expenses: formattedExpenses })
-                });
+    if (hasInvalid) return;
 
-                if (response.ok) {
-                  toast.success("Despesas cadastradas com sucesso!");
-                  setExpenses([]); // limpa o estado se desejar
-                } else {
-                  let errorMessage = "";
-                  const contentType = response.headers.get("Content-Type");
+    const formattedExpenses = expenses.map((exp) => ({
+      summary: exp.summary,
+      value: parseFloat(exp.value || "0"),
+      date: formatDayMonthYear(exp.date, monthYearCleaned),
+      category_id: exp.category_id,
+      status_id: "2",
+      user_id: "2",
+    }));
 
-                  if (contentType?.includes("application/json")) {
-                    const errorData = await response.json();
-                    errorMessage = JSON.stringify(errorData);
-                  } else {
-                    errorMessage = await response.text();
-                  }
+    try {
+      const response = await fetch(`${apiUrl}/expenses`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ expenses: formattedExpenses }),
+      });
 
-                  toast.error("Falha ao cadastrar despesas");
-                }
-              } catch (err) {
-                toast.error("Falha ao cadastrar despesas");
-              }
-            }}
-          >
+      if (response.ok) {
+        toast.success("Despesas cadastradas com sucesso!");
+        setExpenses([]); // limpa o estado
+      } else {
+        let errorMessage = "";
+        const contentType = response.headers.get("Content-Type");
+
+        if (contentType?.includes("application/json")) {
+          const errorData = await response.json();
+          errorMessage = JSON.stringify(errorData);
+        } else {
+          errorMessage = await response.text();
+        }
+
+        toast.error("Falha ao cadastrar despesas");
+      }
+    } catch (err) {
+      toast.error("Falha ao cadastrar despesas");
+    }
+  }}
+>
+
             <ExpenseForm expenses={expenses} setExpenses={setExpenses} />
             <div className="mt-6 flex justify-end">
               <Button type="submit">Salvar Todas</Button>

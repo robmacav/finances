@@ -1,173 +1,99 @@
 "use client"
 
 import * as React from "react"
+import { apiUrl } from "@/lib/api";
 
 import {
-  type ColumnDef,
   type ColumnFiltersState,
-  flexRender,
+  type SortingState,
+  type VisibilityState,
   getCoreRowModel,
   getFilteredRowModel,
   getPaginationRowModel,
   getSortedRowModel,
-  type SortingState,
   useReactTable,
-  type VisibilityState,
 } from "@tanstack/react-table"
-import { ChevronDown, MoreHorizontal } from "lucide-react"
 
-import type { Expense } from '../../../../types/Expense';
-
-import { Button } from "@/components/ui/button"
-import { Checkbox } from "@/components/ui/checkbox"
 import {
-  DropdownMenu,
-  DropdownMenuCheckboxItem,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
-import { Input } from "@/components/ui/input"
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
+  Table, TableBody, TableCell, TableHead, TableHeader, TableRow,
 } from "@/components/ui/table"
 
+import { flexRender } from "@tanstack/react-table"
+
+import {
+  DropdownMenu, DropdownMenuCheckboxItem, DropdownMenuContent,
+  DropdownMenuLabel, DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu"
+
+import {
+  AlertDialog, AlertDialogContent, AlertDialogHeader,
+  AlertDialogTitle, AlertDialogDescription, AlertDialogFooter,
+  AlertDialogCancel, AlertDialogAction,
+} from "@/components/ui/alert-dialog"
+
+import { toast } from "sonner"
+import { Input } from "@/components/ui/input"
+import { Button } from "@/components/ui/button"
+import { MoreHorizontal } from "lucide-react"
+
+import type { Expense } from '../../../../types/Expense';
 import { useExpense } from '../../../hooks/useExpense';
-import { CategoriesExpensesSelect } from "./categoriesExpensesSelect";
 import { DataTablePagination } from "./DataTablePagination";
 
 import { Show } from "./Show";
 import { Edit } from "./Edit";
 import { New } from "./New";
+import FiltersModal from "./FiltersModal";
 
-import { toast } from "sonner"
-
-import {
-  AlertDialog,
-  AlertDialogContent,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogCancel,
-  AlertDialogAction,
-} from "@/components/ui/alert-dialog"
-
-import { apiUrl } from "@/lib/api";
-
-type PaginationState = {
-  pageIndex: number
-  pageSize: number
-}
-
-
-export function getColumns({
-  openDeleteDialog,
-  openViewDialog,
-  openEditDialog
-}: {
-  openDeleteDialog: (id: string) => void;
-  openViewDialog: (expense: Expense) => void;
-  openEditDialog: (expense: Expense) => void;
-  expensesRefetch: () => void;
-}): ColumnDef<Expense>[] {
+function getColumns({ openDeleteDialog, openViewDialog, openEditDialog }: any) {
   return [
-    {
-      id: "select",
-      header: ({ table }) => (
-        <div className="hidden sm:flex">
-          <Checkbox
-            checked={
-              table.getIsAllPageRowsSelected() ||
-              (table.getIsSomePageRowsSelected() && "indeterminate")
-            }
-            onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-            aria-label="Select all"
-          />
-        </div>
-      ),
-      cell: ({ row }) => (
-        <div className="hidden sm:flex">
-          <Checkbox
-            checked={row.getIsSelected()}
-            onCheckedChange={(value) => row.toggleSelected(!!value)}
-            aria-label="Select row"
-          />
-        </div>
-      ),
-      enableSorting: false,
-      enableHiding: false,
-    },
     {
       accessorKey: "summary",
       header: "Descrição",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("summary")}</div>
-      ),
     },
-      {
+    {
       accessorKey: "value",
       header: "Valor",
-      cell: ({ row }) => (
-        <div className="capitalize">{row.getValue("value")}</div>
-      ),
     },
     {
       id: "date_full",
       header: "Data",
-      accessorFn: (row) => row.date?.full ?? "",
-      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+      accessorFn: (row: Expense) => row.date?.full ?? "—",
     },
     {
       id: "category_summary",
       header: "Categoria",
-      accessorFn: (row) => row.category?.summary ?? "",
-      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>,
+      accessorFn: (row: Expense) => row.category?.summary ?? "—",
     },
     {
       id: "subcategory_summary",
       header: "Sub-categoria",
-      accessorFn: (row) => row.subcategory?.summary ?? "",
-      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>
+      accessorFn: (row: Expense) => row.subcategory?.summary ?? "—",
     },
     {
       id: "status_summary",
       header: "Status",
-      accessorFn: (row) => row.status?.summary ?? "",
-      cell: ({ getValue }) => <div className="capitalize">{String(getValue() || "—")}</div>
+      accessorFn: (row: Expense) => row.status?.summary ?? "—",
     },
     {
       id: "actions",
       enableHiding: false,
-      cell: ({ row }) => {
-        return (
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="ghost" className="h-8 w-8 p-0">
-                <span className="sr-only">Open menu</span>
-                <MoreHorizontal />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuLabel>Acões</DropdownMenuLabel>
-              <DropdownMenuItem onClick={() => openViewDialog(row.original)}>
-                Exibir
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => openEditDialog(row.original)}>
-                Editar
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => openDeleteDialog(row.original.id)}>Excluir</DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
-        )
-      }
-    }
+      cell: ({ row }: any) => (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" className="h-8 w-8 p-0">
+              <MoreHorizontal />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuLabel>Ações</DropdownMenuLabel>
+            <DropdownMenuCheckboxItem onClick={() => openViewDialog(row.original)}>Exibir</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem onClick={() => openEditDialog(row.original)}>Editar</DropdownMenuCheckboxItem>
+            <DropdownMenuCheckboxItem onClick={() => openDeleteDialog(row.original.id)}>Excluir</DropdownMenuCheckboxItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      )
+    },
   ]
 }
 
@@ -180,179 +106,87 @@ function Expenses({ month, year }: Props) {
   const monthYear = `${String(month).padStart(2, "0")}${year}`;
 
   const [sorting, setSorting] = React.useState<SortingState>([])
-  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>(
-    []
-  )
-  const [columnVisibility, setColumnVisibility] =
-    React.useState<VisibilityState>({})
+  const [columnFilters, setColumnFilters] = React.useState<ColumnFiltersState>([])
+  const [columnVisibility, setColumnVisibility] = React.useState<VisibilityState>({})
   const [rowSelection, setRowSelection] = React.useState({})
+  const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
 
-  const { data, loading: expensesLoading, error: expensesError, refetch: expensesRefetch } = useExpense(monthYear);
+  const { data, loading, error, refetch } = useExpense(monthYear);
+  const tableData = React.useMemo(() => data ?? [], [data]);
 
-  const [deletingExpenseId, setDeletingExpenseId] = React.useState<string | null>(null);
-
+  const [deleteId, setDeleteId] = React.useState<string | null>(null);
   const [isAlertOpen, setIsAlertOpen] = React.useState(false);
 
-  const [selectedEditExpense, setSelectedEditExpense] = React.useState<Expense | null>(null);
-  const [isEditDialogOpen, setIsEditDialogOpen] = React.useState(false);
+  const [editExpense, setEditExpense] = React.useState<Expense | null>(null);
+  const [editOpen, setEditOpen] = React.useState(false);
 
-  const [selectedViewExpense, setSelectedViewExpense] = React.useState<Expense | null>(null);
-  const [isViewDialogOpen, setIsViewDialogOpen] = React.useState(false);
+  const [viewExpense, setViewExpense] = React.useState<Expense | null>(null);
+  const [viewOpen, setViewOpen] = React.useState(false);
 
-  function openViewDialog(expense: Expense) {
-    setSelectedViewExpense(expense);
-    setIsViewDialogOpen(true);
-  }
-
-  function openEditDialog(expense: Expense) {
-    setSelectedEditExpense(expense);
-    setIsEditDialogOpen(true);
-  }
-
-  function openDeleteDialog(id: string) {
-    setDeletingExpenseId(id);
-    setIsAlertOpen(true);
-  }
-
-async function confirmDelete() {
-  if (!deletingExpenseId) return;
-
-  const currentPage = table.getState().pagination.pageIndex;
-
-  try {
-    const response = await fetch(`${apiUrl}/expenses/${deletingExpenseId}`, {
-      method: "DELETE",
-    });
-
-    if (response.ok) {
+  const confirmDelete = async () => {
+    if (!deleteId) return;
+    try {
+      const res = await fetch(`${apiUrl}/expenses/${deleteId}`, { method: "DELETE" });
+      if (!res.ok) throw new Error();
       toast.success("Despesa excluída com sucesso!");
-
-      // Garante que a página atual seja mantida após o refetch
-      setPageIndex(currentPage);
-      expensesRefetch();
-    } else {
-      toast.error("Ocorreu um erro ao excluir a despesa!");
+      refetch();
+    } catch {
+      toast.error("Erro ao excluir despesa!");
+    } finally {
+      setIsAlertOpen(false);
+      setDeleteId(null);
     }
-  } catch {
-    toast.error("Ocorreu um erro ao excluir a despesa!");
-  } finally {
-    setIsAlertOpen(false);
-    setDeletingExpenseId(null);
   }
-}
 
+  const columns = React.useMemo(() => getColumns({
+    openDeleteDialog: (id: string) => { setDeleteId(id); setIsAlertOpen(true); },
+    openEditDialog: (expense: Expense) => { setEditExpense(expense); setEditOpen(true); },
+    openViewDialog: (expense: Expense) => { setViewExpense(expense); setViewOpen(true); },
+  }), []);
 
-const columns = getColumns({
-  openDeleteDialog: (id: string) => openDeleteDialog(id),
-  openViewDialog: (expense: Expense) => openViewDialog(expense),
-  openEditDialog: (expense: Expense) => openEditDialog(expense),
-  expensesRefetch: expensesRefetch
-});
-
-const memoizedData = React.useMemo(() => data ?? [], [data]);
-
-const [pageIndex, setPageIndex] = React.useState(0);
-
-const [pagination, setPagination] = React.useState({
-  pageIndex: 0,
-  pageSize: 10, // ou qualquer valor padrão desejado
-})
-
-
-const table = useReactTable({
-  data: memoizedData,
-  columns,
-  getPaginationRowModel: getPaginationRowModel(),
-  getSortedRowModel: getSortedRowModel(),
-  getFilteredRowModel: getFilteredRowModel(),
-  getCoreRowModel: getCoreRowModel(),
-  state: {
-    sorting,
-    columnFilters,
-    columnVisibility,
-    rowSelection,
-    pagination, // agora com pageIndex e pageSize
-  },
-  onSortingChange: setSorting,
-  onColumnFiltersChange: setColumnFilters,
-  onColumnVisibilityChange: setColumnVisibility,
-  onRowSelectionChange: setRowSelection,
-  onPaginationChange: setPagination, // já espera { pageIndex, pageSize }
-})
-
-
-
-  const TableColumnLabels: Record<string, string> = {
-    summary: "Descrição",
-    value: "Valor",
-    date_full: "Data",
-    category_summary: "Categoria",
-    subcategory_summary: "Sub-categoria",
-    status_summary: "Status"
-  };
+  const table = useReactTable({
+    data: tableData,
+    columns,
+    state: { sorting, columnFilters, columnVisibility, rowSelection, pagination },
+    onSortingChange: setSorting,
+    onColumnFiltersChange: setColumnFilters,
+    onColumnVisibilityChange: setColumnVisibility,
+    onRowSelectionChange: setRowSelection,
+    onPaginationChange: setPagination,
+    getCoreRowModel: getCoreRowModel(),
+    getPaginationRowModel: getPaginationRowModel(),
+    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel: getFilteredRowModel(),
+  });
 
   return (
     <section className="mt-5">
-      <div className="flex items-center py-4">
-        <Input
-          placeholder="Filtrar despesa..."
-          value={(table.getColumn("summary")?.getFilterValue() as string) ?? ""}
-          onChange={(event) =>
-            table.getColumn("summary")?.setFilterValue(event.target.value)
-          }
-          className="max-w-sm mr-3"
-        />
-
-        < CategoriesExpensesSelect  table={table}  />
-        
-        <DropdownMenu >
-          <DropdownMenuTrigger asChild>
-            <Button variant="outline" className="hidden sm:inline-flex ml-auto mr-1">
-              Colunas <ChevronDown />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            {table
-              .getAllColumns()
-              .filter((column) => column.getCanHide())
-              .map((column) => {
-                return (
-                  <DropdownMenuCheckboxItem
-                    key={column.id}
-                    className="capitalize"
-                    checked={column.getIsVisible()}
-                    onCheckedChange={(value) => column.toggleVisibility(!!value)}
-                  >
-                    {TableColumnLabels[column.id] ?? column.id}
-                  </DropdownMenuCheckboxItem>
-                );
-              })}
-          </DropdownMenuContent>
-        </DropdownMenu>
-
-        < New onExpenseCreated={expensesRefetch} />
+      <div className="flex justify-between items-center py-4">
+        <div className="flex w-full">
+          <Input
+            placeholder="Filtrar despesa..."
+            value={(table.getColumn("summary")?.getFilterValue() as string) ?? ""}
+            onChange={(e) => table.getColumn("summary")?.setFilterValue(e.target.value)}
+            className="w-full sm:max-w-sm mr-1"
+          />
+          < FiltersModal />
+        </div>
+        <New onExpenseCreated={refetch} />
       </div>
+
       <div className="rounded-md border">
         <Table>
           <TableHeader>
-            {table.getHeaderGroups().map((headerGroup) => (
+            {table.getHeaderGroups().map(headerGroup => (
               <TableRow key={headerGroup.id}>
-                {headerGroup.headers.map((header) => (
-                  <TableHead
-                    key={header.id}
-                    onClick={header.column.getToggleSortingHandler()}
-                    className="cursor-pointer select-none"
-                  >
+                {headerGroup.headers.map(header => (
+                  <TableHead key={header.id}>
                     {header.isPlaceholder ? null : (
-                      <div className="flex items-center gap-1">
-                        {flexRender(
-                          header.column.columnDef.header,
-                          header.getContext()
-                        )}
-                        {{
-                          asc: "↑",
-                          desc: "↓"
-                        }[header.column.getIsSorted() as string] ?? null}
+                      <div
+                        className="cursor-pointer"
+                        onClick={header.column.getToggleSortingHandler()}
+                      >
+                        {header.column.columnDef.header as string} {header.column.getIsSorted() ? (header.column.getIsSorted() === 'asc' ? '↑' : '↓') : null}
                       </div>
                     )}
                   </TableHead>
@@ -360,99 +194,75 @@ const table = useReactTable({
               </TableRow>
             ))}
           </TableHeader>
+
           <TableBody>
-            {(() => {
-              const showSkeletons = expensesLoading || !!expensesError;
-              const rows = showSkeletons ? [] : table.getRowModel().rows;
-
-              const minRows = 10;
-              const emptyRows = Array.from({ length: Math.max(minRows - rows.length, 0) });
-
-              return (
-                <>
-                  {rows.map((row) => (
-                    <TableRow
-                      key={row.id}
-                      data-state={row.getIsSelected() && "selected"}
-                    >
-                      {row.getVisibleCells().map((cell) => (
-                        <TableCell key={cell.id}>
-                          {flexRender(
-                            cell.column.columnDef.cell,
-                            cell.getContext()
-                          )}
-                        </TableCell>
-                      ))}
-                    </TableRow>
+            {loading || error ? (
+              [...Array(10)].map((_, idx) => (
+                <TableRow key={idx}>
+                  {table.getVisibleLeafColumns().map(col => (
+                    <TableCell key={col.id} className="h-12">
+                      <div className="h-4 w-full bg-muted rounded animate-pulse" />
+                    </TableCell>
                   ))}
-                  {rows.length === 0 && !showSkeletons ? (
-                    <TableRow>
-                      <TableCell
-                        colSpan={table.getAllColumns().length}
-                        className="h-[480px] text-center text-muted-foreground"
-                      >
-                        Sem registros.
-                      </TableCell>
-                    </TableRow>
-                  ) : (
-                    emptyRows.map((_, idx) => (
-                      <TableRow key={`empty-${idx}`}>
-                        {table.getVisibleLeafColumns().map((column) => (
-                          <TableCell key={column.id} className="h-12">
-                            {showSkeletons ? (
-                              <div className="h-4 w-full bg-muted rounded animate-pulse" />
-                            ) : null}
-                          </TableCell>
-                        ))}
-                      </TableRow>
-                    ))
-                  )}
-                </>
-              );
-            })()}
+                </TableRow>
+              ))
+            ) : table.getRowModel().rows.length ? (
+              table.getRowModel().rows.map(row => (
+                <TableRow key={row.id} data-state={row.getIsSelected() && "selected"}>
+                  {row.getVisibleCells().map(cell => (
+                    <TableCell key={cell.id}>
+                      {flexRender(cell.column.columnDef.cell, cell.getContext())}
+                    </TableCell>
+                  ))}
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={table.getAllColumns().length} className="text-center h-96 text-muted-foreground">
+                  Sem registros.
+                </TableCell>
+              </TableRow>
+            )}
           </TableBody>
         </Table>
       </div>
-      <div className="">
-        < DataTablePagination table={table} />
-      </div>
+
+      <DataTablePagination table={table} />
 
       <AlertDialog open={isAlertOpen} onOpenChange={setIsAlertOpen}>
         <AlertDialogContent>
           <AlertDialogHeader>
             <AlertDialogTitle>Tem certeza que deseja excluir esta despesa?</AlertDialogTitle>
-            <AlertDialogDescription>
-              Esta ação não pode ser desfeita, a despesa será removida permanentemente.
-            </AlertDialogDescription>
+            <AlertDialogDescription>Esta ação não pode ser desfeita.</AlertDialogDescription>
           </AlertDialogHeader>
           <AlertDialogFooter>
-            <AlertDialogCancel onClick={() => setIsAlertOpen(false)}>Cancelar</AlertDialogCancel>
+            <AlertDialogCancel>Cancelar</AlertDialogCancel>
             <AlertDialogAction onClick={confirmDelete}>Excluir</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+      
+      <FiltersModal
+        open={viewOpen}
+        onOpenChange={setViewOpen}
+      />
+
 
       <Show
-        onExpenseCreated={() => {
-          expensesRefetch();
-          setIsViewDialogOpen(false);
-        }}
-        initialExpense={selectedViewExpense}
-        open={isViewDialogOpen}
-        onOpenChange={setIsViewDialogOpen}
+        onExpenseCreated={() => { refetch(); setViewOpen(false); }}
+        initialExpense={viewExpense}
+        open={viewOpen}
+        onOpenChange={setViewOpen}
       />
 
       <Edit
-        onExpenseEdited={() => {
-          expensesRefetch();
-          setIsEditDialogOpen(false);
-        }}
-        initialExpense={selectedEditExpense}
-        open={isEditDialogOpen}
-        onOpenChange={setIsEditDialogOpen}
+        onExpenseEdited={() => { refetch(); setEditOpen(false); }}
+        initialExpense={editExpense}
+        open={editOpen}
+        onOpenChange={setEditOpen}
       />
     </section>
-  )
+  );
 }
 
-export default Expenses
+export default Expenses;

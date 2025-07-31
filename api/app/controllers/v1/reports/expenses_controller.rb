@@ -11,13 +11,14 @@ class V1::Reports::ExpensesController < ApplicationController
     end
 
     def all_by_month_year
-        @expenses = Expense.all_by_month_year(params[:month_year])
-        @expenses_kaminari = @expenses.page(params[:page]).per(params[:per_page] || 50)
+        @expenses= Expense.all_by_month_year(params[:month_year])
+                          .page(params[:page])
+                          .per(params[:per_page] || 50)
 
         render json: {
-            current_page: @expenses_kaminari.current_page,
-            total_pages: @expenses_kaminari.total_pages,
-            total_count: @expenses_kaminari.total_count,
+            current_page: @expenses.current_page,
+            total_pages: @expenses.total_pages,
+            total_count: @expenses.total_count,
             expenses: @expenses.map { |e| serialize_expense(e) }
         }
     end
@@ -83,22 +84,22 @@ class V1::Reports::ExpensesController < ApplicationController
             value: "R$ #{'%.2f' % expense.value}",
 
             date: date && {
-            full: date.strftime("%d/%m/%Y"),
-            day: date.day,
-            month: date.month,
-            year: date.year
+                full: date.strftime("%d/%m/%Y"),
+                day: date.day,
+                month: date.month,
+                year: date.year
             },
 
             status: {
-            id: expense.status&.id,
-            summary: expense.status&.summary
+                id: expense.status&.id,
+                summary: expense.status&.summary
             },
 
             category: {
-            id: expense.category&.id,
-            summary: expense.category&.summary,
-            color: expense.category&.color
+                id: expense.category&.id,
+                summary: expense.category&.summary,
+                color: expense.category&.color
             }
         }
-        end
+    end
 end

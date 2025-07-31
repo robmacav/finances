@@ -49,12 +49,11 @@ const weekOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Satu
 export function ChartBarDefault({ title, subtitle }: Props) {
   const { data } = useAllCurrentWeek()
 
-  // Mescla dias da semana com os dados retornados
   const chartData = weekOrder.map((day) => {
     const item = data?.find((d) => d.day === day)
     return {
       month: dayMap[day],
-      despesas: item?.total ?? 0,
+      despesas: item?.total ?? 0
     }
   })
 
@@ -64,7 +63,6 @@ export function ChartBarDefault({ title, subtitle }: Props) {
         <CardTitle>{title}</CardTitle>
         <CardDescription>{subtitle}</CardDescription>
       </CardHeader>
-
       <CardContent>
         <ChartContainer config={chartConfig}>
           <BarChart accessibilityLayer data={chartData}>
@@ -82,7 +80,7 @@ export function ChartBarDefault({ title, subtitle }: Props) {
               tickMargin={10}
               axisLine={false}
               tick={({ x, y, payload }) => {
-                const currentDayIndex = new Date().getDay() // 0 (Sun) - 6 (Sat)
+                const currentDayIndex = new Date().getDay()
                 const currentDayName = ["Sunday", "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"][currentDayIndex]
                 const currentLabel = dayMap[currentDayName]
 

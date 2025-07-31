@@ -1,17 +1,21 @@
 import { useState } from "react";
-import { DateExpensesSelect } from "../expenses/DateExpensesSelect";
-
-import TabsContentPage from "./TabsContentPage";
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { SiteHeader } from "../site-header";
 
-import Transactions from './Transactions';
-import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { SiteHeader } from "../site-header";
+import { DateExpensesSelect } from "./DateExpensesSelect";
+
+import TabsContentPage from "./TabsContentPage";
+import Transactions from '../transactions/Index';
+
+function getFormattedMonthYear(year: number, month: number) {
+  return new Date(year, month - 1)
+    .toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
+    .replace(/^./, (str) => str.toUpperCase());
+}
 
 function Index() {
-    const [month, setMonth] = useState(new Date().getMonth() + 1); // 1 a 12
+    const [month, setMonth] = useState(new Date().getMonth() + 1);
     const [year, setYear] = useState(new Date().getFullYear());
 
     function changeMonth(delta: number) {
@@ -24,30 +28,26 @@ function Index() {
         <div className="mx-auto p-5 sm:px-0 sm:pt-0 lg:px-10">
                 <SiteHeader />
             
-                <section className="flex items-center justify-between mt-5">
+                <div className="flex justify-between items-center mt-5">
                     <div>
                         <h3 className="text-2xl font-bold tracking-tight">DASHBOARD</h3>
-                        <small>
-                            {new Date(year, month - 1)
-                                .toLocaleDateString("pt-BR", { month: "long", year: "numeric" })
-                                .replace(/^./, (str) => str.toUpperCase())}
-                        </small>
+                        <small>{getFormattedMonthYear(year, month)}</small>
                     </div>
                     
-                    < DateExpensesSelect month={month} year={year} changeMonth={changeMonth} />
-                </section>
+                    < DateExpensesSelect changeMonth={changeMonth} />
+                </div>
 
-                <Tabs defaultValue="expenses" className="">
+                <Tabs defaultValue="dashboard" className="">
                     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mt-5 gap-4">
                         <TabsList>
-                            <TabsTrigger value="expenses">Dashboard</TabsTrigger>
-                            <TabsTrigger value="incomes">Transações</TabsTrigger>
+                            <TabsTrigger value="dashboard">Dashboard</TabsTrigger>
+                            <TabsTrigger value="transactions">Transações</TabsTrigger>
                         </TabsList>
                     </div>
-                    <TabsContent value="expenses">
+                    <TabsContent value="dashboard">
                         < TabsContentPage month={month} year={year} />
                     </TabsContent>
-                    <TabsContent value="incomes">
+                    <TabsContent value="transactions">
                         < Transactions month={month} year={year} />
                     </TabsContent>
                 </Tabs>
