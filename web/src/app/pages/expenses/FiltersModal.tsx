@@ -23,7 +23,7 @@ function FiltersModal({ open, onOpenChange }: NewProps) {
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogTrigger asChild>
-        <Button variant="outline" className="sm:me-1">
+        <Button variant="outline" className="sm:me-1 me-1 sm:me-0">
           <Funnel />
         </Button>
       </DialogTrigger>

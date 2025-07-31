@@ -241,12 +241,6 @@ function Expenses({ month, year }: Props) {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
-      
-      <FiltersModal
-        open={viewOpen}
-        onOpenChange={setViewOpen}
-      />
-
 
       <Show
         onExpenseCreated={() => { refetch(); setViewOpen(false); }}
