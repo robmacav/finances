@@ -28,13 +28,13 @@ import { CalendarIcon, Plus } from "lucide-react"
 import { toast } from "sonner"
 import { useStatus } from "@/hooks/useStatus"
 
-import { type Expense } from "../../../../types/Expense"
+import { type Transaction } from "../../../../types/reports/Transaction"
 
 import { apiUrl } from "@/lib/api";
 
 type NewProps = {
   onExpenseEdited: () => void;
-  initialExpense?: Expense | null;
+  initialExpense?: Transaction | null;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }

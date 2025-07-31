@@ -219,6 +219,7 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
 
 type NewProps = {
   onExpenseCreated: () => void;
+  type: string;
 };
 
 function formatDate(date: Date | undefined) {
