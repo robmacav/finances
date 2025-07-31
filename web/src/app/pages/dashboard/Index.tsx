@@ -25,7 +25,7 @@ function Index() {
     }
     
     return (
-        <div className="mx-auto p-5 sm:px-0 sm:pt-0 lg:px-10">
+        <div className="mx-auto p-5 sm:px-0 sm:pt-0 sm:px-5 md:px-10">
                 <SiteHeader />
             
                 <div className="flex justify-between items-center mt-5">

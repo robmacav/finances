@@ -22,6 +22,11 @@ import { useMostFrequentsByMonthYear } from '@/hooks/reports/expenses/useMostFre
 type Props = {
   title: string
   subtitle?: string
+  data: {
+    summary: string;
+    qtd: number;
+    total: number;
+  }[];
 }
 
 const chartConfig = {
@@ -38,9 +43,7 @@ const chartConfig = {
   },
 } satisfies ChartConfig
 
-export function ChartBarLabelCustom({ title, subtitle }: Props) {
-  const { data = [] } = useMostFrequentsByMonthYear("072025");
-
+export function ChartBarLabelCustom({ title, subtitle, data }: Props) {
   const chartData = data?.map((item: any) => ({
     month: `${item.summary} (${item.qtd})`,
     desktop: item.total,

@@ -6,7 +6,7 @@ class Income < ApplicationRecord
     belongs_to :category, class_name: 'Category', foreign_key: 'category_id', optional: true
 
     scope :all_by_month_year, ->(month_year) {
-        where("date like ?", "%#{month_year}%")
+        includes(:category, :status).where("date like ?", "%#{month_year}%").order(date: :asc, summary: :asc)
     }
 
     scope :all_by_month_year_sum, ->(month_year) {

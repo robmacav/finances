@@ -30,8 +30,8 @@ class Expense < ApplicationRecord
 
     scope :total_months_by_year, ->(year) {
         where("EXTRACT(YEAR FROM date) = ?", year)
-        .select("TO_CHAR(date, 'MM/YYYY') AS month_year, SUM(value) AS total")
-        .group("TO_CHAR(date, 'MM/YYYY')")
+        .select("TO_CHAR(date, 'MMYYYY') AS month_year, SUM(value) AS total")
+        .group("TO_CHAR(date, 'MMYYYY')")
         .order("month_year ASC")
     }
 

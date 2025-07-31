@@ -24,6 +24,14 @@ Rails.application.routes.draw do
         get "all-by-month-year-by-category", to: "incomes#all_by_month_year_by_category"
         get 'current-year-total-months', to: 'incomes#current_year_total_months'
       end
+
+      scope :transactions do 
+        get 'all-by-month-year', to: 'transactions#all_by_month_year'
+      end
+
+      scope :dashboard do 
+        get "data", to: "dashboard#data"
+      end
     end
 
     namespace :utils do

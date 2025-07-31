@@ -33,10 +33,14 @@ import { useIncomesExpensesTotalMonthsByYear } from "@/hooks/utils/dashboard/use
 
 type Props = {
   title: string;
+  data: {
+    month: string;
+    incomes: number;
+    exepeses: number;
+  }
 };
  
-export function Overview2({ title }: Props) {
-  const { data: chartData } = useIncomesExpensesTotalMonthsByYear("2025");
+export function Overview2({ title, data }: Props) {
 
   return (
     <Card className="flex flex-col">
@@ -46,7 +50,7 @@ export function Overview2({ title }: Props) {
       <CardContent className="pl-2 h-[300px]">
         <ResponsiveContainer width="100%" height="100%">
           <ChartContainer config={chartConfig} className="mx-auto h-full">
-            <BarChart accessibilityLayer data={chartData ?? []}>
+            <BarChart accessibilityLayer data={data ?? []}>
               <CartesianGrid vertical={false} />
               <YAxis
                 stroke="#888888"

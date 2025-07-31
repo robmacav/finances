@@ -26,25 +26,24 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
-import { useAllByMonthYearByCategories } from "@/hooks/reports/expenses/useAllByMonthYearByCategories"
-
 type Props = {
-  month: number;
-  year: number;
+  data: {
+    category: {
+      summary: string;
+      color: string;
+    }
+    total: number;
+  }
 };
 
-function PieChart1({ month, year }: Props) {
-  const monthYear = `${String(month).padStart(2, "0")}${year}`;
-
-  const { data: rawData, loading, error } = useAllByMonthYearByCategories(monthYear);
-
-  const chartData = rawData?.map((item) => ({
+function PieChart1({ data }: Props) {
+  const chartData = data?.map((item) => ({
     category: item.category.summary,
     total: item.total,
     fill: `#${item.category.color.replace(/^#/, '')}`
   }));
 
-  const chartConfig = rawData?.reduce((acc: any, item: any) => {
+  const chartConfig = data?.reduce((acc: any, item: any) => {
     const key = item.category.summary;
     acc[key] = {
       label: key,
@@ -52,9 +51,6 @@ function PieChart1({ month, year }: Props) {
     };
     return acc;
   }, {} as Record<string, { label: string; color: string }>);
-
-  if (loading) return <p>Carregando...</p>;
-  if (error) return <p>Erro: {error}</p>;
 
 function dados() {
   return (

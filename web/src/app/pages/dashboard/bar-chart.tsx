@@ -20,6 +20,8 @@ import {
 
 import { useAllCurrentWeek } from "@/hooks/reports/expenses/useAllCurrentWeek"
 
+import { type DashboardData } from "../../../../types/reports/DashboardData"
+
 export const description = "A bar chart"
 
 const chartConfig = {
@@ -32,6 +34,10 @@ const chartConfig = {
 type Props = {
   title: string;
   subtitle: string;
+  data: {
+    day: string;
+    total: number;
+  }[];
 }
 
 const dayMap: Record<string, string> = {
@@ -46,9 +52,7 @@ const dayMap: Record<string, string> = {
 
 const weekOrder = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"]
 
-export function ChartBarDefault({ title, subtitle }: Props) {
-  const { data } = useAllCurrentWeek()
-
+export function ChartBarDefault({ title, subtitle, data }: Props) {
   const chartData = weekOrder.map((day) => {
     const item = data?.find((d) => d.day === day)
     return {
