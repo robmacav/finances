@@ -36,7 +36,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
 
-import type { Expense } from '../../../../types/Expense';
+// import type { Expense } from '../../../../types/Expense';
 // import { useExpense } from '../../../hooks/useExpense';
 // import type { Transaction } from '../../../../types/reports/Transaction';
 import { useTransactionsByMonthYear } from '../../../hooks/reports/useTransactionsByMonthYear';
@@ -47,6 +47,7 @@ import { Show } from "./Show";
 import { Edit } from "./Edit";
 import { New } from "./New";
 import FiltersModal from "./FiltersModal";
+import type { Transaction } from "types/reports/Transaction";
 
 function getColumns({ openDeleteDialog, openViewDialog, openEditDialog }: any) {
   return [
@@ -61,22 +62,22 @@ function getColumns({ openDeleteDialog, openViewDialog, openEditDialog }: any) {
     {
       id: "date_full",
       header: "Data",
-      accessorFn: (row: Expense) => row.date?.full ?? "—",
+      accessorFn: (row: Transaction) => row.date?.full ?? "—",
     },
     {
       id: "category_summary",
       header: "Categoria",
-      accessorFn: (row: Expense) => row.category?.summary ?? "—",
+      accessorFn: (row: Transaction) => row.category?.summary ?? "—",
     },
     {
       id: "subcategory_summary",
       header: "Sub-categoria",
-      accessorFn: (row: Expense) => row.subcategory?.summary ?? "—",
+      accessorFn: (row: Transaction) => row.subcategory?.summary ?? "—",
     },
     {
       id: "status_summary",
       header: "Status",
-      accessorFn: (row: Expense) => row.status?.summary ?? "—",
+      accessorFn: (row: Transaction) => row.status?.summary ?? "—",
     },
     {
       id: "actions",
@@ -115,22 +116,21 @@ function Index({ month, year }: Props) {
   const [pagination, setPagination] = React.useState({ pageIndex: 0, pageSize: 10 })
 
   const { data, loading, error, refetch } = useTransactionsByMonthYear(monthYear);
-  // const { data, loading, error, refetch } = useExpense(monthYear);
   const tableData = React.useMemo(() => data ?? [], [data]);
 
   const [deleteId, setDeleteId] = React.useState<string | null>(null);
   const [isAlertOpen, setIsAlertOpen] = React.useState(false);
 
-  const [editExpense, setEditExpense] = React.useState<Expense | null>(null);
+  const [editTransaction, setEditTransaction] = React.useState<Transaction | null>(null);
   const [editOpen, setEditOpen] = React.useState(false);
 
-  const [viewExpense, setViewExpense] = React.useState<Expense | null>(null);
+  const [viewTransaction, setViewTransaction] = React.useState<Transaction | null>(null);
   const [viewOpen, setViewOpen] = React.useState(false);
 
   const confirmDelete = async () => {
     if (!deleteId) return;
     try {
-      const res = await fetch(`${apiUrl}/expenses/${deleteId}`, { method: "DELETE" });
+      const res = await fetch(`${apiUrl}/transactions/${deleteId}`, { method: "DELETE" });
       if (!res.ok) throw new Error();
       toast.success("Despesa excluída com sucesso!");
       refetch();
@@ -144,8 +144,8 @@ function Index({ month, year }: Props) {
 
   const columns = React.useMemo(() => getColumns({
     openDeleteDialog: (id: string) => { setDeleteId(id); setIsAlertOpen(true); },
-    openEditDialog: (expense: Expense) => { setEditExpense(expense); setEditOpen(true); },
-    openViewDialog: (expense: Expense) => { setViewExpense(expense); setViewOpen(true); },
+    openEditDialog: (transaction: Transaction) => { setEditTransaction(transaction); setEditOpen(true); },
+    openViewDialog: (transaction: Transaction) => { setViewTransaction(transaction); setViewOpen(true); },
   }), []);
 
   const table = useReactTable({
@@ -175,7 +175,7 @@ function Index({ month, year }: Props) {
           />
           < FiltersModal />
         </div>
-        <New onExpenseCreated={refetch} />
+        <New onTransactionCreated={refetch} />
       </div>
 
       <div className="rounded-md border">
@@ -247,18 +247,18 @@ function Index({ month, year }: Props) {
       </AlertDialog>
 
       <Show
-        onExpenseCreated={() => { refetch(); setViewOpen(false); }}
-        initialExpense={viewExpense}
+        onTransactionCreated={() => { refetch(); setViewOpen(false); }}
+        initialTransaction={viewTransaction}
         open={viewOpen}
         onOpenChange={setViewOpen}
       />
 
-      <Edit
+      {/* <Edit
         onExpenseEdited={() => { refetch(); setEditOpen(false); }}
         initialExpense={editExpense}
         open={editOpen}
         onOpenChange={setEditOpen}
-      />
+      /> */}
     </section>
   );
 }

@@ -3,20 +3,28 @@ export type Transaction = {
   summary: string;
   details: string | null;
   value: string;
+  kind: 'expenses' | 'incomes';
+
   date: {
     full: string;
     day: number;
     month: number;
     year: number;
   } | null;
+
   status: {
     id: number | null;
     summary: string | null;
   };
+
   category: {
     id: number | null;
     summary: string | null;
     color: string | null;
   };
-  type: 'expenses' | 'incomes';
+
+  subcategory: {
+    id: number | null;
+    summary: string | null;
+  };
 };

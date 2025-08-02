@@ -11,11 +11,11 @@ import {
 import { Label } from "@/components/ui/label"
 import { useEffect, useState } from "react"
 
-import { type Expense } from "../../../../types/Expense"
+import { type Transaction } from "../../../../types/reports/Transaction"
 
 type NewProps = {
-  onExpenseCreated: () => void;
-  initialExpense?: Expense | null;
+  onTransactionCreated: () => void;
+  initialTransaction?: Transaction | null;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -27,7 +27,7 @@ function formatToDDMMYYYY(date: Date): string {
   return `${day}/${month}/${year}`;
 }
 
-export function Show({ initialExpense, open, onOpenChange }: NewProps) {
+export function Show({ initialTransaction, open, onOpenChange }: NewProps) {
   const [summary, setSummary] = useState("")
   const [value, setValue] = useState("")
   const [category, setSelectedCategory] = useState<string | undefined>()
@@ -36,14 +36,14 @@ export function Show({ initialExpense, open, onOpenChange }: NewProps) {
   const [date, setDate] = useState("")
 
   useEffect(() => {
-    if (initialExpense) {
-      setSummary(initialExpense.summary ?? "")
-      setValue(initialExpense.value?.toString() ?? "")
-      setSelectedCategory(initialExpense.category?.summary?.toString())
-      setSelectedStatus(initialExpense.status?.summary?.toString())
-      setDetails(initialExpense.details ?? "")
+    if (initialTransaction) {
+      setSummary(initialTransaction.summary ?? "")
+      setValue(initialTransaction.value?.toString() ?? "")
+      setSelectedCategory(initialTransaction.category?.summary?.toString())
+      // setSelectedStatus(initialTransaction.status?.summary?.toString())
+      setDetails(initialTransaction.details ?? "")
 
-      const parsedDate = initialExpense.date?.full ? new Date(initialExpense.date.full) : new Date();
+      const parsedDate = initialTransaction.date?.full ? new Date(initialTransaction.date.full) : new Date();
       setDate(formatToDDMMYYYY(parsedDate));
     } else {
       setSummary("")
@@ -53,7 +53,7 @@ export function Show({ initialExpense, open, onOpenChange }: NewProps) {
       setDetails("")
       setDate("");
     }
-  }, [initialExpense])
+  }, [initialTransaction])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
