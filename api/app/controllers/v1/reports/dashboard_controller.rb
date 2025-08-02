@@ -69,27 +69,27 @@ class V1::Reports::DashboardController < ApplicationController
         page = params[:page]
         per_page = params[:per_page] || 50
 
-        incomes = Income.all_by_month_year_sum(month_year)
-        expenses = Expense.all_by_month_year_sum(month_year)
+        incomes = Transaction.sum_by_kind_and_month_year(:income, month_year)
+        expenses = Transaction.sum_by_kind_and_month_year(:expense, month_year)
         available = incomes - expenses
 
-        expenses_by_category = Expense.all_by_month_year_by_category(month_year)
-                                    .page(page)
-                                    .per(per_page)
+        expenses_by_category = Transaction.by_kind_and_month_year_per_category(:expense, month_year)
+                                          .page(page)
+                                          .per(per_page)
 
         grouped_by_category = expenses_by_category.map do |expense|
             {
                 category: {
-                summary: expense.category.summary,
-                color: expense.category.color
+                    summary: expense.category.summary,
+                    color: expense.category.color
                 },
                 total: expense.total.to_f
             }
         end
 
-        total_by_months = build_total_by_months(year)
+        total_by_months = build_total_by_months(year.to_i)
 
-        most_frequents = Expense.most_frequents_on_current_month(month_year).map do |e|
+        most_frequents = Transaction.by_month_year_expenses_most_frequents(month_year).map do |e|
             {
                 summary: e.summary,
                 qtd: e.qtd.to_i,
@@ -97,7 +97,7 @@ class V1::Reports::DashboardController < ApplicationController
             }
         end
 
-        current_week = Expense.all_current_week_total_by_day.map do |e|
+        current_week = Transaction.expenses_on_current_week_total_by_day.map do |e|
             {
                 day: e.day_name.strip,
                 total: e.total.to_f
@@ -115,29 +115,27 @@ class V1::Reports::DashboardController < ApplicationController
             most_frequents: most_frequents,
             current_week: current_week
         }
-    rescue
-        render json: {}
     end
 
     private
 
     def build_total_by_months(year)
-        expenses = Expense.total_months_by_year(year)
-        incomes = Income.total_months_by_year(year)
+        expenses = Transaction.total_months_by_kind_per_year(:expense, year.to_i)
+        incomes  = Transaction.total_months_by_kind_per_year(:income,  year.to_i)
 
-        expenses_hash = expenses.index_by(&:month_year)
-        incomes_hash = incomes.index_by(&:month_year)
+        # Hashes com chave sendo "Jan", "Feb", etc.
+        expenses_hash = expenses.index_by(&:month)
+        incomes_hash  = incomes.index_by(&:month)
 
-        meses = %w[January February March April May June July August September October November December]
+        meses = %w[Jan Feb Mar Apr May Jun Jul Aug Sep Oct Nov Dec]
 
-        (1..12).map do |mes|
-            chave = format('%02d%04d', mes, year.to_i)
-
+        meses.map do |mes|
             {
-                month: meses[mes - 1],
-                incomes: incomes_hash[chave]&.total.to_i,
-                expenses: expenses_hash[chave]&.total.to_i
+            month: mes,
+            incomes: incomes_hash[mes]&.total.to_f,
+            expenses: expenses_hash[mes]&.total.to_f
             }
         end
     end
+
 end

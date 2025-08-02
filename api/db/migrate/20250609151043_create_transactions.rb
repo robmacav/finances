@@ -4,7 +4,7 @@ class CreateTransactions < ActiveRecord::Migration[7.1]
       t.string :summary
       t.text :details
       t.decimal :value
-      t.string :date, limit: 8
+      t.date :date
       t.integer :transaction_kind_id, null: false
       t.integer :status_id, null: false
       t.integer :category_id
