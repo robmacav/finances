@@ -4,8 +4,11 @@ default: &default
   pool: <%= ENV.fetch("RAILS_DB_MAX_THREADS") { 5 } %>
 
 development: 
-  adapter: sqlite3
-  database: /dev/null
+  <<: *default
+  host: <%= Rails.application.credentials.production.database.host %>
+  database: <%= Rails.application.credentials.production.database.database %>
+  username: <%= Rails.application.credentials.production.database.username %>
+  password: <%= Rails.application.credentials.production.database.password %>
 
 production:
   primary:

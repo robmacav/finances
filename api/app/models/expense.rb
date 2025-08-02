@@ -35,7 +35,6 @@ class Expense < ApplicationRecord
         .order("month_year ASC")
     }
 
-
     scope :all_current_week_total_by_day, -> {
         start_date = Date.today.beginning_of_week(:monday)
         end_date = Date.today.end_of_week(:sunday)
@@ -45,7 +44,6 @@ class Expense < ApplicationRecord
         .group("day_name")
         .order(Arel.sql("MIN(date)"))
     }
-
 
     scope :most_frequents_on_current_month, ->(month_year) {
         where(date: date_range_by_month_year_string(month_year))

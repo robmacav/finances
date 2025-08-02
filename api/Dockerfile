@@ -16,7 +16,7 @@ RUN bundle install
 
 # ENTRYPOINT ["entrypoint.sh"]
 
-ENV RAILS_ENV=production
+ENV RAILS_ENV=development
 
 EXPOSE 3000
 

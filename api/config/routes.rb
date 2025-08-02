@@ -9,6 +9,10 @@ Rails.application.routes.draw do
     resources :categories
 
     namespace :reports do
+      scope :transactions do 
+        get "all-by-month-year", to: "transactions#all_by_month_year"
+      end
+
       scope :expenses do 
         get "by-category-and-month-year", to: "expenses#by_category_and_month_year"
         get "all-by-month-year", to: "expenses#all_by_month_year"
