@@ -34,6 +34,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 
 import { apiUrl } from "@/lib/api";
 
+import { createTransaction, createMultipleTransactions } from "@/api/transaction";
+
 function isValidDate(date: Date | undefined) {
   if (!date) return false
   return !isNaN(date.getTime())
@@ -117,28 +119,28 @@ export function MonthYearPickerOnly({ value, setValue }: MonthYearPickerOnlyProp
 }
 
 
-type Expense = {
+type Transaction = {
   summary: string;
   value: string;
   date: string;
   category_id?: string;
 };
 
-type ExpenseFormProps = {
-  expenses: Expense[];
-  setExpenses: React.Dispatch<React.SetStateAction<Expense[]>>;
+type TransactionFormProps = {
+  transactions: Transaction[];
+  setTransactions: React.Dispatch<React.SetStateAction<Transaction[]>>;
 };
 
-function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
-  const handleChange = (index: number, field: keyof Expense, value: string) => {
-    const updated = [...expenses];
+function TransactionForm({ transactions, setTransactions }: TransactionFormProps) {
+  const handleChange = (index: number, field: keyof Transaction, value: string) => {
+    const updated = [...transactions];
     updated[index][field] = value;
-    setExpenses(updated);
+    setTransactions(updated);
   };
 
   const handleRemove = (index: number) => {
-    const updated = expenses.filter((_, i) => i !== index);
-    setExpenses(updated);
+    const updated = transactions.filter((_, i) => i !== index);
+    setTransactions(updated);
   };
 
   const { data: categoryData } = useCategory();
@@ -146,45 +148,41 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
   const [monthYearField, setMonthYearField] = useState(formatMonthYear(new Date()))
 
   return (
-    <div className="space-y-6 overflow-y-auto p-2">
+    <div className="space-y-4 overflow-y-auto p-2">
       <MonthYearPickerOnly value={monthYearField} setValue={setMonthYearField} />
-      {expenses.map((expense, index) => (
-        <div key={index} className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-4 items-end">
+      {transactions.map((transaction, index) => (
+        <div key={index} className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-1 items-end">
           <div className="grid gap-3">
-            <Label htmlFor={`summary-${index}`}>Descrição</Label>
             <Input
               id={`summary-${index}`}
               name={`summary-${index}`}
-              value={expense.summary}
+              value={transaction.summary}
               onChange={(e) => handleChange(index, "summary", e.target.value)}
-              placeholder="Amazon"
+              placeholder="Descrição"
             />
           </div>
           <div className="grid gap-3">
-            <Label htmlFor={`value-${index}`}>Valor</Label>
             <Input
               id={`value-${index}`}
               name={`value-${index}`}
-              value={expense.value}
+              value={transaction.value}
               onChange={(e) => handleChange(index, "value", e.target.value)}
-              placeholder="85.75"
+              placeholder="Valor"
             />
           </div>
           <div className="grid gap-3">
-            <Label htmlFor={`date-${index}`}>Dia</Label>
             <Input
               id={`date-${index}`}
               name={`date-${index}`}
-              value={expense.date}
+              value={transaction.date}
               onChange={(e) => handleChange(index, "date", e.target.value)}
-              placeholder="07"
+              placeholder="Dia"
             />
           </div>
           <div className="grid gap-3">
-            <Label>Categoria</Label>
             <Select
               name="category_id"
-              value={expense.category_id ?? ""}
+              value={transaction.category_id ?? ""}
               onValueChange={(value) => handleChange(index, "category_id", value)}
             >
               <SelectTrigger className="min-w-[250px]">
@@ -218,8 +216,7 @@ function ExpenseForm({ expenses, setExpenses }: ExpenseFormProps) {
 }
 
 type NewProps = {
-  onExpenseCreated: () => void;
-  type: string;
+  onTransactionCreated: () => void;
 };
 
 function formatDate(date: Date | undefined) {
@@ -251,25 +248,26 @@ function formatDayMonthYear(day: number | string, monthYear: string): string {
 }
 
 
-export function New({ onExpenseCreated }: NewProps) {
+export function New({ onTransactionCreated }: NewProps) {
   const { data: categoryData } = useCategory();
   const { data: statusData } = useStatus();
 
-  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined)
-  const [selectedStatus, setSelectedStatus] = useState("2")
+  const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
+  const [selectedKind, setSelectedKind] = useState("transactions");
+  const [selectedStatus, setSelectedStatus] = useState("2");
 
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(new Date())
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
 
-  const [monthYearField, setMonthYearField] = useState("07/2025")
+  const [monthYearField, setMonthYearField] = useState("07/2025");
 
-  const [expenses, setExpenses] = useState<Expense[]>([
+  const [transactions, setTransactions] = useState<Transaction[]>([
     { summary: "", value: "", date: "", category_id: undefined }
   ]);
 
-  const [tab, setTab] = useState("expenses");
+  const [tab, setTab] = useState("unico");
 
   return (
     <Dialog
@@ -278,7 +276,7 @@ export function New({ onExpenseCreated }: NewProps) {
           setSelectedCategory(undefined);
           setSelectedStatus("2");
           setTab("unico");
-          setExpenses([{ summary: "", value: "", date: "", category_id: undefined }]);
+          setTransactions([{ summary: "", value: "", date: "", category_id: undefined }]);
         }
       }}
     >
@@ -289,12 +287,12 @@ export function New({ onExpenseCreated }: NewProps) {
       </DialogTrigger>
       <DialogContent className="md:min-w-3xl xl:min-w-6xl h-[90vh] flex flex-col">
         <DialogHeader>
-          <DialogTitle>Cadastro de Despesas</DialogTitle>
+          <DialogTitle>Cadastro de Transações</DialogTitle>
           <DialogDescription>
-            Preencha os campos abaixo para cadastrar uma nova despesa.
+            Preencha os campos abaixo para cadastrar uma nova transação.
           </DialogDescription>
         </DialogHeader>
-        <Tabs defaultValue="expenses" value={tab} onValueChange={setTab} className="flex-1 flex flex-col overflow-hidden">
+        <Tabs value={tab} onValueChange={setTab} className="flex-1 flex flex-col overflow-hidden">
           <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between my-5 gap-4">
             <TabsList>
                 <TabsTrigger value="unico">Único</TabsTrigger>
@@ -304,157 +302,169 @@ export function New({ onExpenseCreated }: NewProps) {
             <Button
               variant="outline"
               onClick={() =>
-                setExpenses([...expenses, { summary: "", value: "", date: "" }])
+                setTransactions([...transactions, { summary: "", value: "", date: "" }])
               }
             >
               <Plus className="mr-2" />
-              Adicionar despesa
+              Adicionar transação
             </Button>
           )}
-          
           </div>
+
+          <div className="flex flex-col sm:flex-row gap-4 p-2">
+            <div className="basis-1/3 grid gap-3">
+              <Label>Tipo de Transação</Label>
+              <Select name="kind" value={selectedKind} onValueChange={setSelectedKind}>
+                <SelectTrigger className="w-full">
+                  <SelectValue placeholder="Selecione uma categoria" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectGroup>
+                    <SelectLabel>Status</SelectLabel>
+                    <SelectItem value="expenses">Despesas</SelectItem>
+                    <SelectItem value="incomes">Receitas</SelectItem>
+                  </SelectGroup>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
+
           <TabsContent value="unico" className="flex-1 overflow-y-auto p-2">
-            <form
-              id="unico"
-              onSubmit={async (e) => {
-                e.preventDefault()
+          <form
+            id="unico"
+            onSubmit={async (e) => {
+              e.preventDefault();
 
-                const form = e.currentTarget;
-                const formData = new FormData(form);
+              const form = e.currentTarget;
+              const formData = new FormData(form);
 
-                const payload = {
-                  summary: formData.get("summary"),
-                  value: parseFloat(formData.get("value")?.toString() || "0"),
-                  date: formatToDDMMYYYY(formData.get("date")?.toString() || ""),
-                  category_id: formData.get("category_id"),
-                  details: formData.get("details"),
-                  status_id: formData.get("status_id"),
-                  user_id: "2"
-                }
+              const payload = {
+                summary: formData.get("summary")?.toString() || "",
+                value: parseFloat(formData.get("value")?.toString() || "0"),
+                date: formatToDDMMYYYY(formData.get("date")?.toString() || ""),
+                category_id: formData.get("category_id"),
+                details: formData.get("details"),
+                kind: formData.get("kind"),
+                status_id: formData.get("status_id"),
+                user_id: "2"
+              };
 
-                try {
-                  const response = await fetch(`${apiUrl}/expenses`, {
-                    method: "POST",
-                    headers: {
-                      "Content-Type": "application/json",
-                    },
-                    body: JSON.stringify(payload),
-                  })
+              try {
+                const response = await createTransaction(payload);
 
-                  if (response.ok) {
-                    toast.success("Despesa cadastrada com sucesso!");
+                if (response.ok) {
+                  toast.success("Transação cadastrada com sucesso!");
+                  onTransactionCreated();
+                  form.reset();
+                } else {
+                  const contentType = response.headers.get("Content-Type");
+                  let errorMessage = "";
 
-                    onExpenseCreated();
-
-                    form.reset()
+                  if (contentType?.includes("application/json")) {
+                    const errorData = await response.json();
+                    errorMessage = JSON.stringify(errorData);
                   } else {
-                    let errorMessage = ""
-                    const contentType = response.headers.get("Content-Type")
-
-                    if (contentType?.includes("application/json")) {
-                      const errorData = await response.json()
-                      errorMessage = JSON.stringify(errorData)
-                    } else {
-                      errorMessage = await response.text()
-                    }
-
-                    toast.error("Falha ao cadastrar despesa");
+                    errorMessage = await response.text();
                   }
-                } catch (err) {
-                  toast.error("Falha ao cadastrar despesa");
-                } 
-              }}
-            >
+
+                  toast.error("Erro ao cadastrar: " + errorMessage);
+                }
+              } catch (err) {
+                toast.error("Erro ao cadastrar transação.");
+              }
+            }}
+          >
               <div className="grid gap-4">
                 <div className="grid gap-3">
                   <Label>Título</Label>
-                  <Input id="summary" name="summary" defaultValue="" />
+                  <Input id="summary" name="summary" defaultValue="" placeholder="PVH Shopping" />
                 </div>
-                <div className="grid gap-3">
-                  <Label htmlFor="value">Valor</Label>
-                  <Input id="value" name="value" defaultValue="" autoComplete="off"/>
-                </div>
-
-                <div className="grid gap-3">
-                  <Label htmlFor="name-1">Data</Label>
-                  <div className="flex flex-col gap-3">
-                    <div className="relative flex gap-2">
-                    <Input
-                      id="date"
-                      value={value}
-                      name="date"
-                      placeholder="June 01, 2025"
-                      className="bg-background pr-10"
-                      onFocus={() => setOpen(true)}
-                      onChange={(e) => {
-                        const date = new Date(e.target.value);
-                        setValue(e.target.value);
-                        if (isValidDate(date)) {
-                          setDate(date);
-                          setMonth(date);
-                          setValue(formatDateDDMMYYYY(date));
-                        }
-                      }}
-                      onKeyDown={(e) => {
-                        if (e.key === "ArrowDown") {
-                          e.preventDefault()
-                          setOpen(true)
-                        }
-                      }}
-                    />
-
-                      <Popover open={open} onOpenChange={setOpen}>
-                        <PopoverTrigger asChild>
-                          <Button
-                            id="date-picker"
-                            variant="ghost"
-                            className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
-                          >
-                            <CalendarIcon className="size-3.5" />
-                            <span className="sr-only">Select date</span>
-                          </Button>
-                        </PopoverTrigger>
-                        <PopoverContent
-                          className="w-auto overflow-hidden p-0"
-                          align="end"
-                          alignOffset={-8}
-                          sideOffset={10}
-                        >
-                        <Calendar
-                          mode="single"
-                          selected={date}
-                          captionLayout="dropdown"
-                          month={month}
-                          onMonthChange={setMonth}
-                          onSelect={(date) => {
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="flex-1 grid gap-3">
+                    <Label htmlFor="value">Valor</Label>
+                    <Input id="value" name="value" defaultValue="" autoComplete="off" placeholder="R$ 128.79" />
+                  </div>
+                  <div className="flex-1 grid gap-3">
+                    <Label htmlFor="name-1">Data</Label>
+                    <div className="flex flex-col gap-3">
+                      <div className="relative flex gap-2">
+                      <Input
+                        id="date"
+                        value={value}
+                        name="date"
+                        placeholder="June 01, 2025"
+                        className="bg-background pr-10"
+                        onFocus={() => setOpen(true)}
+                        onChange={(e) => {
+                          const date = new Date(e.target.value);
+                          setValue(e.target.value);
+                          if (isValidDate(date)) {
                             setDate(date);
+                            setMonth(date);
                             setValue(formatDateDDMMYYYY(date));
-                            setOpen(false);
-                          }}
-                          locale={ptBR}
-                        />
-                        </PopoverContent>
-                      </Popover>
+                          }
+                        }}
+                        onKeyDown={(e) => {
+                          if (e.key === "ArrowDown") {
+                            e.preventDefault()
+                            setOpen(true)
+                          }
+                        }}
+                      />
+
+                        <Popover open={open} onOpenChange={setOpen}>
+                          <PopoverTrigger asChild>
+                            <Button
+                              id="date-picker"
+                              variant="ghost"
+                              className="absolute top-1/2 right-2 size-6 -translate-y-1/2"
+                            >
+                              <CalendarIcon className="size-3.5" />
+                              <span className="sr-only">Select date</span>
+                            </Button>
+                          </PopoverTrigger>
+                          <PopoverContent
+                            className="w-auto overflow-hidden p-0"
+                            align="end"
+                            alignOffset={-8}
+                            sideOffset={10}
+                          >
+                          <Calendar
+                            mode="single"
+                            selected={date}
+                            captionLayout="dropdown"
+                            month={month}
+                            onMonthChange={setMonth}
+                            onSelect={(date) => {
+                              setDate(date);
+                              setValue(formatDateDDMMYYYY(date));
+                              setOpen(false);
+                            }}
+                            locale={ptBR}
+                          />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div className="grid gap-3">
-                  <Label>Categoria</Label>
-                  <Select name="category_id" value={selectedCategory} onValueChange={setSelectedCategory}>
-                    <SelectTrigger className="w-full">
-                      <SelectValue placeholder="Selecione uma categoria" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectGroup>
-                        <SelectLabel>Categorias</SelectLabel>
-                        {(categoryData ?? []).map((category) => (
-                          <SelectItem key={category.id} value={category.id.toString()}>
-                            {category.summary}
-                          </SelectItem>
-                        ))}
-                      </SelectGroup>
-                    </SelectContent>
-                  </Select>
+                  <div className="flex-1 grid gap-3">
+                    <Label>Categoria</Label>
+                    <Select name="category_id" value={selectedCategory} onValueChange={setSelectedCategory}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecione uma categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Categorias</SelectLabel>
+                          {(categoryData ?? []).map((category) => (
+                            <SelectItem key={category.id} value={category.id.toString()}>
+                              {category.summary}
+                            </SelectItem>
+                          ))}
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
                 </div>
                 <div className="grid gap-3">
                   <Label>Status</Label>
@@ -486,69 +496,62 @@ export function New({ onExpenseCreated }: NewProps) {
             </form>
           </TabsContent>
           <TabsContent value="lote" className="flex-1 overflow-y-auto">
-<form
-  onSubmit={async (e) => {
-    e.preventDefault();
+            <form
+              onSubmit={async (e) => {
+                e.preventDefault();
 
-    const monthYearCleaned = monthYearField.replace("/", "");
+                const monthYearCleaned = monthYearField.replace("/", "");
 
-    // Validação dos campos
-    const hasInvalid = expenses.some((exp, index) => {
-      if (
-        !exp.summary?.trim() ||
-        !exp.value?.toString().trim() ||
-        !exp.date?.trim() ||
-        !exp.category_id
-      ) {
-        toast.error(`Preencha todos os campos da linha ${index + 1}`);
-        return true;
-      }
-      return false;
-    });
+                const hasInvalid = transactions.some((exp, index) => {
+                  if (
+                    !exp.summary?.trim() ||
+                    !exp.value?.toString().trim() ||
+                    !exp.date?.trim() ||
+                    !exp.category_id
+                  ) {
+                    toast.error(`Preencha todos os campos da linha ${index + 1}`);
+                    return true;
+                  }
+                  return false;
+                });
 
-    if (hasInvalid) return;
+                if (hasInvalid) return;
 
-    const formattedExpenses = expenses.map((exp) => ({
-      summary: exp.summary,
-      value: parseFloat(exp.value || "0"),
-      date: formatDayMonthYear(exp.date, monthYearCleaned),
-      category_id: exp.category_id,
-      status_id: "2",
-      user_id: "2",
-    }));
+                const formattedTransactions = transactions.map((exp) => ({
+                  summary: exp.summary,
+                  value: parseFloat(exp.value || "0"),
+                  date: formatDayMonthYear(exp.date, monthYearCleaned),
+                  category_id: exp.category_id ?? null,
+                  status_id: "2",
+                  user_id: "2"
+                }));
 
-    try {
-      const response = await fetch(`${apiUrl}/expenses`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ expenses: formattedExpenses }),
-      });
+                try {
+                  const response = await createMultipleTransactions(formattedTransactions);
 
-      if (response.ok) {
-        toast.success("Despesas cadastradas com sucesso!");
-        setExpenses([]); // limpa o estado
-      } else {
-        let errorMessage = "";
-        const contentType = response.headers.get("Content-Type");
+                  if (response.ok) {
+                    toast.success("Transações cadastradas com sucesso!");
+                    setTransactions([]);
+                  } else {
+                    let errorMessage = "";
+                    const contentType = response.headers.get("Content-Type");
 
-        if (contentType?.includes("application/json")) {
-          const errorData = await response.json();
-          errorMessage = JSON.stringify(errorData);
-        } else {
-          errorMessage = await response.text();
-        }
+                    if (contentType?.includes("application/json")) {
+                      const errorData = await response.json();
+                      errorMessage = JSON.stringify(errorData);
+                    } else {
+                      errorMessage = await response.text();
+                    }
 
-        toast.error("Falha ao cadastrar despesas");
-      }
-    } catch (err) {
-      toast.error("Falha ao cadastrar despesas");
-    }
-  }}
->
+                    toast.error("Falha ao cadastrar transações!");
+                  }
+                } catch (err) {
+                  toast.error("Falha ao cadastrar transações!");
+                }
+              }}
+            >
 
-            <ExpenseForm expenses={expenses} setExpenses={setExpenses} />
+            <TransactionForm transactions={transactions} setTransactions={setTransactions} />
             <div className="mt-6 flex justify-end">
               <Button type="submit">Salvar Todas</Button>
             </div>
