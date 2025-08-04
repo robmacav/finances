@@ -38,9 +38,9 @@ export function Show({ initialTransaction, open, onOpenChange }: NewProps) {
   useEffect(() => {
     if (initialTransaction) {
       setSummary(initialTransaction.summary ?? "")
-      setValue(initialTransaction.value?.toString() ?? "")
-      setSelectedCategory(initialTransaction.category?.summary?.toString())
-      // setSelectedStatus(initialTransaction.status?.summary?.toString())
+      setValue(initialTransaction.value.formated.toString() ?? "")
+      setSelectedCategory(initialTransaction.category?.summary?.toString() ?? "")
+      setSelectedStatus(initialTransaction.status?.summary?.toString() ?? "")
       setDetails(initialTransaction.details ?? "")
 
       const parsedDate = initialTransaction.date?.full ? new Date(initialTransaction.date.full) : new Date();

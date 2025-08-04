@@ -28,6 +28,7 @@ export type CreateMultiplesTransactionsPayload = {
   value: number;
   date: string;
   category_id: string | null;
+  kind: string | null;
   status_id: string;
   user_id: string;
 };

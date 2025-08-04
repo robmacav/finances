@@ -19,13 +19,20 @@ class V1::Reports::TransactionsController < ApplicationController
 
         {
             id: transaction.id,
+            kind: transaction&.kind,
             summary: transaction.summary,
             details: transaction.details,
-            value: "#{value_prefix} #{'%.2f' % transaction.value}",
-            kind: transaction&.kind,
+
+            value: {
+                original: transaction.value,
+                formated: "#{value_prefix} #{'%.2f' % transaction.value}"
+            },
 
             date: {
+                original: transaction.date,
+
                 full: transaction&.date.strftime("%d/%m/%Y"),
+
                 day: transaction.date&.day,
                 month: transaction.date&.month,
                 year: transaction.date&.year

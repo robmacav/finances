@@ -23,7 +23,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover"
-import { CalendarIcon, Plus } from "lucide-react"
+import { CalendarIcon } from "lucide-react"
 
 import { toast } from "sonner"
 import { useStatus } from "@/hooks/useStatus"
@@ -33,8 +33,8 @@ import { type Transaction } from "../../../../types/reports/Transaction"
 import { apiUrl } from "@/lib/api";
 
 type NewProps = {
-  onExpenseEdited: () => void;
-  initialExpense?: Transaction | null;
+  onTransactionEdited: () => void;
+  initialTransaction?: Transaction | null;
   open?: boolean;
   onOpenChange?: (open: boolean) => void;
 }
@@ -58,6 +58,26 @@ function isValidDate(date: Date | undefined) {
   return !isNaN(date.getTime())
 }
 
+function formatDateToDDMMYYYY(dateStr: string): string {
+  const date = new Date(dateStr);
+  
+  const day = String(date.getDate()).padStart(2, '0');
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // meses são de 0 a 11
+  const year = String(date.getFullYear());
+
+  return `${day}${month}${year}`;
+}
+
+function formatDateToISO(dateStr: string): string {
+  const date = new Date(dateStr);
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, '0'); // meses são base 0
+  const day = String(date.getDate()).padStart(2, '0');
+
+  return `${year}-${month}-${day}`;
+}
+
 function formatToDDMMYYYY(dateStr: string | null): string {
   if (!dateStr) return ""
 
@@ -71,7 +91,7 @@ function formatToDDMMYYYY(dateStr: string | null): string {
   return `${day}${month}${year}`
 }
 
-export function Edit({ onExpenseEdited, initialExpense, open, onOpenChange }: NewProps) {
+export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChange }: NewProps) {
   const { data: categoryData } = useCategory();
   const { data: statusData } = useStatus();
 
@@ -79,17 +99,21 @@ export function Edit({ onExpenseEdited, initialExpense, open, onOpenChange }: Ne
 
 
   const [selectedCategory, setSelectedCategory] = useState(
-    initialExpense?.category?.id?.toString()
+    initialTransaction?.category?.id?.toString()
   );
 
   const [selectedStatus, setSelectedStatus] = useState(
-    initialExpense?.status?.id?.toString()
+    initialTransaction?.status?.id?.toString()
   );
 
-  const [value, setValue] = useState(formatDate(new Date(initialExpense?.date?.full || "")));
-  const [date, setDate] = useState(new Date(initialExpense?.date?.full || ""));
+  const [value, setValue] = useState(formatDate(new Date(initialTransaction?.date?.full || "")));
+  const [date, setDate] = useState(new Date(initialTransaction?.date?.full || ""));
 
   const [month, setMonth] = React.useState<Date | undefined>(date)
+
+  const [selectedKind, setSelectedKind] = useState<string | undefined>(
+    initialTransaction?.kind as string
+  );
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -97,9 +121,9 @@ export function Edit({ onExpenseEdited, initialExpense, open, onOpenChange }: Ne
       </DialogTrigger>
       <DialogContent className="md:min-w-3xl xl:min-w-6xl">
         <DialogHeader>
-          <DialogTitle>{initialExpense?.summary}</DialogTitle>
+          <DialogTitle>{initialTransaction?.summary}</DialogTitle>
           <DialogDescription>
-            Faça a alteração dos campos abaixo para atualizar os dados da despesa.
+            Faça a alteração dos campos abaixo para atualizar os dados da transação.
           </DialogDescription>
         </DialogHeader>
         <form
@@ -110,9 +134,10 @@ export function Edit({ onExpenseEdited, initialExpense, open, onOpenChange }: Ne
             const formData = new FormData(form);
 
             const payload = {
+              kind: formData.get("kind"),
               summary: formData.get("summary"),
               value: parseFloat(formData.get("value")?.toString() || "0"),
-              date: formatToDDMMYYYY(formData.get("date")?.toString() || ""),
+              date: formatDateToISO(formData.get("date")?.toString() || ""),
               category_id: formData.get("category_id"),
               details: formData.get("details"),
               status_id: formData.get("status_id"),
@@ -120,8 +145,8 @@ export function Edit({ onExpenseEdited, initialExpense, open, onOpenChange }: Ne
             }
 
             try {
-              const response = await fetch(`${apiUrl}/expenses`, {
-                method: "POST",
+              const response = await fetch(`${apiUrl}/transactions/${initialTransaction?.id}`, {
+                method: "PATCH",
                 headers: {
                   "Content-Type": "application/json",
                 },
@@ -129,14 +154,14 @@ export function Edit({ onExpenseEdited, initialExpense, open, onOpenChange }: Ne
               })
 
               if (response.ok) {
-                toast.success("Despesa cadastrada com sucesso!");
+                toast.success("Transação atualizada com sucesso!");
 
-                onExpenseEdited();
+                onTransactionEdited();
 
                 form.reset()
               } else {
                 const contentType = response.headers.get("Content-Type")
-                let errorMessage = "Erro desconhecido"
+                let errorMessage = "";
 
                 if (contentType?.includes("application/json")) {
                   const errorData = await response.json()
@@ -145,22 +170,38 @@ export function Edit({ onExpenseEdited, initialExpense, open, onOpenChange }: Ne
                   errorMessage = await response.text()
                 }
 
-                toast.error("Falha ao cadastrar despesa");
+                toast.error("Falha ao atualizar transação");
               }
             } catch (err) {
-              toast.error("Falha ao cadastrar despesa");
+              toast.error("Falha ao atualizar transação");
               console.error("Erro ao enviar dados:", err)
             } 
           }}
         >
         <div className="grid gap-4 mt-5">
           <div className="grid gap-3">
+            <Label>Tipo de Transação</Label>
+            <Select name="kind" value={selectedKind} onValueChange={setSelectedKind}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione uma categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Status</SelectLabel>
+                  <SelectItem value="expense">Despesas</SelectItem>
+                  <SelectItem value="income">Receitas</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid gap-3">
             <Label>Título</Label>
-            <Input id="summary" name="summary" defaultValue={initialExpense?.summary ?? ""} />
+            <Input id="summary" name="summary" defaultValue={initialTransaction?.summary ?? ""} />
           </div>
           <div className="grid gap-3">
             <Label htmlFor="value">Valor</Label>
-            <Input id="value" name="value" defaultValue={initialExpense?.value ?? ""} />
+            <Input id="value" name="value" defaultValue={initialTransaction?.value.original ?? ""} />
           </div>
 
           <div className="grid gap-3">

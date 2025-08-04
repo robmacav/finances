@@ -1,4 +1,28 @@
+import React, { useState } from "react"
+
+import { ptBR } from "date-fns/locale";
+import { CalendarIcon, Plus, Trash } from "lucide-react"
+
+import { toast } from "sonner"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
 import { Button } from "@/components/ui/button"
+import { Textarea } from "@/components/ui/textarea"
+import { Calendar } from "@/components/ui/calendar"
+
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover"
+
+import { 
+  Tabs, 
+  TabsContent, 
+  TabsList, 
+  TabsTrigger 
+} from "@/components/ui/tabs"
+
 import {
   Dialog,
   DialogClose,
@@ -9,52 +33,61 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectLabel } from "@/components/ui/select"
+
+import { 
+  Select, 
+  SelectContent, 
+  SelectGroup, 
+  SelectItem, 
+  SelectTrigger, 
+  SelectValue, 
+  SelectLabel 
+} from "@/components/ui/select"
+
 import { useCategory } from "@/hooks/useCategory"
-import React, { useState } from "react"
-
-import { ptBR } from "date-fns/locale";
-
-
-import { Calendar } from "@/components/ui/calendar"
-
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover"
-import { CalendarIcon, Plus, Trash } from "lucide-react"
-
-import { toast } from "sonner"
 import { useStatus } from "@/hooks/useStatus"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-
-import { apiUrl } from "@/lib/api";
 
 import { createTransaction, createMultipleTransactions } from "@/api/transaction";
 
-function isValidDate(date: Date | undefined) {
-  if (!date) return false
-  return !isNaN(date.getTime())
+export function formatToDate(dateString: string): Date | null {
+  console.log("Input recebido:", dateString);
+
+  const parts = dateString.split("/");
+
+  if (parts.length !== 3) {
+    console.warn("Formato inválido");
+    return null;
+  }
+
+  const [dayStr, monthStr, yearStr] = parts;
+
+  const day = parseInt(dayStr, 10);
+  const month = parseInt(monthStr, 10) - 1; 
+  const year = parseInt(yearStr, 10);
+
+  if (
+    isNaN(day) || isNaN(month) || isNaN(year) ||
+    day < 1 || day > 31 || month < 0 || month > 11 || year < 1000
+  ) {
+    console.warn("Valores inválidos");
+    return null;
+  }
+
+  const date = new Date(year, month, day);
+
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month ||
+    date.getDate() !== day
+  ) {
+    console.warn("Data inválida");
+    return null;
+  }
+
+  console.log("Data convertida:", date);
+  return date;
 }
 
-function formatMonthYear(date: Date | undefined): string {
-  if (!date) return ""
-  const month = String(date.getMonth() + 1).padStart(2, "0")
-  const year = date.getFullYear()
-  return `${month}/${year}`
-}
-
-function formatDateDDMMYYYY(date: Date | undefined): string {
-  if (!date) return "";
-  const day = String(date.getDate()).padStart(2, "0");
-  const month = String(date.getMonth() + 1).padStart(2, "0"); // Janeiro = 0
-  const year = date.getFullYear();
-  return `${day}/${month}/${year}`;
-}
 
 
 type MonthYearPickerOnlyProps = {
@@ -118,11 +151,31 @@ export function MonthYearPickerOnly({ value, setValue }: MonthYearPickerOnlyProp
   )
 }
 
+function isValidDate(date: Date | undefined) {
+  if (!date) return false
+  return !isNaN(date.getTime())
+}
+
+function formatMonthYear(date: Date | undefined): string {
+  if (!date) return ""
+  const month = String(date.getMonth() + 1).padStart(2, "0")
+  const year = date.getFullYear()
+  return `${month}/${year}`
+}
+
+function formatDateDDMMYYYY(date: Date | undefined): string {
+  if (!date) return "";
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0"); // Janeiro = 0
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
+}
 
 type Transaction = {
   summary: string;
   value: string;
   date: string;
+  kind: string;
   category_id?: string;
 };
 
@@ -145,13 +198,43 @@ function TransactionForm({ transactions, setTransactions }: TransactionFormProps
 
   const { data: categoryData } = useCategory();
 
+  const [selectedKindLoteForm, setSelectedKindLoteForm] = useState("expense");
   const [monthYearField, setMonthYearField] = useState(formatMonthYear(new Date()))
+
+  console.log("selected: ", selectedKindLoteForm);
 
   return (
     <div className="space-y-4 overflow-y-auto p-2">
-      <MonthYearPickerOnly value={monthYearField} setValue={setMonthYearField} />
+      <div className="flex gap-4">
+        <div className="w-1/2">
+          <div className="grid gap-3">
+            <Label>Tipo de Transação</Label>
+            <Select name="kind" value={selectedKindLoteForm} onValueChange={setSelectedKindLoteForm}>
+              <SelectTrigger className="w-full">
+                <SelectValue placeholder="Selecione uma categoria" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectGroup>
+                  <SelectLabel>Status</SelectLabel>
+                  <SelectItem value="expense">Despesas</SelectItem>
+                  <SelectItem value="income">Receitas</SelectItem>
+                </SelectGroup>
+              </SelectContent>
+            </Select>
+          </div>
+        </div>
+        <div className="w-1/2">
+          <MonthYearPickerOnly value={monthYearField} setValue={setMonthYearField} />
+        </div>
+      </div>
       {transactions.map((transaction, index) => (
         <div key={index} className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-1 items-end">
+          <Input
+            id={`kind-${index}`}
+            name={`kind-${index}`}
+            value={selectedKindLoteForm}
+          />
+
           <div className="grid gap-3">
             <Input
               id={`summary-${index}`}
@@ -225,17 +308,14 @@ function formatDate(date: Date | undefined) {
   return date.toLocaleDateString("pt-BR")
 }
 
-
 function formatToDDMMYYYY(dateStr: string | null): string {
   if (!dateStr) return ""
-
-  console.log("dataaaa", dateStr);
 
   const date = new Date(dateStr)
   if (isNaN(date.getTime())) return ""
 
   const day = String(date.getDate()).padStart(2, "0")
-  const month = String(date.getMonth() + 1).padStart(2, "0") // Janeiro = 0
+  const month = String(date.getMonth() + 1).padStart(2, "0")
   const year = String(date.getFullYear())
 
   return `${day}${month}${year}`
@@ -253,7 +333,8 @@ export function New({ onTransactionCreated }: NewProps) {
   const { data: statusData } = useStatus();
 
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
-  const [selectedKind, setSelectedKind] = useState("transactions");
+
+  const [selectedKind, setSelectedKind] = useState("expense");
   const [selectedStatus, setSelectedStatus] = useState("2");
 
   const [open, setOpen] = React.useState(false)
@@ -264,7 +345,7 @@ export function New({ onTransactionCreated }: NewProps) {
   const [monthYearField, setMonthYearField] = useState("07/2025");
 
   const [transactions, setTransactions] = useState<Transaction[]>([
-    { summary: "", value: "", date: "", category_id: undefined }
+    { summary: "", value: "", date: "", category_id: undefined, kind: "" }
   ]);
 
   const [tab, setTab] = useState("unico");
@@ -276,7 +357,7 @@ export function New({ onTransactionCreated }: NewProps) {
           setSelectedCategory(undefined);
           setSelectedStatus("2");
           setTab("unico");
-          setTransactions([{ summary: "", value: "", date: "", category_id: undefined }]);
+          setTransactions([{ summary: "", value: "", date: "", category_id: undefined, kind: "" }]);
         }
       }}
     >
@@ -302,31 +383,13 @@ export function New({ onTransactionCreated }: NewProps) {
             <Button
               variant="outline"
               onClick={() =>
-                setTransactions([...transactions, { summary: "", value: "", date: "" }])
+                setTransactions([...transactions, { summary: "", value: "", date: "", kind: "" }])
               }
             >
               <Plus className="mr-2" />
               Adicionar transação
             </Button>
           )}
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 p-2">
-            <div className="basis-1/3 grid gap-3">
-              <Label>Tipo de Transação</Label>
-              <Select name="kind" value={selectedKind} onValueChange={setSelectedKind}>
-                <SelectTrigger className="w-full">
-                  <SelectValue placeholder="Selecione uma categoria" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectGroup>
-                    <SelectLabel>Status</SelectLabel>
-                    <SelectItem value="expenses">Despesas</SelectItem>
-                    <SelectItem value="incomes">Receitas</SelectItem>
-                  </SelectGroup>
-                </SelectContent>
-              </Select>
-            </div>
           </div>
 
           <TabsContent value="unico" className="flex-1 overflow-y-auto p-2">
@@ -341,7 +404,7 @@ export function New({ onTransactionCreated }: NewProps) {
               const payload = {
                 summary: formData.get("summary")?.toString() || "",
                 value: parseFloat(formData.get("value")?.toString() || "0"),
-                date: formatToDDMMYYYY(formData.get("date")?.toString() || ""),
+                date: formatToDate(formData.get("date")?.toString() || ""),
                 category_id: formData.get("category_id"),
                 details: formData.get("details"),
                 kind: formData.get("kind"),
@@ -375,6 +438,23 @@ export function New({ onTransactionCreated }: NewProps) {
             }}
           >
               <div className="grid gap-4">
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <div className="basis-1/3 grid gap-3">
+                    <Label>Tipo de Transação</Label>
+                    <Select name="kind" value={selectedKind} onValueChange={setSelectedKind}>
+                      <SelectTrigger className="w-full">
+                        <SelectValue placeholder="Selecione uma categoria" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectGroup>
+                          <SelectLabel>Status</SelectLabel>
+                          <SelectItem value="expenses">Despesas</SelectItem>
+                          <SelectItem value="incomes">Receitas</SelectItem>
+                        </SelectGroup>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                </div>
                 <div className="grid gap-3">
                   <Label>Título</Label>
                   <Input id="summary" name="summary" defaultValue="" placeholder="PVH Shopping" />
@@ -490,13 +570,14 @@ export function New({ onTransactionCreated }: NewProps) {
                 </div>
                 <div className="grid gap-3">
                   <Label >Descrição</Label>
-                  <Textarea id="details" name="details" defaultValue="" rows={5} autoComplete="off" />
+                  <Textarea id="details" name="details" defaultValue="" rows={10} autoComplete="off" />
                 </div>
               </div>
             </form>
           </TabsContent>
           <TabsContent value="lote" className="flex-1 overflow-y-auto">
             <form
+              id="lote"
               onSubmit={async (e) => {
                 e.preventDefault();
 
@@ -517,11 +598,14 @@ export function New({ onTransactionCreated }: NewProps) {
 
                 if (hasInvalid) return;
 
+                console.log("transactions: ", transactions);
+
                 const formattedTransactions = transactions.map((exp) => ({
                   summary: exp.summary,
                   value: parseFloat(exp.value || "0"),
                   date: formatDayMonthYear(exp.date, monthYearCleaned),
                   category_id: exp.category_id ?? null,
+                  kind: exp.kind,
                   status_id: "2",
                   user_id: "2"
                 }));
@@ -552,9 +636,6 @@ export function New({ onTransactionCreated }: NewProps) {
             >
 
             <TransactionForm transactions={transactions} setTransactions={setTransactions} />
-            <div className="mt-6 flex justify-end">
-              <Button type="submit">Salvar Todas</Button>
-            </div>
           </form>
 
           </TabsContent>
@@ -563,7 +644,7 @@ export function New({ onTransactionCreated }: NewProps) {
           <DialogClose asChild>
             <Button variant="outline">Cancelar</Button>
           </DialogClose>
-          <Button type="submit" form={tab === "unico" ? "unico" : undefined}>Salvar</Button>
+          <Button type="submit" form={tab === "unico" ? "unico" : "lote"}>Salvar</Button>
         </DialogFooter>
       </DialogContent>
     </Dialog>

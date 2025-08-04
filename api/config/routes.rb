@@ -4,9 +4,8 @@ Rails.application.routes.draw do
   namespace :v1 do 
     get 'status', to: 'status#index'
 
-    resources :incomes
-    resources :expenses
     resources :categories
+    resources :transactions
 
     namespace :reports do
       scope :transactions do 

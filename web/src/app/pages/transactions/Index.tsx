@@ -36,11 +36,7 @@ import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
 
-// import type { Expense } from '../../../../types/Expense';
-// import { useExpense } from '../../../hooks/useExpense';
-// import type { Transaction } from '../../../../types/reports/Transaction';
 import { useTransactionsByMonthYear } from '../../../hooks/reports/useTransactionsByMonthYear';
-
 import { DataTablePagination } from "../expenses/DataTablePagination";
 
 import { Show } from "./Show";
@@ -58,6 +54,7 @@ function getColumns({ openDeleteDialog, openViewDialog, openEditDialog }: any) {
     {
       accessorKey: "value",
       header: "Valor",
+      accessorFn: (row: Transaction) => row.value?.formated ?? "—",
     },
     {
       id: "date_full",
@@ -68,11 +65,6 @@ function getColumns({ openDeleteDialog, openViewDialog, openEditDialog }: any) {
       id: "category_summary",
       header: "Categoria",
       accessorFn: (row: Transaction) => row.category?.summary ?? "—",
-    },
-    {
-      id: "subcategory_summary",
-      header: "Sub-categoria",
-      accessorFn: (row: Transaction) => row.subcategory?.summary ?? "—",
     },
     {
       id: "status_summary",
@@ -253,12 +245,12 @@ function Index({ month, year }: Props) {
         onOpenChange={setViewOpen}
       />
 
-      {/* <Edit
-        onExpenseEdited={() => { refetch(); setEditOpen(false); }}
-        initialExpense={editExpense}
+      <Edit
+        onTransactionEdited={() => { refetch(); setEditOpen(false); }}
+        initialTransaction={editTransaction}
         open={editOpen}
         onOpenChange={setEditOpen}
-      /> */}
+      />
     </section>
   );
 }

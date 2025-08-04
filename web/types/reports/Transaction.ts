@@ -2,7 +2,12 @@ export type Transaction = {
   id: number;
   summary: string;
   details: string | null;
-  value: string;
+
+  value: {
+    formated: string;
+    original: string;
+  }
+  
   kind: 'expenses' | 'incomes';
 
   date: {
