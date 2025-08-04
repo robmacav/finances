@@ -50,8 +50,6 @@ import { useStatus } from "@/hooks/useStatus"
 import { createTransaction, createMultipleTransactions } from "@/api/transaction";
 
 export function formatToDate(dateString: string): Date | null {
-  console.log("Input recebido:", dateString);
-
   const parts = dateString.split("/");
 
   if (parts.length !== 3) {
@@ -84,7 +82,6 @@ export function formatToDate(dateString: string): Date | null {
     return null;
   }
 
-  console.log("Data convertida:", date);
   return date;
 }
 
@@ -108,7 +105,6 @@ export function MonthYearPickerOnly({ value, setValue }: MonthYearPickerOnlyProp
             id="month-year"
             name="month_year"
             value={value}
-            placeholder="07/2025"
             className="bg-background pr-10"
             readOnly
           />
@@ -158,8 +154,10 @@ function isValidDate(date: Date | undefined) {
 
 function formatMonthYear(date: Date | undefined): string {
   if (!date) return ""
+
   const month = String(date.getMonth() + 1).padStart(2, "0")
   const year = date.getFullYear()
+
   return `${month}/${year}`
 }
 
@@ -169,6 +167,15 @@ function formatDateDDMMYYYY(date: Date | undefined): string {
   const month = String(date.getMonth() + 1).padStart(2, "0"); // Janeiro = 0
   const year = date.getFullYear();
   return `${day}/${month}/${year}`;
+}
+
+function formatDayAndMonthYearToDate(day: string, monthYear: string) {
+  const dayStr = String(day).padStart(2, "0");
+
+  const month = monthYear.slice(0, 2);
+  const year = monthYear.slice(2);
+
+  return `${year}-${month}-${dayStr}`;
 }
 
 type Transaction = {
@@ -182,26 +189,27 @@ type Transaction = {
 type TransactionFormProps = {
   transactions: Transaction[];
   setTransactions: React.Dispatch<React.SetStateAction<Transaction[]>>;
+  setSelectedKindLoteForm: any;
+  selectedKindLoteForm: any;
+  setMonthYearFieldLoteForm: any;
+  monthYearFieldLoteForm: any;
 };
 
-function TransactionForm({ transactions, setTransactions }: TransactionFormProps) {
+function TransactionForm({ transactions, setTransactions, setSelectedKindLoteForm, selectedKindLoteForm, setMonthYearFieldLoteForm, monthYearFieldLoteForm }: TransactionFormProps) {
   const handleChange = (index: number, field: keyof Transaction, value: string) => {
     const updated = [...transactions];
     updated[index][field] = value;
+
     setTransactions(updated);
   };
 
   const handleRemove = (index: number) => {
     const updated = transactions.filter((_, i) => i !== index);
+
     setTransactions(updated);
   };
 
   const { data: categoryData } = useCategory();
-
-  const [selectedKindLoteForm, setSelectedKindLoteForm] = useState("expense");
-  const [monthYearField, setMonthYearField] = useState(formatMonthYear(new Date()))
-
-  console.log("selected: ", selectedKindLoteForm);
 
   return (
     <div className="space-y-4 overflow-y-auto p-2">
@@ -224,15 +232,16 @@ function TransactionForm({ transactions, setTransactions }: TransactionFormProps
           </div>
         </div>
         <div className="w-1/2">
-          <MonthYearPickerOnly value={monthYearField} setValue={setMonthYearField} />
+          <MonthYearPickerOnly value={monthYearFieldLoteForm} setValue={setMonthYearFieldLoteForm} />
         </div>
       </div>
       {transactions.map((transaction, index) => (
         <div key={index} className="grid grid-cols-[2fr_1fr_1fr_1fr_auto] gap-1 items-end">
           <Input
+            type="hidden"
             id={`kind-${index}`}
             name={`kind-${index}`}
-            value={selectedKindLoteForm}
+            value={transaction.kind}
           />
 
           <div className="grid gap-3">
@@ -323,8 +332,10 @@ function formatToDDMMYYYY(dateStr: string | null): string {
 
 function formatDayMonthYear(day: number | string, monthYear: string): string {
   const dayStr = String(day).padStart(2, "0");
-  
-  return dayStr + monthYear;
+  const month = monthYear.slice(0, 2);  // "08"
+  const year = monthYear.slice(2);      // "2025"
+
+  return `${year}-${dayStr}-${month}`;
 }
 
 
@@ -342,10 +353,13 @@ export function New({ onTransactionCreated }: NewProps) {
   const [month, setMonth] = React.useState<Date | undefined>(date)
   const [value, setValue] = React.useState(formatDate(date))
 
-  const [monthYearField, setMonthYearField] = useState("07/2025");
+  const [monthYearField, setMonthYearField] = useState<string | undefined>(undefined);
+  const [monthYearFieldLoteForm, setMonthYearFieldLoteForm] = useState(formatMonthYear(new Date()))
+
+  const [selectedKindLoteForm, setSelectedKindLoteForm] = useState("expense");
 
   const [transactions, setTransactions] = useState<Transaction[]>([
-    { summary: "", value: "", date: "", category_id: undefined, kind: "" }
+    { summary: "", value: "", date: "", category_id: undefined, kind: selectedKindLoteForm }
   ]);
 
   const [tab, setTab] = useState("unico");
@@ -355,9 +369,10 @@ export function New({ onTransactionCreated }: NewProps) {
       onOpenChange={(isOpen) => {
         if (!isOpen) {
           setSelectedCategory(undefined);
+          setSelectedKind("expense");
           setSelectedStatus("2");
           setTab("unico");
-          setTransactions([{ summary: "", value: "", date: "", category_id: undefined, kind: "" }]);
+          setTransactions([{ summary: "", value: "", date: "", category_id: undefined, kind: selectedKind }]);
         }
       }}
     >
@@ -383,7 +398,7 @@ export function New({ onTransactionCreated }: NewProps) {
             <Button
               variant="outline"
               onClick={() =>
-                setTransactions([...transactions, { summary: "", value: "", date: "", kind: "" }])
+                setTransactions([...transactions, { summary: "", value: "", date: "", kind: selectedKindLoteForm }])
               }
             >
               <Plus className="mr-2" />
@@ -448,8 +463,8 @@ export function New({ onTransactionCreated }: NewProps) {
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Status</SelectLabel>
-                          <SelectItem value="expenses">Despesas</SelectItem>
-                          <SelectItem value="incomes">Receitas</SelectItem>
+                          <SelectItem value="expense">Despesas</SelectItem>
+                          <SelectItem value="income">Receitas</SelectItem>
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -581,8 +596,8 @@ export function New({ onTransactionCreated }: NewProps) {
               onSubmit={async (e) => {
                 e.preventDefault();
 
-                const monthYearCleaned = monthYearField.replace("/", "");
-
+                const monthYearCleaned = monthYearFieldLoteForm.replace("/", "");
+                
                 const hasInvalid = transactions.some((exp, index) => {
                   if (
                     !exp.summary?.trim() ||
@@ -598,18 +613,17 @@ export function New({ onTransactionCreated }: NewProps) {
 
                 if (hasInvalid) return;
 
-                console.log("transactions: ", transactions);
-
+                
                 const formattedTransactions = transactions.map((exp) => ({
                   summary: exp.summary,
                   value: parseFloat(exp.value || "0"),
-                  date: formatDayMonthYear(exp.date, monthYearCleaned),
+                  date: formatDayAndMonthYearToDate(exp.date, monthYearCleaned),
                   category_id: exp.category_id ?? null,
-                  kind: exp.kind,
+                  kind: selectedKindLoteForm,
                   status_id: "2",
                   user_id: "2"
                 }));
-
+                
                 try {
                   const response = await createMultipleTransactions(formattedTransactions);
 
@@ -635,7 +649,14 @@ export function New({ onTransactionCreated }: NewProps) {
               }}
             >
 
-            <TransactionForm transactions={transactions} setTransactions={setTransactions} />
+            <TransactionForm 
+              transactions={transactions} 
+              setTransactions={setTransactions} 
+              setSelectedKindLoteForm={setSelectedKindLoteForm} 
+              selectedKindLoteForm={selectedKindLoteForm} 
+              setMonthYearFieldLoteForm={setMonthYearFieldLoteForm}
+              monthYearFieldLoteForm={monthYearFieldLoteForm} 
+            />
           </form>
 
           </TabsContent>

@@ -106,9 +106,9 @@ class V1::Reports::DashboardController < ApplicationController
 
         render json: {
             summary: {
-                incomes: "R$ #{incomes}",
-                expenses: "R$ #{expenses}",
-                available: "R$ #{available}"
+                incomes: "R$ #{'%.2f' % incomes}",
+                expenses: "R$ #{'%.2f' % expenses}",
+                available: "R$ #{'%.2f' % available}"
             },
             expenses_by_category: grouped_by_category,
             total_by_months: total_by_months,

@@ -17,33 +17,16 @@ class V1::TransactionsController < ApplicationController
   end
 
   def create
-    puts "########### inicio"
-    puts transactions_params
-
-
     if params[:transactions].present? && params[:transactions].is_a?(Array)
       trs = transactions_params
 
-      trs.each do |tr|
-        if tr[:date].present?
-          begin
-            tr[:date] = Date.strptime(tr[:date], '%d%m%Y')
-          rescue ArgumentError
-            tr[:date] = nil
-          end
-        end
-      end
-
-      trs = trs.map { |transaction_param| Transaction.new(transaction_param) }
-
-      puts "########## arra"
-      puts trs.inspect
+      trs = trs.map { |tr| Transaction.new(tr) }
 
       Transaction.transaction do
         trs.each(&:save!)
       end
 
-      render json: transactions, status: :created
+      render json: trs, status: :created
     else
       @transaction = Transaction.new(transaction_params)
 
