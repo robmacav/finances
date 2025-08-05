@@ -92,21 +92,8 @@ function dados() {
 
   return (
     <Card className="h-full">
-      <CardHeader className="items-center pb-0 flex flex-row justify-between">
+      <CardHeader className="items-center pb-0 flex flex-row">
         <CardTitle>Categorias</CardTitle>
-        <div className="">
-          <Select>
-            <SelectTrigger className="w-[120px] h-8 text-sm px-2">
-              <SelectValue placeholder="Despesas" />
-            </SelectTrigger>
-            <SelectContent>
-              <SelectGroup>
-                <SelectItem value="apple">Despesas</SelectItem>
-                <SelectItem value="banana">Receitas</SelectItem>
-              </SelectGroup>
-            </SelectContent>
-          </Select>
-        </div>
       </CardHeader>
       <CardContent>
         <ResponsiveContainer width="100%" height={450}>

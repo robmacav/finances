@@ -38,7 +38,8 @@ Rails.application.routes.draw do
     end
 
     namespace :utils do
-      scope :incomes do
+      scope :transactions do 
+        get 'meta', to: 'transactions#meta'
       end
       
       scope :expenses do

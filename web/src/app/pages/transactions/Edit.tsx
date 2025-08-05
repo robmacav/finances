@@ -14,7 +14,7 @@ import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { Select, SelectContent, SelectGroup, SelectItem, SelectTrigger, SelectValue, SelectLabel } from "@/components/ui/select"
 import { useCategory } from "@/hooks/useCategory"
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 import { Calendar } from "@/components/ui/calendar"
 
@@ -39,17 +39,39 @@ type NewProps = {
   onOpenChange?: (open: boolean) => void;
 }
 
-function formatDate(date: Date | undefined) {
-  if (!date) {
-    return ""
-  }
+// function formatDate(date: Date | undefined) {
+//   if (!date) {
+//     return ""
+//   }
 
-  return date.toLocaleDateString("en-US", {
-    day: "2-digit",
-    month: "long",
-    year: "numeric",
-  })
+//   return date.toLocaleDateString("en-US", {
+//     day: "2-digit",
+//     month: "long",
+//     year: "numeric",
+//   })
+// }
+
+function formatDate(date: Date): string {
+  const day = String(date.getDate()).padStart(2, "0");
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const year = date.getFullYear();
+  return `${day}/${month}/${year}`;
 }
+
+function parseDateSafely(dateStr: string | null | undefined): Date | undefined {
+  if (!dateStr) return undefined;
+
+  // Garante que tem formato "YYYY-MM-DD"
+  const isoDateOnly = dateStr.split("T")[0]; // remove hora se tiver
+
+  // Adiciona T00:00:00 para forçar início do dia no horário local
+  const safeDate = new Date(isoDateOnly + "T00:00:00");
+
+  // Validação básica
+  return isNaN(safeDate.getTime()) ? undefined : safeDate;
+}
+
+
 
 function isValidDate(date: Date | undefined) {
   if (!date) {
@@ -62,7 +84,7 @@ function formatDateToDDMMYYYY(dateStr: string): string {
   const date = new Date(dateStr);
   
   const day = String(date.getDate()).padStart(2, '0');
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // meses são de 0 a 11
+  const month = String(date.getMonth() + 1).padStart(2, '0');
   const year = String(date.getFullYear());
 
   return `${day}${month}${year}`;
@@ -95,25 +117,37 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
   const { data: categoryData } = useCategory();
   const { data: statusData } = useStatus();
 
+  const [summary, setSummary] = useState("")
+  const [value, setValue] = useState("")
+  const [category, setSelectedCategory] = useState<string | undefined>()
+  const [kind, setSelectedKind] = useState<string | undefined>()
+  const [status, setSelectedStatus] = useState<string | undefined>()
+  const [details, setDetails] = useState("")
+
+  const [date, setDate] = useState<Date | undefined>(undefined); // usado para <Calendar /> e lógica
+  const [dateInput, setDateInput] = useState<string>(""); // usado para o <Input />
   const [calendarOpen, setCalendarOpen] = React.useState(false);
-
-
-  const [selectedCategory, setSelectedCategory] = useState(
-    initialTransaction?.category?.id?.toString()
-  );
-
-  const [selectedStatus, setSelectedStatus] = useState(
-    initialTransaction?.status?.id?.toString()
-  );
-
-  const [value, setValue] = useState(formatDate(new Date(initialTransaction?.date?.full || "")));
-  const [date, setDate] = useState(new Date(initialTransaction?.date?.full || ""));
-
   const [month, setMonth] = React.useState<Date | undefined>(date)
 
-  const [selectedKind, setSelectedKind] = useState<string | undefined>(
-    initialTransaction?.kind as string
-  );
+  useEffect(() => {
+    if (initialTransaction) {
+      setSummary(initialTransaction.summary ?? "")
+      setValue(initialTransaction.value.original.toString() ?? "")
+      setSelectedCategory(initialTransaction.category?.id?.toString() ?? "")
+      setSelectedKind(initialTransaction.kind?.toString() ?? "")
+      setSelectedStatus(initialTransaction.status?.id?.toString() ?? "")
+      setDetails(initialTransaction.details ?? "")
+      setDateInput(initialTransaction.date?.full?.toString() ?? "");
+    } else {
+      setSummary("")
+      setValue("")
+      setSelectedCategory("")
+      setSelectedKind("")
+      setSelectedStatus("")
+      setDetails("")
+      setDate(undefined);
+    }
+  }, [initialTransaction])
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -181,7 +215,7 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
         <div className="grid gap-4 mt-5">
           <div className="grid gap-3">
             <Label>Tipo de Transação</Label>
-            <Select name="kind" value={selectedKind} onValueChange={setSelectedKind}>
+            <Select name="kind" value={kind} onValueChange={setSelectedKind}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
@@ -210,7 +244,7 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
               <div className="relative flex gap-2">
                 <Input
                   id="date"
-                  value={value}
+                  value={dateInput}
                   name="date"
                   placeholder="June 01, 2025"
                   className="bg-background pr-10"
@@ -245,17 +279,21 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
                     alignOffset={-8}
                     sideOffset={10}
                   >
-                    <Calendar
-                      mode="single"
-                      selected={date}
-                      captionLayout="dropdown"
-                      month={month}
-                      onMonthChange={setMonth}
-                      onSelect={(date) => {
-                        setValue(formatDate(date))
-                        setCalendarOpen(false)
-                      }}
-                    />
+<Calendar
+  mode="single"
+  selected={date}
+  captionLayout="dropdown"
+  month={month}
+  onMonthChange={setMonth}
+  onSelect={(selectedDate) => {
+    if (selectedDate) {
+      setDate(selectedDate); // para o calendário
+      setDateInput(formatDate(selectedDate)); // para o input de data
+      setCalendarOpen(false);
+    }
+  }}
+/>
+
                   </PopoverContent>
                 </Popover>
 
@@ -264,7 +302,7 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
           </div>
           <div className="grid gap-3">
             <Label>Categoria</Label>
-            <Select name="category_id" value={selectedCategory} onValueChange={setSelectedCategory}>
+            <Select name="category_id" value={category} onValueChange={setSelectedCategory}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>
@@ -282,7 +320,7 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
           </div>
           <div className="grid gap-3">
             <Label>Status</Label>
-            <Select name="status_id" value={selectedStatus} onValueChange={setSelectedStatus}>
+            <Select name="status_id" value={status} onValueChange={setSelectedStatus}>
               <SelectTrigger className="w-full">
                 <SelectValue placeholder="Selecione uma categoria" />
               </SelectTrigger>

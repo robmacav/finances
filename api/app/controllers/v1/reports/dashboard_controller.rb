@@ -1,68 +1,4 @@
 class V1::Reports::DashboardController < ApplicationController
-    # incomes
-    def incomes_expenses_available_by_month_year
-        @incomes = Income.all_by_month_year_sum(params[:month_year])
-        @expenses = Expense.all_by_month_year_sum(params[:month_year])
-        @available = @incomes - @expenses
-
-        render json: {
-            incomes: "R$ #{@incomes}",
-            expenses: "R$ #{@expenses}",
-            available: "R$ #{@available}",
-        }
-    end
-
-    # expenses
-    def all_by_month_year_by_category
-        @expenses = Expense.all_by_month_year_by_category(params[:month_year]).page(params[:page]).per(params[:per_page] || 50)
-
-        resultado = @expenses.map do |expense|
-            {
-                category: {
-                    summary: expense.category.summary,
-                    color: expense.category.color
-                },
-                total: expense.total.to_f
-            }
-        end
-        
-        render json: resultado
-    end
-
-    # incomes and expenses total
-    def incomes_expenses_total_months_by_year
-        expenses = Expense.total_months_by_year(params[:year])
-        incomes = Income.total_months_by_year(params[:year])
-
-        expenses_hash = expenses.index_by(&:month_year)
-        incomes_hash = incomes.index_by(&:month_year)
-
-        meses = %w[January February March April May June July August September October November December]
-        ano = Time.current.year
-
-        resultado = (1..12).map do |mes|
-            chave = format('%02d%04d', mes, ano)
-
-            {
-                month: meses[mes - 1],
-                incomes: incomes_hash[chave]&.total.to_i,
-                expenses: expenses_hash[chave]&.total.to_i
-            }
-        end
-
-        render json: resultado
-    end
-
-    # expenses
-    def most_frequents_by_month_year
-        render json: Expense.most_frequents_on_current_month(params[:month_year]).map { |e| { summary: e.summary, qtd: e.qtd.to_i, total: e.total.to_f } }
-    end
-
-    # expenses
-    def all_current_week
-        render json: Expense.all_current_week_total_by_day.map{|e| { day: e.day_name.strip, total: e.total.to_f }}
-    end
-
     def data
         month_year = params[:month_year]
         year = month_year[2..5]
@@ -113,7 +49,11 @@ class V1::Reports::DashboardController < ApplicationController
             expenses_by_category: grouped_by_category,
             total_by_months: total_by_months,
             most_frequents: most_frequents,
-            current_week: current_week
+            current_week: {
+                data: current_week,
+                status: nil,
+                insight: weekly_expense_insight
+            }
         }
     end
 
@@ -138,4 +78,36 @@ class V1::Reports::DashboardController < ApplicationController
         end
     end
 
+    def weekly_expense_insight
+        current_start = Date.today.beginning_of_week(:monday)
+        current_end = Date.today.end_of_week(:sunday)
+
+        previous_start = current_start - 7.days
+        previous_end = current_end - 7.days
+
+        current_total = Transaction.where(kind: :expense, date: current_start..current_end).sum(:value)
+        previous_total = Transaction.where(kind: :expense, date: previous_start..previous_end).sum(:value)
+
+        percent_diff = if previous_total > 0
+                            ((current_total - previous_total) / previous_total.to_f * 100).round(2)
+                        else
+                            100.0
+                        end
+
+        if previous_total.zero? && current_total.zero?
+            insight = "Você não teve despesas nem nesta nem na semana anterior."
+        elsif previous_total.zero?
+            insight = "Você teve um aumento de 100% nas despesas em relação à semana anterior."
+        elsif current_total.zero?
+            insight = "Suas despesas caíram 100% em relação à semana anterior."
+        elsif percent_diff.positive?
+            insight = "Suas despesas aumentaram #{percent_diff}% em relação à semana anterior."
+        elsif percent_diff.negative?
+            insight = "Suas despesas diminuíram #{percent_diff.abs}% em relação à semana anterior."
+        else
+            insight = "Suas despesas se mantiveram estáveis em relação à semana anterior."
+        end
+
+        insight
+    end
 end

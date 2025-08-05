@@ -46,6 +46,7 @@ import {
 
 import { useCategory } from "@/hooks/useCategory"
 import { useStatus } from "@/hooks/useStatus"
+import { useMeta } from "@/hooks/utils/transactions/useMeta"
 
 import { createTransaction, createMultipleTransactions } from "@/api/transaction";
 
@@ -343,6 +344,9 @@ export function New({ onTransactionCreated }: NewProps) {
   const { data: categoryData } = useCategory();
   const { data: statusData } = useStatus();
 
+  const { data: metaData } = useMeta();
+
+
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
 
   const [selectedKind, setSelectedKind] = useState("expense");
@@ -431,9 +435,13 @@ export function New({ onTransactionCreated }: NewProps) {
                 const response = await createTransaction(payload);
 
                 if (response.ok) {
-                  toast.success("Transação cadastrada com sucesso!");
-                  onTransactionCreated();
+                  await response.json();
+                  
                   form.reset();
+
+                  toast.success("Transação cadastrada com sucesso!");
+
+                  onTransactionCreated();
                 } else {
                   const contentType = response.headers.get("Content-Type");
                   let errorMessage = "";
@@ -628,8 +636,13 @@ export function New({ onTransactionCreated }: NewProps) {
                   const response = await createMultipleTransactions(formattedTransactions);
 
                   if (response.ok) {
-                    toast.success("Transações cadastradas com sucesso!");
+                    await response.json();
+
                     setTransactions([]);
+
+                    toast.success("Transações cadastradas com sucesso!");
+
+                    onTransactionCreated();
                   } else {
                     let errorMessage = "";
                     const contentType = response.headers.get("Content-Type");

@@ -15,6 +15,7 @@ export type Transaction = {
     day: number;
     month: number;
     year: number;
+    original: any;
   } | null;
 
   status: {
