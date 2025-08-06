@@ -55,6 +55,14 @@ class Transaction < ApplicationRecord
         .order(Arel.sql("MIN(date)"))
     }
 
+    def format_brazilian_currency
+        whole, decimal = sprintf('%.2f', value).split(".")
+
+        whole_with_delimiter = whole.reverse.gsub(/(\d{3})(?=\d)/, '\\1.').reverse
+       
+        "#{whole_with_delimiter},#{decimal}"
+    end
+
     private
 
     def self.date_range_by_month_year_string(month_year)

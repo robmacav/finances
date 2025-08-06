@@ -1,4 +1,6 @@
 class V1::Reports::TransactionsController < ApplicationController
+    include CurrencyFormatable
+
     def all_by_month_year
         @transactions = Transaction.by_month_year(params[:month_year])
                         .page(params[:page])
@@ -15,7 +17,7 @@ class V1::Reports::TransactionsController < ApplicationController
     private
 
     def serialize_transaction(transaction)
-        value_prefix = transaction.expense? ? "- R$" : "+ R$"
+        value_prefix = transaction.expense? ? "-" : "+"
 
         {
             id: transaction.id,
@@ -25,7 +27,7 @@ class V1::Reports::TransactionsController < ApplicationController
 
             value: {
                 original: transaction.value,
-                formated: "#{value_prefix} #{'%.2f' % transaction.value}"
+                formated: "#{value_prefix} #{format_currency(transaction.value)}"
             },
 
             date: {

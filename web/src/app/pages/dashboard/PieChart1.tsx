@@ -17,29 +17,28 @@ import {
   ChartTooltipContent
 } from '@/components/ui/chart'
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select"
-
 type Props = {
   data: {
     category: {
       summary: string;
       color: string;
     }
-    total: number;
+    total: {
+      original: string;
+      formated: string;
+    }
   }
 };
+
+function decimalToInteger(value: number): string {
+  const integerPart = Math.floor(value);
+  return integerPart.toLocaleString("pt-BR");
+}
 
 function PieChart1({ data }: Props) {
   const chartData = data?.map((item) => ({
     category: item.category.summary,
-    total: item.total,
+    total: item.total.original,
     fill: `#${item.category.color.replace(/^#/, '')}`
   }));
 
@@ -77,7 +76,7 @@ function dados() {
                   </Label>
                 </div>
                 <span className="text-right font-medium break-words max-w-sm text-foreground">
-                  R$ {item.total}
+                  R$ {decimalToInteger(item.total)}
                 </span>
               </div>
             </li>

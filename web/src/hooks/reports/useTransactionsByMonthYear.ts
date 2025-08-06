@@ -14,17 +14,31 @@ const BACKGROUND_REFRESH_MS = 1000 * 60; // 1 minuto
 function isSameTransactions(a: Transaction[], b: Transaction[]) {
   if (a.length !== b.length) return false;
 
-  const aIds = new Set(a.map(t => t.id));
-  const bIds = new Set(b.map(t => t.id));
+  const sortById = (list: Transaction[]) =>
+    [...list].sort((x, y) => x.id - y.id);
 
-  if (aIds.size !== bIds.size) return false;
+  const aSorted = sortById(a);
+  const bSorted = sortById(b);
 
-  for (const id of aIds) {
-    if (!bIds.has(id)) return false;
+  for (let i = 0; i < aSorted.length; i++) {
+    const ta = aSorted[i];
+    const tb = bSorted[i];
+
+    if (
+      ta.id !== tb.id ||
+      ta.summary !== tb.summary ||
+      ta.value !== tb.value ||
+      ta.date !== tb.date ||
+      ta.category.id !== tb.category.id ||
+      ta.status.id !== tb.status.id
+    ) {
+      return false;
+    }
   }
 
   return true;
 }
+
 
 export function useTransactionsByMonthYear(month_year: string): UseTransactionsResult {
   const [data, setData] = useState<Transaction[] | null>(null);

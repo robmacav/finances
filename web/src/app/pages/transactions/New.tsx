@@ -1,4 +1,4 @@
-import React, { useState } from "react"
+import React, { useEffect, useState } from "react"
 
 import { ptBR } from "date-fns/locale";
 import { CalendarIcon, Plus, Trash } from "lucide-react"
@@ -46,7 +46,7 @@ import {
 
 import { useCategory } from "@/hooks/useCategory"
 import { useStatus } from "@/hooks/useStatus"
-import { useMeta } from "@/hooks/utils/transactions/useMeta"
+import { useFormData } from "@/hooks/utils/transactions/useFormData"
 
 import { createTransaction, createMultipleTransactions } from "@/api/transaction";
 
@@ -341,16 +341,14 @@ function formatDayMonthYear(day: number | string, monthYear: string): string {
 
 
 export function New({ onTransactionCreated }: NewProps) {
-  const { data: categoryData } = useCategory();
   const { data: statusData } = useStatus();
 
-  const { data: metaData } = useMeta();
-
+  const { data: formData } = useFormData();
 
   const [selectedCategory, setSelectedCategory] = useState<string | undefined>(undefined);
 
   const [selectedKind, setSelectedKind] = useState("expense");
-  const [selectedStatus, setSelectedStatus] = useState("2");
+  const [selectedStatus, setSelectedStatus] = useState("1");
 
   const [open, setOpen] = React.useState(false)
   const [date, setDate] = React.useState<Date | undefined>(new Date())
@@ -431,6 +429,19 @@ export function New({ onTransactionCreated }: NewProps) {
                 user_id: "2"
               };
 
+              if (
+                !formData.get("summary") ||
+                !formData.get("value") ||
+                !formData.get("date") ||
+                !formData.get("category_id") ||
+                !formData.get("kind") ||
+                !formData.get("status_id")
+              ) {
+                toast.error(`Preencha todos os campos do formulário!`);
+
+                return;
+              }
+
               try {
                 const response = await createTransaction(payload);
 
@@ -453,10 +464,12 @@ export function New({ onTransactionCreated }: NewProps) {
                     errorMessage = await response.text();
                   }
 
-                  toast.error("Erro ao cadastrar: " + errorMessage);
+                  toast.error("Ocorreu um erro ao cadastrar a transação");
                 }
               } catch (err) {
-                toast.error("Erro ao cadastrar transação.");
+                toast.error("Ocorreu um erro ao cadastrar transação.");
+
+                console.log("Ocorreu um erro ao cadastrar a transação: ", err);
               }
             }}
           >
@@ -466,13 +479,16 @@ export function New({ onTransactionCreated }: NewProps) {
                     <Label>Tipo de Transação</Label>
                     <Select name="kind" value={selectedKind} onValueChange={setSelectedKind}>
                       <SelectTrigger className="w-full">
-                        <SelectValue placeholder="Selecione uma categoria" />
+                        <SelectValue placeholder="Selecione o tipo de transação" />
                       </SelectTrigger>
                       <SelectContent>
                         <SelectGroup>
-                          <SelectLabel>Status</SelectLabel>
-                          <SelectItem value="expense">Despesas</SelectItem>
-                          <SelectItem value="income">Receitas</SelectItem>
+                          <SelectLabel>Tipos de Transação</SelectLabel>
+                          {formData?.kind.map((kind) => (
+                            <SelectItem key={kind.value} value={kind.value.toString()}>
+                              {kind.summary}
+                            </SelectItem>
+                          ))}
                         </SelectGroup>
                       </SelectContent>
                     </Select>
@@ -559,7 +575,7 @@ export function New({ onTransactionCreated }: NewProps) {
                       <SelectContent>
                         <SelectGroup>
                           <SelectLabel>Categorias</SelectLabel>
-                          {(categoryData ?? []).map((category) => (
+                          {formData?.categories.map((category) => (
                             <SelectItem key={category.id} value={category.id.toString()}>
                               {category.summary}
                             </SelectItem>
@@ -568,8 +584,7 @@ export function New({ onTransactionCreated }: NewProps) {
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
-                <div className="grid gap-3">
+                <div className="flex-1 grid gap-3">
                   <Label>Status</Label>
                   <Select
                     name="status_id"
@@ -582,7 +597,7 @@ export function New({ onTransactionCreated }: NewProps) {
                     <SelectContent>
                       <SelectGroup>
                         <SelectLabel>Status</SelectLabel>
-                        {(statusData ?? []).map((status) => (
+                        {formData?.statuses.map((status) => (
                           <SelectItem key={status.id} value={status.id.toString()}>
                             {status.summary}
                           </SelectItem>
@@ -591,6 +606,8 @@ export function New({ onTransactionCreated }: NewProps) {
                     </SelectContent>
                   </Select>
                 </div>
+                </div>
+
                 <div className="grid gap-3">
                   <Label >Descrição</Label>
                   <Textarea id="details" name="details" defaultValue="" rows={10} autoComplete="off" />

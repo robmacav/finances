@@ -1,4 +1,6 @@
 class V1::Reports::DashboardController < ApplicationController
+    include CurrencyFormatable
+
     def data
         month_year = params[:month_year]
         year = month_year[2..5]
@@ -19,7 +21,10 @@ class V1::Reports::DashboardController < ApplicationController
                     summary: expense.category.summary,
                     color: expense.category.color
                 },
-                total: expense.total.to_f
+                total: {
+                    original: expense.total.to_f,
+                    formated: format_currency_without_decimal(expense.total)
+                }
             }
         end
 
@@ -42,9 +47,9 @@ class V1::Reports::DashboardController < ApplicationController
 
         render json: {
             summary: {
-                incomes: "R$ #{'%.2f' % incomes}",
-                expenses: "R$ #{'%.2f' % expenses}",
-                available: "R$ #{'%.2f' % available}"
+                incomes: format_currency_without_decimal(incomes),
+                expenses: format_currency_without_decimal(expenses),
+                available: format_currency_without_decimal(available)
             },
             expenses_by_category: grouped_by_category,
             total_by_months: total_by_months,

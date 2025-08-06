@@ -3,33 +3,13 @@ Rails.application.routes.draw do
 
   namespace :v1 do 
     get 'status', to: 'status#index'
-
+    
     resources :categories
     resources :transactions
 
     namespace :reports do
       scope :transactions do 
         get "all-by-month-year", to: "transactions#all_by_month_year"
-      end
-
-      scope :expenses do 
-        get "by-category-and-month-year", to: "expenses#by_category_and_month_year"
-        get "all-by-month-year", to: "expenses#all_by_month_year"
-        get "all-by-month-year-by-category", to: "expenses#all_by_month_year_by_category"
-        get 'current-year-total-months', to: 'expenses#current_year_total_months'
-        get 'all-current-week', to: 'expenses#all_current_week'
-        get 'most-frequents-by-month-year', to: 'expenses#most_frequents_by_month_year'
-      end
-
-      scope :incomes do
-        get "by-category-and-month-year", to: "incomes#by_category_and_month_year"
-        get "all-by-month-year", to: "incomes#all_by_month_year"
-        get "all-by-month-year-by-category", to: "incomes#all_by_month_year_by_category"
-        get 'current-year-total-months', to: 'incomes#current_year_total_months'
-      end
-
-      scope :transactions do 
-        get 'all-by-month-year', to: 'transactions#all_by_month_year'
       end
 
       scope :dashboard do 
@@ -39,18 +19,7 @@ Rails.application.routes.draw do
 
     namespace :utils do
       scope :transactions do 
-        get 'meta', to: 'transactions#meta'
-      end
-      
-      scope :expenses do
-        get "month-availables", to: "expenses#month_availables"
-        get "categories", to: "expenses#categories"
-        get "first", to: "expenses#first"
-      end
-
-      scope :dashboard do
-        get "incomes-expenses-available-by-month-year", to: "dashboard#incomes_expenses_available_by_month_year"
-        get "incomes-expenses-total-months-by-year", to: "dashboard#incomes_expenses_total_months_by_year"
+        get 'form-data', to: 'transactions#form_data'
       end
     end
   end

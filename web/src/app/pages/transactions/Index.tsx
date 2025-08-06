@@ -37,7 +37,7 @@ import { Button } from "@/components/ui/button"
 import { MoreHorizontal } from "lucide-react"
 
 import { useTransactionsByMonthYear } from '../../../hooks/reports/useTransactionsByMonthYear';
-import { DataTablePagination } from "../expenses/DataTablePagination";
+import { DataTablePagination } from "./DataTablePagination";
 
 import { Show } from "./Show";
 import { Edit } from "./Edit";
@@ -123,8 +123,11 @@ function Index({ month, year }: Props) {
     if (!deleteId) return;
     try {
       const res = await fetch(`${apiUrl}/transactions/${deleteId}`, { method: "DELETE" });
+
       if (!res.ok) throw new Error();
+
       toast.success("Despesa excluída com sucesso!");
+
       refetch();
     } catch {
       toast.error("Erro ao excluir despesa!");

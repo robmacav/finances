@@ -33,4 +33,8 @@ export type Transaction = {
     id: number | null;
     summary: string | null;
   };
+
+  user: {
+    id: number | null;
+  }
 };

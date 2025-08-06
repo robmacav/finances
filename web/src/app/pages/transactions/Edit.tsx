@@ -31,6 +31,7 @@ import { useStatus } from "@/hooks/useStatus"
 import { type Transaction } from "../../../../types/reports/Transaction"
 
 import { apiUrl } from "@/lib/api";
+import { editTransaction } from "@/api/transaction"
 
 type NewProps = {
   onTransactionEdited: () => void;
@@ -91,13 +92,13 @@ function formatDateToDDMMYYYY(dateStr: string): string {
 }
 
 function formatDateToISO(dateStr: string): string {
-  const date = new Date(dateStr);
+  if (!dateStr) return "";
 
-  const year = date.getFullYear();
-  const month = String(date.getMonth() + 1).padStart(2, '0'); // meses são base 0
-  const day = String(date.getDate()).padStart(2, '0');
+  const [day, month, year] = dateStr.split("/");
 
-  return `${year}-${month}-${day}`;
+  if (!day || !month || !year) return "";
+
+  return `${year}-${month.padStart(2, '0')}-${day.padStart(2, '0')}`;
 }
 
 function formatToDDMMYYYY(dateStr: string | null): string {
@@ -168,6 +169,7 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
             const formData = new FormData(form);
 
             const payload = {
+              id: initialTransaction?.id || "",
               kind: formData.get("kind"),
               summary: formData.get("summary"),
               value: parseFloat(formData.get("value")?.toString() || "0"),
@@ -179,20 +181,14 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
             }
 
             try {
-              const response = await fetch(`${apiUrl}/transactions/${initialTransaction?.id}`, {
-                method: "PATCH",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify(payload),
-              })
+              const response = await editTransaction(payload);
 
               if (response.ok) {
+                await response.json();
+
                 toast.success("Transação atualizada com sucesso!");
 
                 onTransactionEdited();
-
-                form.reset()
               } else {
                 const contentType = response.headers.get("Content-Type")
                 let errorMessage = "";
@@ -204,11 +200,12 @@ export function Edit({ onTransactionEdited, initialTransaction, open, onOpenChan
                   errorMessage = await response.text()
                 }
 
-                toast.error("Falha ao atualizar transação");
+                toast.error("Ocorreu um erro ao atualizar transação");
               }
             } catch (err) {
-              toast.error("Falha ao atualizar transação");
-              console.error("Erro ao enviar dados:", err)
+              toast.error("Ocorreu um erro ao atualizar transação");
+
+              console.log("Ocorreu um erro ao atualizar a transação: ", err);
             } 
           }}
         >
