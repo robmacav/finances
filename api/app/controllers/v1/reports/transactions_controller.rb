@@ -1,0 +1,75 @@
+class V1::Reports::TransactionsController < ApplicationController
+    include CurrencyFormatable
+
+    def all_by_month_year
+        if params[:group_by].to_s == "true"
+            I18n.with_locale(:'pt-BR') do
+                transactions = Transaction
+                            .by_month_year(params[:month_year])
+                            .page(params[:page])
+                            .per(params[:per_page] || 50)
+
+                
+
+                grouped = transactions.group_by { |t| I18n.l(t.date, format: "%a, %d %B de %Y") }
+
+                render json: {
+                    current_page: transactions.current_page,
+                    total_pages: transactions.total_pages,
+                    total_count: transactions.total_count,
+                    transactions: grouped.transform_values { |trs| trs.map { |e| serialize_transaction(e) } }
+                }
+            end
+
+            return
+        end
+
+        @transactions = Transaction.by_month_year(params[:month_year]).page(params[:page]).per(params[:per_page] || 50)
+
+        render json: {
+            current_page: @transactions.current_page,
+            total_pages: @transactions.total_pages,
+            total_count: @transactions.total_count,
+            transactions: @transactions.map { |e| serialize_transaction(e) }
+        }
+    end
+
+    private
+
+    def serialize_transaction(transaction)
+        value_prefix = transaction.expense? ? "-" : "+"
+
+        {
+            id: transaction.id,
+            kind: transaction&.kind,
+            summary: transaction.summary,
+            details: transaction.details,
+
+            value: {
+                original: transaction.value,
+                formated: "#{value_prefix} #{format_currency(transaction.value)}"
+            },
+
+            date: {
+                original: transaction.date,
+
+                full: transaction&.date.strftime("%d/%m/%Y"),
+
+                day: transaction.date&.day,
+                month: transaction.date&.month,
+                year: transaction.date&.year
+            },
+
+            status: {
+                id: transaction.status&.id,
+                summary: transaction.status&.summary
+            },
+
+            category: {
+                id: transaction.category&.id,
+                summary: transaction.category&.summary,
+                color: transaction.category&.color
+            }
+        }
+    end
+end

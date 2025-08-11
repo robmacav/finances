@@ -5,6 +5,14 @@ class Category < ApplicationRecord
     has_many :incomes, class_name: 'Income', foreign_key: 'category_id', dependent: :destroy
     has_many :expenses, class_name: 'Expense', foreign_key: 'category_id', dependent: :destroy
 
+    def as_json(options = {})
+        {
+            id: id,
+            summary: summary,
+            color: color
+        }
+    end
+
     private
 
     before_create do
