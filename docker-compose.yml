@@ -1,0 +1,22 @@
+services:
+  db:
+    image: postgres
+    container_name: finances_db
+    volumes:
+      - ./tmp/db:/var/lib/postgresql/data
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+  api:
+    build: 
+      context: .
+      dockerfile: api/Dockerfile
+    container_name: finances_app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./api:/app
+    depends_on:
+      - db
