@@ -5,6 +5,8 @@ import 'transactions_page.dart';
 import 'reports_page.dart';
 import 'account_page.dart';
 
+import 'transactions/new_page.dart';
+
 void main() {
   runApp(const MyApp());
 }
@@ -58,7 +60,7 @@ class _HomePageState extends State<HomePage> {
 
   static const List<Widget> _pages = <Widget>[
     HomePageContent(),
-    TransactionsPage(),
+    TransactionNewPage(),
     SizedBox.shrink(), // espaço vazio para botão central
     ReportsPage(),
     AccountPage(),

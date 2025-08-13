@@ -10,20 +10,20 @@ class EditProfilePage extends StatefulWidget {
 }
 
 class _EditProfilePageState extends State<EditProfilePage> {
-  final TextEditingController _nameController =
-      TextEditingController(text: "Robson Cavalcante");
-  final TextEditingController _emailController =
-      TextEditingController(text: "robmacav@gmail.com");
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _emailController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
 
   bool _isLoading = false;
 
   Future<void> _saveProfile() async {
-    final fullName = _nameController.text.trim();
+    final first_name = _firstNameController.text.trim();
+    final last_name = _lastNameController.text.trim();
     final email = _emailController.text.trim();
     final phone = _phoneController.text.trim();
 
-    if (fullName.isEmpty || email.isEmpty || phone.isEmpty) {
+    if (first_name.isEmpty || last_name.isEmpty || email.isEmpty || phone.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Por favor, preencha todos os campos')),
       );
@@ -33,13 +33,16 @@ class _EditProfilePageState extends State<EditProfilePage> {
     setState(() => _isLoading = true);
 
     try {
+      final api_url = 'http://10.0.2.2:3000/v1/transactions';
+
       final response = await http.post(
-        Uri.parse('https://finances-api.robson.cavalcante.com/v1/transactions'),
+        Uri.parse(api_url),
         headers: {
           'Content-Type': 'application/json',
         },
         body: jsonEncode({
-          'full_name': fullName,
+          'first_name': first_name,
+          'last_name': last_name,
           'email': email,
           'phone_number': phone,
         }),
@@ -118,16 +121,24 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             const SizedBox(height: 30),
 
-            _buildLabel("Nome e Sobrenome"),
-            _buildTextField(_nameController),
+            _buildLabel("Nome"),
+            const SizedBox(height: 5),
+            _buildTextField(_firstNameController),
+            const SizedBox(height: 20),
+
+            _buildLabel("Sobrenome"),
+             const SizedBox(height: 5),
+            _buildTextField(_lastNameController),
 
             const SizedBox(height: 20),
             _buildLabel("E-mail"),
+             const SizedBox(height: 5),
             _buildTextField(_emailController),
 
             const SizedBox(height: 20),
             _buildLabel("Telefone"),
-            _buildTextField(_phoneController, hint: "your phone"),
+             const SizedBox(height: 5),
+            _buildTextField(_phoneController),
 
             const Spacer(),
 
