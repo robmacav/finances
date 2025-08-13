@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class EditProfilePage extends StatefulWidget {
   const EditProfilePage({super.key});
@@ -14,6 +16,57 @@ class _EditProfilePageState extends State<EditProfilePage> {
       TextEditingController(text: "robmacav@gmail.com");
   final TextEditingController _phoneController = TextEditingController();
 
+  bool _isLoading = false;
+
+  Future<void> _saveProfile() async {
+    final fullName = _nameController.text.trim();
+    final email = _emailController.text.trim();
+    final phone = _phoneController.text.trim();
+
+    if (fullName.isEmpty || email.isEmpty || phone.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor, preencha todos os campos')),
+      );
+      return;
+    }
+
+    setState(() => _isLoading = true);
+
+    try {
+      final response = await http.post(
+        Uri.parse('https://finances-api.robson.cavalcante.com/v1/transactions'),
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: jsonEncode({
+          'full_name': fullName,
+          'email': email,
+          'phone_number': phone,
+        }),
+      );
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Perfil atualizado com sucesso!')),
+        );
+        Navigator.pop(context); // volta para a tela anterior
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+                'Erro ao salvar: ${response.statusCode} ${response.reasonPhrase}'),
+          ),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Erro de conexão: $e')),
+      );
+    } finally {
+      setState(() => _isLoading = false);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -23,10 +76,10 @@ class _EditProfilePageState extends State<EditProfilePage> {
         elevation: 0,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
-            onPressed: () {
-              FocusScope.of(context).unfocus(); // remove foco dos campos
-              Navigator.pop(context);
-            }
+          onPressed: () {
+            FocusScope.of(context).unfocus();
+            Navigator.pop(context);
+          },
         ),
         title: const Text(
           "edit profile",
@@ -42,7 +95,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
         child: Column(
           children: [
             const SizedBox(height: 20),
-            // Avatar com gradiente
             Container(
               height: 100,
               width: 100,
@@ -66,7 +118,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
             ),
             const SizedBox(height: 30),
 
-            // Campo nome
             _buildLabel("Nome e Sobrenome"),
             _buildTextField(_nameController),
 
@@ -80,7 +131,6 @@ class _EditProfilePageState extends State<EditProfilePage> {
 
             const Spacer(),
 
-            // Botão save
             SizedBox(
               width: double.infinity,
               height: 50,
@@ -92,15 +142,19 @@ class _EditProfilePageState extends State<EditProfilePage> {
                   ),
                   elevation: 0,
                 ),
-                onPressed: () {},
-                child: const Text(
-                  "save",
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
+                onPressed: _isLoading ? null : _saveProfile,
+                child: _isLoading
+                    ? const CircularProgressIndicator(
+                        color: Colors.black,
+                      )
+                    : const Text(
+                        "save",
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
               ),
             ),
             const SizedBox(height: 20),
