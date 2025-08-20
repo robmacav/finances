@@ -1,0 +1,10 @@
+services:
+  app:
+    container_name: legislacao-rails
+    image: hub.sefin.ro.gov.br/adm/ruby:3.2.0-deps
+    stdin_open: true
+    tty: true
+    ports:
+      - 3000:3000
+    volumes:
+      - .:/app
