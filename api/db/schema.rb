@@ -37,43 +37,7 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_09_151043) do
     t.datetime "updated_at", null: false
   end
 
-  create_table "expenses", force: :cascade do |t|
-    t.string "summary"
-    t.text "details"
-    t.decimal "value"
-    t.date "date"
-    t.integer "category_id", null: false
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "status_id"
-    t.index ["date", "summary"], name: "idx_date_summary"
-  end
-
-  create_table "expenses_backup", id: false, force: :cascade do |t|
-    t.bigint "id"
-    t.string "date", limit: 8
-  end
-
-  create_table "incomes", force: :cascade do |t|
-    t.string "summary"
-    t.text "details"
-    t.decimal "value"
-    t.string "date", limit: 8
-    t.integer "category_id", null: false
-    t.integer "user_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-    t.integer "status_id"
-  end
-
   create_table "statuses", force: :cascade do |t|
-    t.string "summary"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
-  end
-
-  create_table "transaction_kinds", force: :cascade do |t|
     t.string "summary"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
@@ -83,8 +47,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_06_09_151043) do
     t.string "summary"
     t.text "details"
     t.decimal "value"
-    t.string "date", limit: 8
-    t.integer "transaction_kind_id", null: false
+    t.date "date"
+    t.integer "kind", null: false
     t.integer "status_id", null: false
     t.integer "category_id"
     t.integer "user_id", null: false
