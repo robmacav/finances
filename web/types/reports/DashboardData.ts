@@ -19,6 +19,7 @@ export type DashboardData = {
       color: string;
     };
     total: number;
+    items: [];
   }[];
   total_by_months: {
     month: string; 

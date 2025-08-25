@@ -15,32 +15,49 @@ class V1::Reports::DashboardController < ApplicationController
         prev_month_date = current_date.prev_month
         prev_month_year_str = prev_month_date.strftime("%m%Y")
 
-        incomes_current  = Transaction.sum_by_kind_and_month_year(:income, month_year)
-        expenses_current = Transaction.sum_by_kind_and_month_year(:expense, month_year)
+        incomes_current  = Transaction.sum_by_kind_and_month_year(:income, month_year, 3)
+        expenses_current = Transaction.sum_by_kind_and_month_year(:expense, month_year, 2)
         available_current = incomes_current - expenses_current
 
-        incomes_prev  = Transaction.sum_by_kind_and_month_year(:income, prev_month_year_str)
-        expenses_prev = Transaction.sum_by_kind_and_month_year(:expense, prev_month_year_str)
+        incomes_prev  = Transaction.sum_by_kind_and_month_year(:income, prev_month_year_str, 3)
+        expenses_prev = Transaction.sum_by_kind_and_month_year(:expense, prev_month_year_str, 2)
         available_prev = incomes_prev - expenses_prev
 
 
 
-        expenses_by_category = Transaction.by_kind_and_month_year_per_category(:expense, month_year)
+        expenses_by_category = Transaction.by_kind_and_month_year_per_category(:expense, month_year, 2)
                                           .page(page)
                                           .per(per_page)
 
-        grouped_by_category = expenses_by_category.map do |expense|
-            {
-                category: {
-                    summary: expense.category.summary,
-                    color: expense.category.color
-                },
-                total: {
-                    original: expense.total.to_f,
-                    formated: format_currency(expense.total)
-                }
-            }
-        end
+grouped_by_category = expenses_by_category.map do |expense|
+  transactions = Transaction.where(
+    kind: :expense,
+    category_id: expense.category_id,
+    status_id: 2,
+    date: Transaction.date_range_by_month_year_string(month_year)
+  )
+
+  {
+    category: {
+      summary: expense.category.summary,
+      color: expense.category.color
+    },
+    total: {
+      original: expense.total.to_f,
+      formated: format_currency(expense.total)
+    },
+    items: transactions.map do |t|
+      {
+        id: t.id,
+        summary: t.summary,
+        value: t.value.to_f,
+        date: t.date,
+        formated: format_currency(t.value)
+      }
+    end
+  }
+end
+
 
         total_by_months = build_total_by_months(year.to_i)
 

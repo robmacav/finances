@@ -16,6 +16,7 @@ import {
   ChartTooltip,
   ChartTooltipContent
 } from '@/components/ui/chart'
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 
 type Props = {
   data: {
@@ -25,6 +26,10 @@ type Props = {
     }
     total: {
       original: string;
+      formated: string;
+    }
+    items: {
+      summary: string;
       formated: string;
     }
   }
@@ -46,6 +51,7 @@ function ExpensesByCategoryOverview({ data }: Props) {
   const chartData = data?.map((item) => ({
     category: item.category.summary,
     total: item.total.original,
+    items: item.items,
     fill: `#${item.category.color.replace(/^#/, '')}`
   }));
 
@@ -58,13 +64,15 @@ function ExpensesByCategoryOverview({ data }: Props) {
     return acc;
   }, {} as Record<string, { label: string; color: string }>);
 
+  console.log("data: ", chartData);
+
   function dados() {
     return (
       <div className="w-full">
         <ul className="w-full p-5">
           {chartData.map(
             (
-              item: { category: string; total: number; fill: string },
+              item: { category: string; total: number; fill: string, items: [] },
               index: number
             ) => (
               <li
@@ -78,9 +86,22 @@ function ExpensesByCategoryOverview({ data }: Props) {
                       style={{ backgroundColor: item.fill }}
                       aria-hidden="true"
                     ></span>
-                    <Label className="text-muted-foreground whitespace-nowrap">
-                      {item.category}
-                    </Label>
+                    <Tooltip>
+                      <TooltipTrigger asChild>
+                        <Label className="text-muted-foreground whitespace-nowrap">
+                          {item.category}
+                        </Label>
+                      </TooltipTrigger>
+                      <TooltipContent>
+                        <ul>
+                        {item.items?.map((item: any) => (
+                          <li key={item.id}>
+                            {item.summary} — {item.formated}
+                          </li>
+                        ))}
+                        </ul>
+                      </TooltipContent>
+                    </Tooltip>
                   </div>
                   <span className="text-sm text-right font-medium break-words max-w-sm text-foreground">
                     {formatBRL(item.total)}

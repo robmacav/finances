@@ -13,18 +13,18 @@ class Transaction < ApplicationRecord
         .order(date: :asc, summary: :asc)
     }
 
-    scope :by_kind_and_month_year, ->(kind, month_year) {
+    scope :by_kind_and_month_year, ->(kind, month_year, status) {
         includes(:category, :status)
-        .where(kind: kind, date: date_range_by_month_year_string(month_year))
+        .where(kind: kind, date: date_range_by_month_year_string(month_year), status_id: status)
         .order(date: :asc, summary: :asc)
     }
 
-    scope :sum_by_kind_and_month_year, ->(kind, month_year) {
-        where(kind: kind, date: date_range_by_month_year_string(month_year)).sum(:value)
+    scope :sum_by_kind_and_month_year, ->(kind, month_year, status) {
+        where(kind: kind, date: date_range_by_month_year_string(month_year), status_id: status).sum(:value)
     }
 
-    scope :by_kind_and_month_year_per_category, ->(kind, month_year) {
-        where(kind: kind, date: date_range_by_month_year_string(month_year))
+    scope :by_kind_and_month_year_per_category, ->(kind, month_year, status) {
+        where(kind: kind, date: date_range_by_month_year_string(month_year), status_id: status)
         .select("category_id, SUM(value) as total")
         .group("category_id")
         .order("total desc")
