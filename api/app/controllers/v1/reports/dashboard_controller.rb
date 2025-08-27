@@ -15,36 +15,58 @@ class V1::Reports::DashboardController < ApplicationController
         prev_month_date = current_date.prev_month
         prev_month_year_str = prev_month_date.strftime("%m%Y")
 
-        incomes_current  = Transaction.sum_by_kind_and_month_year(:income, month_year)
-        expenses_current = Transaction.sum_by_kind_and_month_year(:expense, month_year)
+        incomes_current  = Transaction.sum_by_kind_and_month_year(:income, month_year, :received)
+        expenses_current = Transaction.sum_by_kind_and_month_year(:expense, month_year, :paid)
         available_current = incomes_current - expenses_current
 
-        incomes_prev  = Transaction.sum_by_kind_and_month_year(:income, prev_month_year_str)
-        expenses_prev = Transaction.sum_by_kind_and_month_year(:expense, prev_month_year_str)
+        incomes_prev  = Transaction.sum_by_kind_and_month_year(:income, prev_month_year_str, :received)
+        expenses_prev = Transaction.sum_by_kind_and_month_year(:expense, prev_month_year_str, :paid)
         available_prev = incomes_prev - expenses_prev
 
 
 
-        expenses_by_category = Transaction.by_kind_and_month_year_per_category(:expense, month_year)
+        expenses_by_category = Transaction.by_kind_and_month_year_per_category(:expense, month_year, :paid)
                                           .page(page)
                                           .per(per_page)
 
         grouped_by_category = expenses_by_category.map do |expense|
+            transactions = Transaction.where(
+                kind: :expense,
+                category_id: expense.category_id,
+                status_id: 2,
+                date: Transaction.date_range_by_month_year_string(month_year)
+            )
+
             {
                 category: {
-                    summary: expense.category.summary,
-                    color: expense.category.color
+                summary: expense.category.summary,
+                color: expense.category.color
                 },
                 total: {
-                    original: expense.total.to_f,
-                    formated: format_currency(expense.total)
-                }
+                original: expense.total.to_f,
+                formated: format_currency(expense.total)
+                },
+                items: transactions
+                .group_by(&:summary)                 # agrupa pelo summary
+                .map do |summary, trans|
+                    total_value = trans.sum { |t| t.value.to_f }   # soma os valores
+                    total_transactions = trans.size                 # total de transações do grupo
+                    {
+                    id: trans.first.id,                           # id do primeiro item do grupo
+                    summary: "#{summary} (#{total_transactions})", # summary + total de transações
+                    value: total_value,
+                    date: trans.first.date,                        # opcional: primeira data
+                    formated: format_currency(total_value)
+                    }
+                end
+                .sort_by { |t| -t[:value] }                      # ordena do maior para o menor
+
             }
         end
 
         total_by_months = build_total_by_months(year.to_i)
 
-        most_frequents = Transaction.by_month_year_expenses_most_frequents(month_year).map do |e|
+        most_frequents = Transaction.by_month_year_expenses_most_frequents(month_year, :paid).map do |e|
             {
                 summary: e.summary,
                 qtd: e.qtd.to_i,
@@ -52,7 +74,7 @@ class V1::Reports::DashboardController < ApplicationController
             }
         end
 
-        current_week = Transaction.expenses_on_current_week_total_by_day.map do |e|
+        current_week = Transaction.expenses_on_current_week_total_by_day(:paid).map do |e|
             {
                 day: e.day_name.strip,
                 total: e.total.to_f
@@ -89,8 +111,8 @@ class V1::Reports::DashboardController < ApplicationController
     private
 
     def build_total_by_months(year)
-        expenses = Transaction.total_months_by_kind_per_year(:expense, year.to_i)
-        incomes  = Transaction.total_months_by_kind_per_year(:income,  year.to_i)
+        expenses = Transaction.total_months_by_kind_per_year(:expense, year.to_i, :paid)
+        incomes  = Transaction.total_months_by_kind_per_year(:income,  year.to_i, :received)
 
         expenses_hash = expenses.index_by(&:month)
         incomes_hash  = incomes.index_by(&:month)

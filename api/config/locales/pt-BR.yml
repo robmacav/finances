@@ -10,3 +10,8 @@ pt-BR:
         kind:
           expense: "despesa"
           income: "receita"
+      status:
+        summary:
+          paid: "pago"
+          peding: "pendente"
+          received: "recebido"
