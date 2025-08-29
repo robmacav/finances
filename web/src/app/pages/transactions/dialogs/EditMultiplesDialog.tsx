@@ -145,7 +145,7 @@ function EditMultiplesDialog({ open, onOpenChange, transactionIDs, onTransaction
                         data: {
                             summary: formData.get("summary"),
                             kind: selectedKind,
-                            value: parseFloat(formData.get("value")?.toString() || "0"),
+                            value: parseFloat(formData.get("value")?.toString() || ""),
                             date: formatToDate(formData.get("date")?.toString() || ""),
                             category_id: selectedCategory,
                             status_id: selectedStatus,
