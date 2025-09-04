@@ -53,6 +53,10 @@ GEM
       activemodel (= 8.0.2.1)
       activesupport (= 8.0.2.1)
       timeout (>= 0.4.0)
+    activerecord-oracle_enhanced-adapter (8.0.0)
+      activerecord (~> 8.0.0)
+      ruby-oci8
+      ruby-plsql (>= 0.6.0)
     activestorage (8.0.2.1)
       actionpack (= 8.0.2.1)
       activejob (= 8.0.2.1)
@@ -283,6 +287,8 @@ GEM
       rubocop (>= 1.72)
       rubocop-performance (>= 1.24)
       rubocop-rails (>= 2.30)
+    ruby-oci8 (2.2.8)
+    ruby-plsql (0.8.0)
     ruby-progressbar (1.13.0)
     rubyzip (3.0.1)
     securerandom (0.4.1)
@@ -370,6 +376,7 @@ PLATFORMS
   x86_64-linux-musl
 
 DEPENDENCIES
+  activerecord-oracle_enhanced-adapter
   bootsnap
   brakeman
   capybara
@@ -381,6 +388,7 @@ DEPENDENCIES
   puma (>= 5.0)
   rails (~> 8.0.2, >= 8.0.2.1)
   rubocop-rails-omakase
+  ruby-oci8 (= 2.2.8)
   selenium-webdriver
   solid_cable
   solid_cache

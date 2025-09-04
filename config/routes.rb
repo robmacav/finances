@@ -3,7 +3,17 @@ Rails.application.routes.draw do
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
   # Can be used by load balancers and uptime monitors to verify that the app is live.
+  get '/detalhe', to: 'legislacao#detalhe'
+  get '/pesquisar_lei', to: 'legislacao#pesquisar_lei'
+  get '/pesquisar_leis_mais', to: 'legislacao#pesquisar_leis_mais'
+  get '/pesquisar_detalhe_lei', to: 'legislacao#pesquisar_detalhe_lei'
+
+
   get "up" => "rails/health#show", as: :rails_health_check
+
+  root to: 'legislacao#index'
+
+  # get '/baixar_xml/:hashCSSI/:gta', to: 'legislacao#index'
 
   # Render dynamic PWA files from app/views/pwa/* (remember to link manifest in application.html.erb)
   # get "manifest" => "rails/pwa#manifest", as: :pwa_manifest

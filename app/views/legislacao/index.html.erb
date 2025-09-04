@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Legislação - Sistema de Consulta</title>
+    <%= javascript_include_tag "legislacao-script", type: "module" %>
+
+</head>
+<body>
+    <!-- Cabeçalho -->
+    <header class="header">
+        <div class="header-content">
+            <h1 class="logo">
+  <%= image_tag "iconeSefin.png", alt: "Ícone Legislação", class: "logo-icon" %>
+  Legislação
+</h1>
+            <div class="search-container">
+                <input type="text" class="search-input" placeholder="Pesquisar legislação">
+                <button class="search-icon">🔍</button>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-container">
+
+
+
+     <!-- Barra lateral de filtros -->
+        <aside class="sidebar">
+            <!-- HTML -->
+<div class="filters-section">
+    <h3>🔧 Filtros</h3>
+    <p class="filters-description">Refine sua busca por categoria e ano.</p>
+    
+    <div class="accordion" id="categoriaFiltro" >
+        <button class="accordion-header">Categoria</button>
+        <div class="accordion-content">
+            <label class="checkbox-label">
+                <input type="checkbox"  data-filter-type="category" value="158"> Leis Ordinárias
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox"  data-filter-type="category" value="174"> Regulamento do ICMS e ANEXOS (Antigo)
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="167"> Instrução Normativa
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="166"> Decretos
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="164"> Resoluções
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="592"> Regulamento do ICMS e ANEXOS (Novo)
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="160"> Resoluções Conjuntas
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="260"> Legislação outras
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="286"> Regulamento do ITCD
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="222"> Regulamento do IPVA
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="111"> Leis Complementares
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="274"> Ato Conjunto
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="128"> Pareceres
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="165"> Ato Normativo
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="124"> Pareceres Normativos
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="168"> Simples Nacional
+            </label>
+            <label class="checkbox-label">
+                <input type="checkbox" data-filter-type="category" value="110"> Código Tributário Nacional
+            </label>
+            </br>
+        </div>
+    </div>
+
+    <div class="accordion" id="anosFiltro">
+        <button class="accordion-header">Ano </button>
+        <div class="accordion-content" id="year-filters">
+        <!-- Anos serão inseridos aqui via JS -->
+        </div>
+    </div>
+            
+    </aside>
+
+        <!-- Conteúdo principal -->
+        <main class="main-content">
+            <div class="results-header">
+                <span class="results-count">0 resultados</span>
+                <div class="sort-container">
+                    <span>Ordenar por</span>
+                    <select class="sort-select">
+                        <option value="1">Mais relevantes</option>
+                        <option value="2">Mais recentes</option>
+                        <option value="3">Alfabética</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Resultados da legislação -->
+            <div class="results-list"></div>
+
+            <!-- Paginação -->
+            <div class="pagination">
+                <span class="pagination-info"></span>
+                <div class="pagination-controls">
+                    <button class="pagination-btn" id="prev-page" disabled>Anterior</button>
+                    <button class="pagination-btn" id="next-page">Próxima</button>
+                </div>
+            </div>
+        </main>
+
+        <!-- Barra lateral direita - IA -->
+        <aside class="ai-sidebar">
+            <div class="ai-section"> 
+                <h3>📖 Mais Acessados</h3>
+                <p class="filters-description">Documentos mais acessados.</p>
+                <div class="related-docs accordion">
+                  <button class="accordion-header">Documentos</button>
+                  <div class="accordion-content" id="most-accessed-docs">
+                    <ul class="related-list">
+                      <!-- Aqui os itens serão inseridos dinamicamente -->
+                    </ul>
+                  </div>
+                </div>
+            </div>
+        </aside>
+        
+    </div>
+</body>
+</html>
