@@ -60,62 +60,58 @@ document.addEventListener('DOMContentLoaded', function() {
     }
 
     // Funcionalidade do botão compartilhar
-    shareBtn.addEventListener('click', function() {
-        if (navigator.share) {
-            navigator.share({
-                title: document.title,
-                text: 'Confira este documento de legislação',
-                url: window.location.href
-            }).catch(err => console.log('Erro ao compartilhar:', err));
-        } else {
-            // Fallback para navegadores que não suportam Web Share API
-            const url = window.location.href;
-            navigator.clipboard.writeText(url).then(() => {
-                const originalText = this.innerHTML;
-                this.innerHTML = '✅ Link copiado!';
-                this.style.backgroundColor = '#28a745';
-                this.style.color = '#fff';
-                this.style.borderColor = '#28a745';
-                
-                setTimeout(() => {
-                    this.innerHTML = originalText;
-                    this.style.backgroundColor = '';
-                    this.style.color = '';
-                    this.style.borderColor = '';
-                }, 2000);
-            }).catch(err => {
-                alert('Não foi possível copiar o link. URL: ' + url);
-            });
-        }
-    });
+     if (!shareBtn) return;
 
-    // Funcionalidade do botão baixar PDF
-    downloadBtn.addEventListener('click', function() {
-        const originalText = this.innerHTML;
-        this.innerHTML = '⏳ Preparando...';
-        this.disabled = true;
-        
-        // Simula o processo de geração do PDF
-        setTimeout(() => {
-            this.innerHTML = '✅ Download iniciado!';
-            this.style.backgroundColor = '#28a745';
-            
-            setTimeout(() => {
-                this.innerHTML = originalText;
-                this.style.backgroundColor = '#007bff';
-                this.disabled = false;
-                
-                // Simula o download (em uma implementação real, seria um link para o PDF)
-                const link = document.createElement('a');
-                link.href = '#'; // Aqui seria a URL real do PDF
-                link.download = 'decreto-d-30535-2025.pdf';
-                // link.click(); // Descomentaria em produção
-                
-                console.log('Download simulado do PDF: decreto-d-30535-2025.pdf');
-            }, 2000);
-        }, 1500);
-    });
+  shareBtn.addEventListener('click', function() {
+    if (navigator.share) {
+      navigator.share({
+        title: document.title,
+        text: 'Confira este documento de legislação',
+        url: window.location.href
+      }).catch(err => console.log('Erro ao compartilhar:', err));
+    } else {
+      // fallback robusto para copiar o link
+      const url = window.location.href;
 
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(url).then(() => {
+          showCopiedFeedback(this);
+        }).catch(err => fallbackCopyText(url, this));
+      } else {
+        fallbackCopyText(url, this);
+      }
+    }
+  });
+
+  function fallbackCopyText(text, btn) {
+    const input = document.createElement('input');
+    input.value = text;
+    document.body.appendChild(input);
+    input.select();
+    try {
+      document.execCommand('copy');
+      showCopiedFeedback(btn);
+    } catch (err) {
+      alert('Não foi possível copiar o link. URL: ' + text);
+    }
+    document.body.removeChild(input);
+  }
+
+  function showCopiedFeedback(btn) {
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '✅ Link copiado!';
+    btn.style.backgroundColor = '#28a745';
+    btn.style.color = '#fff';
+    btn.style.borderColor = '#28a745';
+    setTimeout(() => {
+      btn.innerHTML = originalText;
+      btn.style.backgroundColor = '';
+      btn.style.color = '';
+      btn.style.borderColor = '';
+    }, 2000);
+  }
+
+   
     // Funcionalidade do botão voltar
     backBtn.addEventListener('click', function(e) {
         e.preventDefault();

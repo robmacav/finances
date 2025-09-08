@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   get '/detalhe', to: 'legislacao#detalhe'
   get '/pesquisar_lei', to: 'legislacao#pesquisar_lei'
   get '/pesquisar_leis_mais', to: 'legislacao#pesquisar_leis_mais'
-  get '/pesquisar_detalhe_lei', to: 'legislacao#pesquisar_detalhe_lei'
+  get '/pesquisar_detalhe_lei/:id', to: 'legislacao#pesquisar_detalhe_lei'
+  get '/link_arquivo/:id', to: 'legislacao#link_arquivo'
 
 
   get "up" => "rails/health#show", as: :rails_health_check

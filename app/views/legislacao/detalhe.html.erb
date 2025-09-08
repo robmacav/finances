@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Decreto D 30535/2025 - Disciplina a requisição de informações financeiras</title>
+    <title>Detalhes Legislação</title>
     <%= javascript_include_tag "detail-script", type: "module" %>
 </head>
 <body>
@@ -29,7 +29,6 @@
                 <span class="document-type">📄 Decreto • D 30535/2025</span>
                 <span class="publish-date">📅 Publicado 17/04/2025</span>
             </div>
-            <h1 class="document-title">Disciplina a requisição de informações financeiras</h1>
             <p class="document-description">
                 Disciplina a requisição de informações referentes a operações realizadas por usuários de serviços de 
                 instituições financeiras, nos termos da Lei Complementar 105/2001.
@@ -43,58 +42,112 @@
 
                 <div class="annexes-section">
                     <h3>Anexos</h3>
-                    <div class="annex-item">
-                        <a href="#" class="annex-link">
-                            📎 Texto consolidado (PDF)
-                        </a>
-                    </div>
+                    <ul class="annex-list">
+                       <p>Carregando...</p>
+                    </ul>
                 </div>
+
+                <script>
+                
+              async function carregarAnexos(leiId) {
+  const container = document.querySelector(".annexes-section .annex-list");
+
+  if (!container) return;
+
+  try {
+    const response = await fetch(`/link_arquivo/${leiId}`);
+    const data = await response.json();
+
+    // Limpa a lista existente
+    container.innerHTML = "";
+
+    if (!data.resultados || data.resultados.length === 0) {
+      container.innerHTML = `<li class="annex-item">Nenhum anexo disponível.</li>`;
+      return;
+    }
+
+    data.resultados.forEach(arquivo => {
+      const li = document.createElement("li");
+      li.className = "annex-item";
+
+      const a = document.createElement("a");
+      a.href = `https://legislacao.sefin.ro.gov.br/Download?arquivo=${encodeURIComponent(arquivo.nomeservidor)}&nome=${encodeURIComponent(arquivo.nome)}`;
+      a.className = "annex-link";
+      a.textContent = `${arquivo.nome}`;
+
+      li.appendChild(a);
+      container.appendChild(li);
+    });
+
+  } catch (error) {
+    console.error("Erro ao carregar anexos:", error);
+    container.innerHTML = `<li class="annex-item">Não foi possível carregar os anexos.</li>`;
+  }
+}
+
+// Captura o parâmetro "lei" da URL
+const params = new URLSearchParams(window.location.search);
+const lei = params.get("lei");
+
+if (lei) {
+  carregarAnexos(lei);
+}
+                
+                </script>
+
+
             </aside>
 
             <!-- Conteúdo principal -->
             <main class="document-content">
-                <section class="official-text">
-                    <h2>Texto oficial</h2>
-                    
-                    <article id="art1" class="article">
-                        <h3>Art. 1º – Objeto</h3>
-                        <p>
-                            Este Decreto disciplina a requisição, pelos órgãos fazendários, de informações sobre 
-                            operações realizadas por usuários de serviços de instituições financeiras.
-                        </p>
-                    </article>
+                <section class="official-text" id="official-text">
+    <h2>Texto oficial</h2>
+    <p>Carregando...</p>
+    <!-- O conteúdo será substituído aqui -->
+  </section>
+</main>
 
-                    <article id="art2" class="article">
-                        <h3>Art. 2º – Hipóteses de requisição</h3>
-                        <p>
-                            A requisição de informações dar-se-á quando necessária para a constituição do 
-                            crédito tributário, fiscalização ou instrução de processos administrativos.
-                        </p>
-                    </article>
+<script>
+async function carregarLei(id) {
+  try {
+    const response = await fetch(`pesquisar_detalhe_lei/${id}`);
+    const data = await response.json();
 
-                    <article id="art3" class="article">
-                        <h3>Art. 3º – Procedimento e prazos</h3>
-                        <p>
-                            As instituições financeiras deverão atender à requisição no prazo de 15 (quinze) dias, 
-                            prorrogável por igual período, mediante justificativa do órgão solicitante.
-                        </p>
-                    </article>
+    // Atualiza a seção do texto oficial
+    document.getElementById("official-text").innerHTML = `
+      <h2>Texto oficial</h2>
+      ${data.texto_html}
+    `;
 
-                    <article id="art4" class="article">
-                        <h3>Art. 4º – Sigilo e responsabilização</h3>
-                        <p>
-                            As informações terão caráter sigiloso, vedada sua divulgação a terceiros, sob pena 
-                            de responsabilização conforme a lei.
-                        </p>
-                    </article>
+    // Atualiza o identificador e tipo do documento
+    const documentTypeSpan = document.querySelector(".document-type");
+    if (documentTypeSpan) {
+      // Exemplo: 📄 Decreto • D 30535/2025
+      documentTypeSpan.innerHTML  = `📄 ${data.tipo || "Documento"} • ${data.identificador}`;
+    }
 
-                    <article id="art5" class="article">
-                        <h3>Art. 5º – Vigência</h3>
-                        <p>
-                            Este Decreto entra em vigor na data de sua publicação.
-                        </p>
-                    </article>
-                </section>
+    // Atualiza a data de publicação
+    const publishDateSpan = document.querySelector(".publish-date");
+    if (publishDateSpan) {
+      publishDateSpan.innerHTML  = `📅 Publicado ${data.publicado_em || ""}`;
+    }
+
+    // Atualiza a descrição do documento
+    const descriptionP = document.querySelector(".document-description");
+    if (descriptionP) {
+      descriptionP.innerHTML  = data.titulo || "";
+    }
+
+  } catch (error) {
+    console.error("Erro ao carregar a lei:", error);
+  }
+}
+
+
+if (lei) {
+  carregarLei(lei);
+}
+</script>
             </main>
         </div>
 

@@ -16,12 +16,21 @@ class LegislacaoController < ApplicationController
 
     # score por palavra no IDENTIFICADOR
     score_cases = palavras.map.with_index(1) do |p, i|
-      "CASE WHEN LOWER(l.IDENTIFICADOR) LIKE :palavra#{i} THEN 3 ELSE 0 END"
+      "CASE WHEN LOWER(l.IDENTIFICADOR) LIKE LOWER(:palavra#{i}) THEN 4 ELSE 0 END"
+    end.join(" + ")
+
+     # score por palavra no IDENTIFICADOR
+    score_cases_titulo = palavras.map.with_index(1) do |p, i|
+      "CASE WHEN LOWER(l.titulo) LIKE LOWER(:palavra#{i}) THEN 3 ELSE 0 END"
     end.join(" + ")
 
     # where por palavra no IDENTIFICADOR
     where_conditions = palavras.map.with_index(1) do |p, i|
-      "LOWER(l.IDENTIFICADOR) LIKE :palavra#{i}"
+      "LOWER(l.IDENTIFICADOR) LIKE LOWER(:palavra#{i})"
+    end.join(" OR ")
+
+    where_conditions_titulo = palavras.map.with_index(1) do |p, i|
+      "LOWER(l.titulo) LIKE LOWER(:palavra#{i})"
     end.join(" OR ")
 
     categories = (params[:categories] || "").split(",").map(&:strip)
@@ -31,6 +40,9 @@ class LegislacaoController < ApplicationController
     else
       ""
     end
+
+    score_case_texto = ""
+    score_case_texto = "+ CASE WHEN CONTAINS(l.TEXTO, :termo_completo, 9) > 0 THEN 9 ELSE 0 END" unless termo_downcase == 't'
 
     anos = (params[:year] || "").split(",").map(&:strip)
 
@@ -45,9 +57,13 @@ class LegislacaoController < ApplicationController
   # Definir a cláusula ORDER BY de acordo com sort_by
   order_by_clause = case sort_by
                   when 1
-                    "score DESC"
+                    if termo == 't'
+                      "l.lei ASC"   # quando é 't', ordena por lei
+                    else
+                      "score DESC"            # busca normal, ordena por relevância
+                    end
                   when 2
-                    "l.ano DESC"
+                    "l.publicacao DESC"
                   when 3
                     "l.identificador ASC"  # padrão
                   else
@@ -63,13 +79,18 @@ class LegislacaoController < ApplicationController
             SELECT l.*,
                    (
                     CASE WHEN LOWER(l.IDENTIFICADOR) LIKE LOWER(:termo_completo) THEN 10 ELSE 0 END
-                     + #{score_cases}
+                    + CASE WHEN LOWER(l.TITULO) LIKE LOWER(:termo_completo) THEN 9 ELSE 0 END
+                    #{score_case_texto}
+                    + #{score_cases}
+                    + #{score_cases_titulo}
                    ) AS score
             FROM SITESEFIN.LEI l
             WHERE l.visivel = 'SIM'
               AND (:termo = 't'
                    OR CONTAINS(l.TEXTO, :contains_expr, 2) > 0
                    OR LOWER(l.IDENTIFICADOR) LIKE LOWER(:termo_completo)
+                   OR LOWER(l.titulo) LIKE LOWER(:termo_completo)
+                   OR #{where_conditions_titulo}
                    OR #{where_conditions})
               #{category_filter}
               #{anos_filter}
@@ -99,11 +120,13 @@ class LegislacaoController < ApplicationController
     count_sql = <<-SQL
       SELECT COUNT(*) AS total_count
         FROM SITESEFIN.LEI l
-        WHERE l.visivel = 'SIM' AND (
-              :termo = 't'
-              OR CONTAINS(l.TEXTO, :contains_expr, 2) > 0
-              OR LOWER(l.IDENTIFICADOR) LIKE LOWER(:termo_completo)
-              OR #{where_conditions} ) 
+        WHERE l.visivel = 'SIM'
+              AND (:termo = 't'
+                   OR CONTAINS(l.TEXTO, :contains_expr, 2) > 0
+                   OR LOWER(l.IDENTIFICADOR) LIKE LOWER(:termo_completo)
+                   OR LOWER(l.titulo) LIKE LOWER(:termo_completo)
+                   OR #{where_conditions_titulo}
+                   OR #{where_conditions})
               #{category_filter}
               #{anos_filter}
     SQL
@@ -139,7 +162,7 @@ class LegislacaoController < ApplicationController
       {
         identificador: l.identificador,
         titulo: l.titulo,
-        lei: l.lei,
+        lei: l.lei.to_i,
         score: l.score,
         ano: l.ano.to_i
       }
@@ -163,12 +186,25 @@ class LegislacaoController < ApplicationController
 
 
   def pesquisar_detalhe_lei
+  id = params[:id]
 
+  lei = Lei.find_by(lei: id)
+
+  if lei
     render json: {
-      documento: 'oi'
+      lei: lei.lei,
+      identificador: lei.identificador,
+      titulo: lei.titulo,
+      ano: lei.ano,
+      visivel: lei.visivel,
+      publicado_em: lei.publicacao.strftime("%d/%m/%Y"),
+      categoria_id: lei.categoria,
+      texto_html: lei.texto # já vem com HTML
     }
-
+  else
+    render json: { error: "Lei não encontrada" }, status: :not_found
   end
+end
   
 
   def pesquisar_leis_mais
@@ -188,5 +224,25 @@ class LegislacaoController < ApplicationController
       }
     }
   end
+
+  def link_arquivo
+  id = params[:id]
+  arquivos = Arquivo.where(lei_fk: id)
+
+  if arquivos.exists?
+    render json: {
+      pagina_info: "Link Arquivos",
+      resultados: arquivos.map { |arquivo|
+        {
+          nome: arquivo.nome,
+          extensao: arquivo.extensao,
+          nomeservidor: arquivo.nomeservidor
+        }
+      }
+    }
+  else
+    render json: { error: "Arquivos não encontrados" }, status: :not_found
+  end
+end
 
 end

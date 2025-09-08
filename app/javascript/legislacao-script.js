@@ -151,17 +151,15 @@ checkboxesAnos.forEach(cb =>
             const card = document.createElement("article");
             card.classList.add("result-card");
             card.innerHTML = `
-                <div class="result-header">
-                    <span class="result-number">${item.identificador}</span>
-                    <span class="result-year">📅 ${item.ano || ""}</span>
-                </div>
-                <h3 class="result-title">${item.titulo}</h3>
-                <br/>
-                <div class="result-actions">
-                    <button class="action-btn save">📥 Baixar</button>
-                    <button class="action-btn details">ℹ️ Detalhes</button>
-                </div>
-            `;
+  <a href="/detalhe?lei=${encodeURIComponent(item.lei)}" class="result-link">
+    <div class="result-header">
+      <span class="result-number">${item.identificador}</span>
+      <span class="result-year">📅 ${item.ano || ""}</span>
+    </div>
+    <h3 class="result-title">${item.titulo}</h3>
+  </a>
+`;
+
             resultsList.appendChild(card);
         });
     }

@@ -575,3 +575,28 @@ body {
     display: block;
     margin: 5px 0;
 }
+
+.result-link {
+  display: block;          /* faz ocupar o card todo */
+  text-decoration: none;   /* remove sublinhado */
+  color: inherit;          /* mantém a cor do texto */
+}
+
+.result-link:hover {
+  background: #f9f9f9;     /* destaque ao passar o mouse */
+  cursor: pointer;
+}
+
+.annex-list {
+    list-style: none;
+    padding: 0;
+}
+
+.annex-item + .annex-item {
+    margin-top: 8px; /* espaçamento entre anexos */
+}
+
+.annex-link {
+    text-decoration: none;
+    color: #007bff;
+}
