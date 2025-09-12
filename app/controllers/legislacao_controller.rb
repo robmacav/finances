@@ -1,178 +1,80 @@
+require 'net/http'
+
 class LegislacaoController < ApplicationController
   
   def pesquisar_lei
   
-    # parâmetros de paginação
-    page = (params[:page] || 1).to_i
-    per_page = 10
-    start_row = (page - 1) * per_page + 1
-    end_row   = start_row + per_page - 1
+  page       = (params[:page] || 1).to_i
+per_page   = 10
+start      = (page - 1) * per_page
+termo      = params[:q].presence&.strip || "t"
+palavras   = termo.downcase.split
+categories = (params[:categories] || "").split(",").map(&:strip)
+anos       = (params[:year] || "").split(",").map(&:strip)
 
-    termo = params[:q].presence&.strip || "t"
-    p "!!!!!!!!!!!!!!!!!!!!!!!!!! #{termo} #{page} !!!!!!!!!!!!!!!!!!!!!!!!!"
-    termo_downcase = termo.downcase
-    palavras = termo_downcase.split
-    contains_expr = palavras.map { |p| "\"#{p}\"" }.join(" OR ")
-
-    # score por palavra no IDENTIFICADOR
-    score_cases = palavras.map.with_index(1) do |p, i|
-      "CASE WHEN LOWER(l.IDENTIFICADOR) LIKE LOWER(:palavra#{i}) THEN 4 ELSE 0 END"
-    end.join(" + ")
-
-     # score por palavra no IDENTIFICADOR
-    score_cases_titulo = palavras.map.with_index(1) do |p, i|
-      "CASE WHEN LOWER(l.titulo) LIKE LOWER(:palavra#{i}) THEN 3 ELSE 0 END"
-    end.join(" + ")
-
-    # where por palavra no IDENTIFICADOR
-    where_conditions = palavras.map.with_index(1) do |p, i|
-      "LOWER(l.IDENTIFICADOR) LIKE LOWER(:palavra#{i})"
-    end.join(" OR ")
-
-    where_conditions_titulo = palavras.map.with_index(1) do |p, i|
-      "LOWER(l.titulo) LIKE LOWER(:palavra#{i})"
-    end.join(" OR ")
-
-    categories = (params[:categories] || "").split(",").map(&:strip)
-
-    category_filter = if categories.any?
-      "AND l.CATEGORIA IN (:categories)"
+q = if termo == "t"
+      "*:*"
     else
-      ""
+      palavras.map { |p| "(identificador:#{p} OR titulo:#{p} OR texto:#{p})" }.join(" OR ")
     end
 
-    score_case_texto = ""
-    score_case_texto = "+ CASE WHEN CONTAINS(l.TEXTO, :termo_completo, 9) > 0 THEN 9 ELSE 0 END" unless termo_downcase == 't'
+filtros = []
+filtros << "categoria:(#{categories.join(' OR ')})" if categories.any?
+filtros << "ano:(#{anos.join(' OR ')})" if anos.any?
 
-    anos = (params[:year] || "").split(",").map(&:strip)
+sort_by = case params[:sort_by].to_i
+          when 1
+            termo == "t" ? "lei asc" : "score desc"
+          when 2
+            "publicacao desc"
+          when 3
+            "identificador asc"
+          else
+            "score desc"
+          end
 
-    anos_filter = if anos.any?
-      "AND l.ano IN (:anos)"
-    else
-      ""
-    end
+uri = URI("https://solr.dev.sefin.ro.gov.br/solr/legislacao/select")
+uri.query = URI.encode_www_form({
+  q: q,
+  fq: filtros,
+  start: start,
+  rows: per_page,
+  fl: "identificador,titulo,lei,ano,score",
+  sort: sort_by
+})
 
+response = Net::HTTP.get(uri)
+data = JSON.parse(response)
 
-  sort_by = params[:sort_by].to_i
-  # Definir a cláusula ORDER BY de acordo com sort_by
-  order_by_clause = case sort_by
-                  when 1
-                    if termo == 't'
-                      "l.lei ASC"   # quando é 't', ordena por lei
-                    else
-                      "score DESC"            # busca normal, ordena por relevância
-                    end
-                  when 2
-                    "l.publicacao DESC"
-                  when 3
-                    "l.identificador ASC"  # padrão
-                  else
-                    "score DESC"  # padrão
-                  end
+# paginação
+num_found   = data["response"]["numFound"]
+total_pages = (num_found.to_f / per_page).ceil
 
-    # SQL com ROW_NUMBER() para paginação
-    sql = <<-SQL
-        SELECT *
-        FROM (
-          SELECT subquery.*, ROWNUM AS rn
-          FROM (
-            SELECT l.*,
-                   (
-                    CASE WHEN LOWER(l.IDENTIFICADOR) LIKE LOWER(:termo_completo) THEN 10 ELSE 0 END
-                    + CASE WHEN LOWER(l.TITULO) LIKE LOWER(:termo_completo) THEN 9 ELSE 0 END
-                    #{score_case_texto}
-                    + #{score_cases}
-                    + #{score_cases_titulo}
-                   ) AS score
-            FROM SITESEFIN.LEI l
-            WHERE l.visivel = 'SIM'
-              AND (:termo = 't'
-                   OR CONTAINS(l.TEXTO, :contains_expr, 2) > 0
-                   OR LOWER(l.IDENTIFICADOR) LIKE LOWER(:termo_completo)
-                   OR LOWER(l.titulo) LIKE LOWER(:termo_completo)
-                   OR #{where_conditions_titulo}
-                   OR #{where_conditions})
-              #{category_filter}
-              #{anos_filter}
-            ORDER BY #{order_by_clause}
-          ) subquery
-          WHERE ROWNUM <= :end_row
-        )
-        WHERE rn >= :start_row
-    SQL
+pagina_info = {
+  current_page: page,
+  per_page: per_page,
+  total_count: num_found,
+  total_pages: total_pages,
+  has_previous: page > 1,
+  has_next: page < total_pages,
+  range_start: start + 1,
+  range_end: [start + per_page, num_found].min
+}
 
-    # binds
-    binds = { termo: termo, termo_completo: "%#{termo_downcase}%" }
-    palavras.each_with_index do |p, i|
-      binds[:"palavra#{i+1}"] = "%#{p}%"
-    end
-    binds[:start_row] = start_row
-    binds[:end_row]   = end_row
-    binds[:contains_expr]   = contains_expr
-    binds[:categories]   = categories
-    binds[:anos]   = anos
+resultados = data["response"]["docs"].map do |doc|
+  {
+    identificador: doc["identificador"],
+    titulo: doc["titulo"],
+    lei: doc["lei"].to_i,
+    ano: doc["ano"].to_i,
+    score: doc["score"]
+  }
+end
 
-    # executa
-    resultados = Lei.find_by_sql([sql, binds])
-
-
-    # cálculo do total de páginas
-    count_sql = <<-SQL
-      SELECT COUNT(*) AS total_count
-        FROM SITESEFIN.LEI l
-        WHERE l.visivel = 'SIM'
-              AND (:termo = 't'
-                   OR CONTAINS(l.TEXTO, :contains_expr, 2) > 0
-                   OR LOWER(l.IDENTIFICADOR) LIKE LOWER(:termo_completo)
-                   OR LOWER(l.titulo) LIKE LOWER(:termo_completo)
-                   OR #{where_conditions_titulo}
-                   OR #{where_conditions})
-              #{category_filter}
-              #{anos_filter}
-    SQL
-
-    total_count = Lei.find_by_sql([count_sql, binds])[0].total_count.to_i
-    total_pages = (total_count.to_f / per_page).ceil
-
-    # informações de paginação
-    pagina_info = {
-      current_page: page,
-      per_page: per_page,
-      total_count: total_count,
-      total_pages: total_pages,
-      has_previous: page > 1,
-      has_next: page < total_pages,
-      range_start: start_row,
-      range_end: [end_row, total_count].min
-    }
-
-
-    resultados.each do |l|
-      puts "#{l.identificador} - #{l.ano} - #{l.lei} (score: #{l.score})"
-    end
-
-    puts "Página #{pagina_info[:current_page]} de #{pagina_info[:total_pages]}"
-    puts "Mostrando #{pagina_info[:range_start]} a #{pagina_info[:range_end]} de #{pagina_info[:total_count]} resultados"
-    puts "Anterior habilitado? #{pagina_info[:has_previous]}"
-    puts "Próximo habilitado? #{pagina_info[:has_next]}"
-
-
-    # resultados formatados
-    resultados_json = resultados.map do |l|
-      {
-        identificador: l.identificador,
-        titulo: l.titulo,
-        lei: l.lei.to_i,
-        score: l.score,
-        ano: l.ano.to_i
-      }
-    end
-
-    # retorno final em JSON
-    render json: {
-      pagina_info: pagina_info,
-      resultados:  resultados_json
-    }
+render json: {
+  pagina_info: pagina_info,
+  resultados: resultados
+}
 
   end
 

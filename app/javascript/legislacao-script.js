@@ -177,7 +177,27 @@ checkboxesAnos.forEach(cb =>
     }
 
     // Event Listeners para filtros e busca
-    searchInput.addEventListener("input", () => { currentPage = 1; fetchAndRenderResults(); });
+    // Função debounce (utilitária)
+function debounce(func, delay) {
+    let timeout;
+    return function (...args) {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => func.apply(this, args), delay);
+    };
+}
+
+// Cria a versão com debounce da busca
+const debouncedFetch = debounce(() => {
+    currentPage = 1;
+    fetchAndRenderResults();
+}, 400); // espera 400ms após parar de digitar
+
+// Event Listeners para filtros e busca
+searchInput.addEventListener("input", debouncedFetch);
+
+
+
+
     checkboxesCategoria.forEach(cb => cb.addEventListener("change", () => { currentPage = 1; fetchAndRenderResults(); }));
     yearButtons.forEach(btn => {
         btn.addEventListener("click", function() {
