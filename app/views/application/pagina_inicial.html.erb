@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="pt-br">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Legislação — Consulta e gestão normativa</title>
+  <!-- Bootstrap 5 -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+  <!-- Font Awesome 6 -->
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" rel="stylesheet" />
+  <style>
+    :root {
+      --azul: #0e5ee6;
+      --azul-esc: #0b4ab4;
+      --cinza-claro: #f5f7fb;
+      --cinza-borda: #e6e9f2;
+      --texto-suave: #6b7280;
+      --radius: 16px;
+    }
+
+    body {
+      background: #fff;
+      color: #111827
+    }
+
+    .navbar-brand span.logo {
+      display: inline-flex;
+      align-items: center;
+      gap: .5rem;
+      font-weight: 700
+    }
+
+    .logo-badge {
+      display: inline-grid;
+      place-items: center;
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: #e6ecff;
+      color: #2742ff;
+      font-weight: 800
+    }
+
+    /* HERO */
+    .hero {
+      background: linear-gradient(135deg, var(--azul), var(--azul-esc));
+      color: #fff;
+      padding: 48px 0 24px
+    }
+
+    .hero .search-card {
+      background: rgba(255, 255, 255, .12);
+      border: 1px solid rgba(255, 255, 255, .25);
+      padding: 20px;
+      border-radius: var(--radius)
+    }
+
+    .chip {
+      display: inline-flex;
+      align-items: center;
+      gap: .35rem;
+      padding: .25rem .6rem;
+      border-radius: 999px;
+      background: #103f9d1f;
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, .35);
+      font-size: .85rem
+    }
+
+    .chip i {
+      font-size: .85em
+    }
+
+    .pill {
+      display: inline-block;
+      padding: .3rem .7rem;
+      border-radius: 999px;
+      background: #eceefe;
+      color: #2742ff;
+      font-weight: 600;
+      font-size: .8rem
+    }
+
+    .btn-ghost {
+      --bs-btn-color: #fff;
+      --bs-btn-hover-bg: rgba(255, 255, 255, .12);
+      --bs-btn-border-color: transparent
+    }
+
+    /* Cards */
+    .card {
+      border: 1px solid var(--cinza-borda);
+      border-radius: var(--radius)
+    }
+
+    .card .btn-sm {
+      padding: .35rem .6rem;
+      border-radius: 10px
+    }
+
+    .section-title {
+      font-weight: 700;
+      font-size: 1.1rem
+    }
+
+    .quick-filters .btn-check:checked+label {
+      background: #e9efff;
+      border-color: #c8d8ff;
+      color: #1437c8
+    }
+
+    .quick-filters label {
+      border-radius: 999px
+    }
+
+    .link-muted {
+      color: var(--texto-suave);
+      text-decoration: none
+    }
+
+    .link-muted:hover {
+      color: #0b4ab4
+    }
+
+    footer {
+      border-top: 1px solid var(--cinza-borda);
+      background: #fff
+    }
+
+    .fs-7 {
+      font-size: .9rem
+    }
+
+    .fs-8 {
+      font-size: .8rem
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg bg-white border-bottom">
+    <div class="container-xl">
+      <div class="d-flex align-items-center">
+        <a class="navbar-brand" href="#">
+          <span class="logo">
+              <small class="logo-badge">BR</small>
+          </span>
+        </a>
+        <div>
+          <b class="d-block">Legislação</b>
+          <small class="text-secondary fw-normal">Consulta e gestão normativa</small>
+        </div>
+      </div>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Alternar navegação">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="nav">
+        <ul class="navbar-nav ms-auto align-items-lg-center gap-lg-2">
+          <li class="nav-item"><a class="nav-link" href="#">Início</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Buscar</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Categorias</a></li>
+          <li class="nav-item"><a class="nav-link" href="#">Favoritos</a></li>
+          <li class="nav-item ms-lg-2"><a class="btn btn-dark rounded-3 px-3" href="#">Entrar</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <section class="hero">
+    <div class="container-xl">
+      <div class="row g-4">
+        <div class="col-lg-7">
+          <div class="d-flex align-items-center gap-2 mb-2">
+            <span class="pill bg-opacity-50"><i class="fa-solid fa-bolt me-1"></i> Nova versão • 2025</span>
+          </div>
+          <h1 class="display-6 fw-bold">Encontre leis, decretos e instruções em segundos</h1>
+          <p class="mb-4">Pesquise por palavra-chave, número, ano ou categoria. Aplique filtros de ano e tema, salve favoritos e acompanhe atualizações.</p>
+
+          <div class="bg-white rounded-4 p-2 d-flex align-items-center shadow-sm">
+            <i class="fa-solid fa-magnifying-glass px-3 text-secondary"></i>
+            <input type="text" class="form-control border-0" placeholder="Ex.: IPVA 2025, LO 2915/2012, ICMS" />
+            <button class="btn btn-primary rounded-3 px-4 ms-2">Buscar</button>
+          </div>
+          <div class="mt-3 d-flex flex-wrap align-items-center gap-2">
+            <span class="text-white-50 me-1">Atalhos:</span>
+            <a class="chip link-underline link-underline-opacity-0 btn btn-sm btn-outline-light" href="#">IPVA</a>
+            <a class="chip link-underline link-underline-opacity-0" href="#">ICMS</a>
+            <a class="chip link-underline link-underline-opacity-0" href="#">IN</a>
+            <a class="chip link-underline link-underline-opacity-0" href="#">ITCD</a>
+          </div>
+        </div>
+        <div class="col-lg-5">
+          <%= render 'filtros_rapidos' %>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <main class="py-5">
+    <div class="container-xl">
+      <div class="row g-4">
+        <%= render 'novidades_atualizacoes' %>
+        <div class="col-lg-5">
+          <%= render 'mais_acessados' %>
+          <%= render 'acesso_rapido' %>
+        </div>
+      </div>
+      <div>
+        <%= render 'categorias_destaque' %>
+      </div>
+    </div>
+  </main>
+
+  <footer class="py-4">
+    <div class="container-xl d-flex flex-wrap justify-content-between align-items-center gap-2">
+      <div class="text-secondary">© 2025 Governo do Estado • Sistema de Legislação</div>
+      <ul class="nav">
+        <li class="nav-item"><a class="nav-link link-secondary" href="#">Acessibilidade</a></li>
+        <li class="nav-item"><a class="nav-link link-secondary" href="#">Política de Privacidade</a></li>
+        <li class="nav-item"><a class="nav-link link-secondary" href="#">Ajuda</a></li>
+      </ul>
+    </div>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</body>
+</html>

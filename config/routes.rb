@@ -12,7 +12,7 @@ Rails.application.routes.draw do
 
   get "up" => "rails/health#show", as: :rails_health_check
 
-  root to: 'legislacao#index'
+  root to: 'application#pagina_inicial'
 
   # get '/baixar_xml/:hashCSSI/:gta', to: 'legislacao#index'
 

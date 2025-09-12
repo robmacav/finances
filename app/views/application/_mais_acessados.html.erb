@@ -1,0 +1,23 @@
+<div class="card mb-3">
+    <div class="card-body">
+        <div class="d-flex justify-content-between align-items-center mb-2">
+        <div class="section-title">Mais acessados</div>
+            <button class="btn btn-sm btn-outline-secondary"><i class="fa-regular fa-star me-1"></i></button>
+        </div>
+        <ul class="list-group list-group-flush">
+            <% @leis.each do |lei| %>
+            <li class="list-group-item px-0 d-flex align-items-start gap-3">
+                <div class="text-secondary pt-1">
+                    <i class="fa-regular fa-file-lines"></i>
+                </div>
+                <div>
+                    <a href="#" class="fw-semibold text-decoration-none"><%= lei.identificador %></a>
+                    <div class="text-secondary fs-8">
+                        <%= lei.titulo %>
+                    </div>
+                </div>
+            </li>
+            <% end %>
+        </ul>
+    </div>
+</div>

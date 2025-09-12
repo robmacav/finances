@@ -1,0 +1,57 @@
+<div class="search-card quick-filters">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <span class="fw-semibold">Filtros rápidos</span>
+    </div>
+    <div class="mb-3">
+        <div class="text-white-50 small mb-2">Por ano</div>
+        <div class="d-flex flex-wrap gap-2">
+        <% @anos_disponiveis.each do |ano| %>
+            <input class="btn-check" id="y2025" type="checkbox"><label for="y2025" class="btn btn-sm btn-outline-light"><%= ano %></label>
+        <% end %>
+        </div>
+    </div>
+    <div class="mb-1">
+        <div class="text-white-50 small mb-2">Por tema</div>
+        <div class="row g-2">
+        <div class="col-12 col-sm-4">
+            <div class="bg-white rounded-3 p-3 h-100 text-dark">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa-solid fa-car-side"></i>
+                    <span class="fw-semibold">IPVA</span>
+                </div>
+                <small class="d-block text-secondary">Veículos automotores</small>
+                <a class="fs-8 link-underline link-offset-2 link-underline-opacity-0 text-primary" href="#">
+                    <span>Ver documentos</span>
+                    <i class="fa-solid fa-angle-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="bg-white rounded-3 p-3 h-100 text-dark">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa-solid fa-truck-fast"></i>
+                    <span class="fw-semibold">ICMS</span>
+                </div>
+                <small class="d-block text-secondary">Circulação de mercadorias</small>
+                <a class="fs-8 link-underline link-offset-2 link-underline-opacity-0" href="#">
+                    <span>Ver documentos</span>
+                    <i class="fa-solid fa-angle-right ms-1"></i>
+                </a>
+            </div>
+        </div>
+        <div class="col-12 col-sm-4">
+            <div class="bg-white rounded-3 p-3 h-100 text-dark">
+                <div class="d-flex align-items-center gap-2 mb-1">
+                    <i class="fa-solid fa-hand-holding-medical"></i>
+                    <span class="fw-semibold">ITCD</span>
+                </div>
+                <small class="d-block text-secondary">Transmissão causa mortis e doação</small>
+                <a class="fs-8 link-underline link-offset-2 link-underline-opacity-0" href="#">
+                    <span>Ver documentos</span>
+                    <i class="fa-solid fa-angle-right ms-1"></i></a>
+                </div>
+            </div>
+        </div>
+        </div>
+    </div>
+</div>

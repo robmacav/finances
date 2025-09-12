@@ -1,0 +1,31 @@
+<div class="mt-4 mb-2 d-flex justify-content-between align-items-center">
+    <div class="section-title">Categorias em destaque</div>
+    <a href="#" class="link-muted">Ver todas</a>
+</div>
+
+<div class="d-flex flex-wrap gap-2 mb-3">
+    <span class="badge rounded-pill text-bg-light border">IPVA</span>
+    <span class="badge rounded-pill text-bg-light border">ICMS</span>
+    <span class="badge rounded-pill text-bg-light border">ITCD</span>
+</div>
+
+<div class="row g-3">
+    <% @leis.first(3).each do |lei| %>
+    <div class="col-4">
+        <div class="card">
+            <div class="card-body">
+            <div class="d-flex align-items-center gap-2 mb-2">
+                <span class="pill"><i class="fa-solid fa-clock-rotate-left me-1"></i> Atualizado recentemente</span>
+                <span class="badge text-bg-light text-dark border">ITCD</span>
+            </div>
+            <div class="fw-semibold">Documento exemplo 1 / ITCD</div>
+            <p class="text-secondary mb-3">Resumo breve do conteúdo relacionado a ITCD. Clique para ver detalhes.</p>
+            <div class="d-flex gap-2">
+                <a class="btn btn-outline-secondary btn-sm" href="#">Abrir</a>
+                <a class="btn btn-outline-primary btn-sm" href="#">Baixar</a>
+            </div>
+            </div>
+        </div>
+    </div>
+    <% end %>
+</div>
