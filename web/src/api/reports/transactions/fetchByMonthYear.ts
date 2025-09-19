@@ -16,7 +16,16 @@ export async function fetchByMonthYear(month_year: string): Promise<FetchTransac
   do {
     const url = `${apiUrl}/reports/transactions/all-by-month-year?month_year=${encodeURIComponent(month_year)}&page=${currentPage}`;
 
-    const res = await fetch(url);
+    const res = await fetch(
+      url,
+      {
+        method: "GET",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": import.meta.env.VITE_API_TOKEN
+        }
+      }
+    );
 
     if (!res.ok) {
       throw new Error(`Erro ao buscar página ${currentPage} de transações`);

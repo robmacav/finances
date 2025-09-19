@@ -1,19 +1,19 @@
 version: "3.3"
 
 services:
-  db:
-    image: mariadb:11.4
-    container_name: finances_db
-    restart: always
-    environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: finances_db
-      MYSQL_USER: finances_user
-      MYSQL_PASSWORD: finances_pass
-    volumes:
-      - db_data:/var/lib/mysql
-    ports:
-      - "3306:3306"
+  # db:
+  #   image: mariadb:11.4
+  #   container_name: finances_db
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: finances_db
+  #     MYSQL_USER: finances_user
+  #     MYSQL_PASSWORD: finances_pass
+  #   volumes:
+  #     - db_data:/var/lib/mysql
+  #   ports:
+  #     - "3306:3306"
 
   api:
     build: ./api
@@ -55,5 +55,5 @@ services:
     depends_on:
       - web
 
-volumes:
-  db_data:
+# volumes:
+#   db_data:

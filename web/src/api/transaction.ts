@@ -16,6 +16,7 @@ export async function createTransaction(payload: CreateTransactionPayload): Prom
     method: "POST",
     headers: {
       "Content-Type": "application/json",
+      "Authorization": import.meta.env.VITE_API_TOKEN
     },
     body: JSON.stringify(payload)
   });
