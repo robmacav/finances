@@ -2,6 +2,9 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   namespace :v1 do 
+    post "/login", to: "sessions#create"
+    get  "/me",    to: "users#me"
+
     get 'status', to: 'status#index'
     
     resources :categories
