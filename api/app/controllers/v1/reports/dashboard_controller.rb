@@ -19,6 +19,11 @@ class V1::Reports::DashboardController < ApplicationController
         expenses_current = Transaction.sum_by_kind_and_month_year(:expense, month_year, :paid)
         available_current = incomes_current - expenses_current
 
+        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+        puts incomes_current
+        puts "@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@"
+
+
         incomes_prev  = Transaction.sum_by_kind_and_month_year(:income, prev_month_year_str, :received)
         expenses_prev = Transaction.sum_by_kind_and_month_year(:expense, prev_month_year_str, :paid)
         available_prev = incomes_prev - expenses_prev
@@ -80,6 +85,10 @@ class V1::Reports::DashboardController < ApplicationController
                 total: e.total.to_f
             }
         end
+
+        puts "#############################"
+        puts format_currency(incomes_current)
+        puts "#############################"
 
         render json: {
             summary: {

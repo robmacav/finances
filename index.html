@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Autenticação - SEFIN RO</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="bg-light d-flex align-items-center" style="min-height: 100vh;">
+
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-md-8 col-lg-6">
+        <div class="card shadow-lg border-0 rounded-4">
+          
+          <!-- Cabeçalho -->
+          <div class="card-header text-center bg-primary text-white rounded-top-4">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Bandeira_de_Rond%C3%B4nia.svg/1200px-Bandeira_de_Rond%C3%B4nia.svg.png" 
+                 alt="Logo SEFIN" class="mb-2" style="width: 60px;">
+            <h5 class="mb-0 fw-bold">Sistemas SEFIN</h5>
+            <small>Secretaria de Estado de Finanças - RO</small>
+          </div>
+
+          <!-- Corpo -->
+          <div class="card-body p-4">
+            <h6 class="fw-bold mb-3 text-secondary">Informações</h6>
+            <ul class="list-unstyled small mb-4">
+              <li><a href="#" class="link-primary">Seja bem-vindo!</a> <span class="text-muted">(09/12/18)</span></li>
+              <li><a href="#" class="link-primary">Cadastro e senha</a> <span class="text-muted">(09/12/18)</span></li>
+              <li><a href="#" class="link-primary">Troca de Senha</a> <span class="text-muted">(27/03/24)</span></li>
+              <li><a href="#" class="link-primary">Manual para redefinir Senha</a> <span class="text-muted">(27/03/24)</span></li>
+            </ul>
+
+            <!-- Área Privada -->
+            <h6 class="fw-bold mb-3 text-secondary">Área Privada</h6>
+            <ul class="nav nav-tabs mb-3" id="authTabs" role="tablist">
+              <li class="nav-item" role="presentation">
+                <button class="nav-link active" id="login-tab" data-bs-toggle="tab" data-bs-target="#login" type="button" role="tab">
+                  Login
+                </button>
+              </li>
+              <li class="nav-item" role="presentation">
+                <button class="nav-link" id="digital-tab" data-bs-toggle="tab" data-bs-target="#digital" type="button" role="tab">
+                  Acesso Digital
+                </button>
+              </li>
+            </ul>
+
+            <div class="tab-content" id="authTabsContent">
+              <!-- Login -->
+              <div class="tab-pane fade show active" id="login" role="tabpanel">
+                <form>
+                  <div class="mb-3">
+                    <label for="cpf" class="form-label">CPF</label>
+                    <input type="text" class="form-control" id="cpf" placeholder="Digite seu CPF">
+                  </div>
+                  <div class="mb-3">
+                    <label for="senha" class="form-label">Senha</label>
+                    <input type="password" class="form-control" id="senha" placeholder="Digite sua senha">
+                  </div>
+                  <button type="submit" class="btn btn-primary w-100">Entrar</button>
+                </form>
+              </div>
+
+              <!-- Acesso Digital -->
+              <div class="tab-pane fade" id="digital" role="tabpanel">
+                <p class="text-muted small">Autenticação via certificado digital.</p>
+                <button class="btn btn-outline-primary w-100">Acessar com Certificado</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Rodapé -->
+          <div class="card-footer text-center small text-muted">
+            Desenvolvido por GEINF/SEFIN
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
