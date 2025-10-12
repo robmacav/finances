@@ -11,3 +11,4 @@ gem "kamal", "2.7.0", require: false
 gem "thruster", "0.1.14", require: false
 gem "kaminari", "1.2.2"
 gem "pg", "1.5.9"
+gem "rack-cors", "3.0.0"
