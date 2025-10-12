@@ -1,0 +1,59 @@
+version: "3.3"
+
+services:
+  # db:
+  #   image: mariadb:11.4
+  #   container_name: finances_db
+  #   restart: always
+  #   environment:
+  #     MYSQL_ROOT_PASSWORD: root
+  #     MYSQL_DATABASE: finances_db
+  #     MYSQL_USER: finances_user
+  #     MYSQL_PASSWORD: finances_pass
+  #   volumes:
+  #     - db_data:/var/lib/mysql
+  #   ports:
+  #     - "3306:3306"
+
+  api:
+    build: ./api
+    container_name: finances_api
+    restart: always
+    command: bash -c "bundle exec rails s -b 0.0.0.0 -p 3000"
+    volumes:
+      - ./api:/app
+    # depends_on:
+    #   - db
+    environment:
+      DB_HOST: db
+      DB_USER: finances_user
+      DB_PASSWORD: finances_pass
+      DB_NAME: finances_db
+    ports:
+      - "3000:3000"
+
+  web:
+    build: ./web
+    container_name: finances_web
+    restart: always
+    command: npm run dev -- --host 0.0.0.0 --port 5173
+    volumes:
+      - ./web:/app
+    depends_on:
+      - api
+    ports:
+      - "5173:5173"
+
+  nginx:
+    image: nginx:alpine
+    container_name: finances_nginx
+    restart: always
+    ports:
+      - "9090:80"
+    volumes:
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    depends_on:
+      - web
+
+# volumes:
+#   db_data:
