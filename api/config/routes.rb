@@ -11,6 +11,7 @@ Rails.application.routes.draw do
 
     namespace :reports do
       get "transactions/all-by-month-year", to: "transactions#all_by_month_year"
+      get "dashboard/data", to: "dashboard#data"
     end
 
     namespace :utils do
