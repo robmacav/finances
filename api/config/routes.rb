@@ -8,5 +8,9 @@ Rails.application.routes.draw do
         delete :batch_destroy
       end
     end
+
+    namespace :reports do
+      get "transactions/all-by-month-year", to: "transactions#all_by_month_year"
+    end
   end
 end
