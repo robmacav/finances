@@ -16,7 +16,32 @@
 
 <p>A plataforma resolve o problema de falta de visibilidade financeira, transformando transações em insights. Com recursos como edição em lote, filtros avançados, gráficos interativos e indicadores de tendência, você identifica rapidamente padrões de consumo, maiores gastos e evolução dos seus hábitos financeiros ao longo do tempo.</p>
 
-<h3>🏗️ Tecnologias Utilizadas</h3>
+### ⚡ Funcionalidades
+
+Dashboard Analítico
+- Métricas financeiras em tempo real (projeção, disponível, receitas e despesas)
+- Comparativos mensais com indicadores de tendência
+- Gráfico de fluxo de caixa anual (últimos 6 meses)
+- Análise de despesas semanais por dia
+- Distribuição de gastos por categoria (gráfico de pizza)
+- Ranking de gastos mais frequentes
+
+Gestão de Transações
+- Cadastro único ou em lote de receitas e despesas
+- Edição individual ou múltipla de transações
+- Exclusão individual ou em massa
+- Filtros por descrição, categoria, status e período
+- Navegação por mês/ano com histórico completo
+- Categorização com cores personalizadas
+- Controle de status (pago/recebido/pendente)
+
+Visualização de Dados
+- Agrupamento de transações por data
+- Totalizadores automáticos por período
+- Gráficos interativos (barras, pizza, linha)
+- Interface responsiva para desktop e mobile
+
+### 🏗️ Tecnologias Utilizadas
 
 ### Backend
 - 🔴 **Ruby on Rails 8.0.2**
@@ -37,7 +62,7 @@
 - Node.js 18+
 - Ruby 3.4.1
 
-### Rodando com Docker
+### Rodando com Docker Compose
 
 #### Clone o repositório
 
@@ -53,33 +78,6 @@ docker-compose up -d
 #### Acesse
 - API: http://localhost:3000
 - Web: http://localhost:5173
-
-### Rodando localmente
-
-#### API (Ruby On Rails)
-```bash
-cd api
-```
-```bash
-bundle install
-```
-```bash
-rails db:create db:migrate db:seed
-```
-```bash
-rails server
-```
-
-#### Web (React)
-```bash
-cd web
-```
-```bash
-npm install
-```
-```bash
-npm run dev
-```
 
 ### 🔑 Competências Técnicas
 
