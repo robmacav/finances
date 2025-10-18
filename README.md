@@ -41,6 +41,11 @@ Visualização de Dados
 - Gráficos interativos (barras, pizza, linha)
 - Interface responsiva para desktop e mobile
 
+### ⚡ Funcionalidades Futuras
+- Planejamento do Fluxo de Transações Mensais (entradas e saídas)
+- Cadastro de Categorias
+- Autenticação
+
 ### 🏗️ Tecnologias Utilizadas
 
 ### Backend
