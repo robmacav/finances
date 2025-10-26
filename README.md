@@ -16,7 +16,7 @@
 
 <p>A plataforma resolve o problema de falta de visibilidade financeira, transformando transações em insights. Com recursos como edição em lote, filtros avançados, gráficos interativos e indicadores de tendência, você identifica rapidamente padrões de consumo, maiores gastos e evolução dos seus hábitos financeiros ao longo do tempo.</p>
 
-### ⚡ Funcionalidades
+### Funcionalidades
 
 Dashboard Analítico
 - Métricas financeiras em tempo real (projeção, disponível, receitas e despesas)
@@ -41,26 +41,26 @@ Visualização de Dados
 - Gráficos interativos (barras, pizza, linha)
 - Interface responsiva para desktop e mobile
 
-### ⚡ Funcionalidades Futuras
+### Funcionalidades Futuras
 - Planejamento do Fluxo de Transações Mensais (entradas e saídas)
 - Cadastro de Categorias
 - Autenticação
 
-### 🏗️ Tecnologias Utilizadas
+### Tecnologias Utilizadas
 
 ### Backend
-- 🔴 **Ruby on Rails 8.0.2**
-- 💎 **Ruby 3.4.2**
-- 🗄️ **PostgreSQL**
-- 🐳 **Docker**
+- **Ruby on Rails 8.0.2**
+- **Ruby 3.4.2**
+- **PostgreSQL**
+- **Docker**
 
 ### Frontend
-- 🔵 **React 19.1.2**
-- 📘 **TypeScript 5.8.3**
-- ⚡ **Vite 6.3.5**
-- 🎨 **Tailwind CSS + Shadcn UI**
+- **React 19.1.2**
+- **TypeScript 5.8.3**
+- **Vite 6.3.5**
+- **Tailwind CSS + Shadcn UI**
 
-<h3>🚀 Como Executar</h3>
+<h3>Como Executar</h3>
 
 ### Pré-requisitos
 - Docker, Docker Compose
@@ -84,7 +84,7 @@ docker-compose up -d
 - API: http://localhost:3000
 - Web: http://localhost:5173
 
-### 🔑 Competências Técnicas
+### Competências Técnicas
 
 **Backend:** Ruby on Rails • RESTful API • PostgreSQL • MVC Pattern • Presenters • Concerns • API Versioning • Namespacing
 
@@ -110,7 +110,7 @@ docker-compose up -d
 <br>
 
 <details>
-<summary style="font-size:18x;">🏗️ Estrutura do Projeto</summary>
+<summary style="font-size:18x;">Estrutura do Projeto</summary>
 
 <br>
 
